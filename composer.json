@@ -1,0 +1,25 @@
+{
+  "name": "son/mvc",
+  "require": {
+    "php": ">=5.3"
+  },
+
+  "minimus-stability": "alpha",
+
+  "authors": [{
+    "name": "Jonathas Ruam",
+    "email": "johnjonathas0@gmail.com"
+    }],
+
+  "autoload": {
+    "psr-0": {
+      "SON": "vendor",
+      "App": "./"
+     }
+   },
+
+   "config":{
+     "bin-dir": "bin"
+   }
+
+}

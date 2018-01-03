@@ -1,0 +1,256 @@
+<!-- Layout Dashboard-->
+<!-- Bootstrap -->
+<link href="../../App/View/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link href="../../App/View/css/font-awesome.min.css" rel="stylesheet">
+<!-- NProgress -->
+<link href="../../App/View/css/nprogress.css" rel="stylesheet">
+<!-- iCheck -->
+<link href="../../App/View/css/green.css" rel="stylesheet">
+
+<link href="../../App/View/css/prettify.min.css" rel="stylesheet">
+<!-- Select2 -->
+<link href="../../App/View/css/select2.min.css" rel="stylesheet">
+<!-- Switchery -->
+<link href="../../App/View/css/switchery.min.css" rel="stylesheet">
+<!-- starrr -->
+<link href="../../App/View/css/starrr.css" rel="stylesheet">
+<!-- bootstrap-daterangepicker -->
+<link href="../../App/View/css/daterangepicker.css" rel="stylesheet">
+
+<!-- Custom Theme Style -->
+<link href="../../App/View/css/custom.min.css" rel="stylesheet">
+</head>
+
+<body class="nav-md">
+<div class="container body">
+  <div class="main_container">
+
+    <div class="col-md-3 left_col">
+      <div class="left_col scroll-view">
+        <div class="navbar nav_title" style="border: 0;">
+          <a href="index.html" class="site_title"><img src="../../App/View/img/gsolo.png" alt="..."> <span>TI CCHLA</span></a>
+        </div>
+
+        <div class="clearfix"></div>
+
+        <!-- menu profile quick info -->
+        <div class="profile clearfix">
+          <div class="profile_pic">
+            <img src="" alt="..." class="img-circle profile_img">
+          </div>
+          <div class="profile_info">
+            <span>Welcome,</span>
+            <h2>John Doe</h2>
+          </div>
+        </div>
+        <!-- /menu profile quick info -->
+
+        <br />
+
+        <!-- sidebar menu -->
+        <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+          <div class="menu_section">
+            <h3></h3>
+            <ul class="nav side-menu">
+              <li><a><i class="fa fa-table"></i> Solicitar atendimento <span class="fa fa-chevron-down"></span></a>
+
+              </li>
+
+            </ul>
+          </div>
+
+        </div>
+        <!-- /sidebar menu -->
+
+        <!-- /menu footer buttons -->
+        <div class="sidebar-footer hidden-small">
+          <a data-toggle="tooltip" data-placement="top" title="Settings">
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+          </a>
+          <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+            <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+          </a>
+          <a data-toggle="tooltip" data-placement="top" title="Lock">
+            <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+          </a>
+          <a data-toggle="tooltip" data-placement="top" title="Logout" href="../logout">
+            <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+          </a>
+        </div>
+        <!-- /menu footer buttons -->
+      </div>
+    </div>
+
+    <!-- top navigation -->
+    <div class="top_nav">
+      <div class="nav_menu">
+        <nav>
+          <div class="nav toggle">
+            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+          </div>
+
+          <ul class="nav navbar-nav navbar-right">
+
+          </ul>
+        </nav>
+      </div>
+    </div>
+    <!-- /top navigation -->
+
+    <!-- page content -->
+
+    <div class="right_col" role="main">
+      <div class="">
+        <div class="page-title">
+          <div class="row tile_count">
+
+          </div>
+          <div class="row">
+            <div class="col-md-6 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
+                  <h2>Descrição <small></small></h2>
+                  <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                    <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                      <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Settings 1</a>
+                        </li>
+                        <li><a href="#">Settings 2</a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                    </li>
+                  </ul>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                  <br />
+                  <form class="form-horizontal form-label-left" method="post" action="client_register_call_request">
+
+                    <div class="form-group">
+                      <label class="control-label col-md-3 col-sm-3 col-xs-12">Motivo para atendimento</label>
+                      <div class="col-md-9 col-sm-9 col-xs-12">
+                        <select name="servico" class="select2_single form-control" tabindex="-1">
+                          <option></option>
+                          <?php foreach ($this->view->servicos as $servicos):?>
+                            <option value=<?php echo $servicos['id'];?>><?php echo $servicos['nome'];?></option>
+                          <?php endforeach; ?>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="control-label col-md-3 col-sm-3 col-xs-12">Descrição</label>
+                      <div class="col-md-9 col-sm-9 col-xs-12">
+                        <input type="text" name="descricao" class="form-control" placeholder="observações">
+                      </div>
+                    </div>
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                      <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
+                        <button type="reset" class="btn btn-primary">Reset</button>
+                        <button type="submit" class="btn btn-success">Solicitar</button>
+                      </div>
+                    </div>
+
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
+                  <h2>SOLICITAÇÕES<small>pendentes</small></h2>
+                  <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    </li>
+                    <li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                    </li>
+                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                    </li>
+                  </ul>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                  <form name="cadastro_cliente" method="post" action="cadastrar_clientes">
+                  <table class="table table-hover">
+                    <thead>
+                      <tr>
+                        <th>Data de solicitação</th>
+                        <th>Serviço</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php foreach ($this->view->requisicoes as $requisicao):?>
+                        <tr>
+                            <td><?php echo $requisicao['data_solicitacao'];?></td>
+                            <td><?php echo $this->view->requests_services_names[$requisicao['id_servico']];?></td>
+                            <td><?php echo $requisicao['status'];?></td>
+                            <td> <input type="checkbox" value=<?php echo $requisicao['id'];?> name="selections[]"/></td>
+                        </tr>
+                      <?php endforeach;?>
+                    </tbody>
+                  </table>
+                  <input type="hidden" name="delete_request" value="delete_request"/>
+                  <button type="submit" class="btn btn-primary">Excluir</button>
+                </form>
+                </div>
+              </div>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /page content -->
+
+    <!-- footer content -->
+    <footer>
+
+    </footer>
+    <!-- /footer content -->
+    <!-- SCRIPTS DASHBOARD THEME-->
+
+  </div>
+</div>
+<!-- jQuery -->
+<script src="../../App/View/js/jquery.min.js"></script>
+<!-- Bootstrap -->
+<script src="../../App/View/js/bootstrap.min.js"></script>
+<!-- FastClick -->
+<script src="../../App/View/js/fastclick.js"></script>
+<!-- NProgress -->
+<script src="../../App/View/js/nprogress.js"></script>
+<!-- iCheck -->
+<script src="../../App/View/js/icheck.min.js"></script>
+<!-- bootstrap-daterangepicker -->
+<script src="../../App/View/js/moment.min.js"></script>
+<script src="../../App/View/js/daterangepicker.js"></script>
+<!-- bootstrap-wysiwyg -->
+<script src="../../App/View/js/bootstrap-wysiwyg.min.js"></script>
+<script src="../../App/View/js/jquery.hotkeys.js"></script>
+<script src="../../App/View/js/prettify.js"></script>
+<!-- jQuery Tags Input -->
+<script src="../../App/View/js/jquery.tagsinput.js"></script>
+<!-- Switchery -->
+<script src="../../App/View/js/switchery.min.js"></script>
+<!-- Select2 -->
+<script src="../../App/View/js/select2.full.min.js"></script>
+<!-- Parsley -->
+<script src="../../App/View/js/parsley.min.js"></script>
+<!-- Autosize -->
+<script src="../../App/View/js/autosize.min.js"></script>
+<!-- jQuery autocomplete -->
+<script src="../../App/View/js/jquery.autocomplete.min.js"></script>
+<!-- starrr -->
+<script src="../../App/View/js/starrr.js"></script>
+<!-- Custom Theme Scripts -->
+<script src="../../App/View/js/custom.min.js"></script>
+</body>

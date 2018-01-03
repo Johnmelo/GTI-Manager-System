@@ -1,0 +1,304 @@
+  <!-- Layout Dashboard-->
+  <!-- Bootstrap -->
+  <link href="../App/View/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link href="../App/View/css/font-awesome.min.css" rel="stylesheet">
+  <!-- NProgress -->
+  <link href="../App/View/css/nprogress.css" rel="stylesheet">
+  <!-- iCheck -->
+  <link href="../App/View/css/green.css" rel="stylesheet">
+  <!-- Custom Theme Style -->
+  <link href="../App/View/css/custom.min.css" rel="stylesheet">
+</head>
+
+<body class="nav-md">
+  <div class="container body">
+    <div class="main_container">
+
+      <div class="col-md-3 left_col">
+        <div class="left_col scroll-view">
+          <div class="navbar nav_title" style="border: 0;">
+            <a href="index.html" class="site_title"><img src="../App/View/img/gsolo.png" alt="..."> <span>TI CCHLA</span></a>
+          </div>
+
+          <div class="clearfix"></div>
+
+          <!-- menu profile quick info -->
+          <div class="profile clearfix">
+            <div class="profile_pic">
+              <img src="" alt="..." class="img-circle profile_img">
+            </div>
+            <div class="profile_info">
+              <span>Welcome,</span>
+              <h2>John Doe</h2>
+            </div>
+          </div>
+          <!-- /menu profile quick info -->
+
+          <br />
+
+          <!-- sidebar menu -->
+          <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+            <div class="menu_section">
+              <h3></h3>
+              <ul class="nav side-menu">
+                <li><a><i class="fa fa-home"></i> Projetos <span class="fa fa-chevron-down"></span></a>
+
+                </li>
+                <li><a><i class="fa fa-edit"></i> Equipe <span class="fa fa-chevron-down"></span></a>
+
+                </li>
+                <li><a><i class="fa fa-desktop"></i> Clientes <span class="fa fa-chevron-down"></span></a>
+
+                </li>
+                <li><a><i class="fa fa-table"></i> Chamados <span class="fa fa-chevron-down"></span></a>
+
+                </li>
+                <li><a href="admin/cadastro_usuarios"><i class="fa fa-bar-chart-o"></i> Cadastro de Usuario <span class="fa fa-chevron-down"></span></a>
+                  
+                </li>
+
+              </ul>
+            </div>
+
+          </div>
+          <!-- /sidebar menu -->
+
+          <!-- /menu footer buttons -->
+          <div class="sidebar-footer hidden-small">
+            <a data-toggle="tooltip" data-placement="top" title="Settings">
+              <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+              <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="Lock">
+              <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="Logout" href="logout">
+              <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+            </a>
+          </div>
+          <!-- /menu footer buttons -->
+        </div>
+      </div>
+
+      <!-- top navigation -->
+      <div class="top_nav">
+        <div class="nav_menu">
+          <nav>
+            <div class="nav toggle">
+              <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+            </div>
+
+            <ul class="nav navbar-nav navbar-right">
+
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <!-- /top navigation -->
+
+      <!-- page content -->
+
+      <div class="right_col" role="main">
+        <div class="">
+          <div class="page-title">
+            <div class="row tile_count">
+              <div class="col-md-2 col-sm-4 col-xs-6 tile_stats_count">
+                <span class="count_top"><i class="fa fa-user"></i> Total Chamados</span>
+                <div class="count"><?php echo $this->view->count;?></div>
+                <span class="count_bottom"><i class="green">4% </i>Resolvidos no prazo</span>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>CHAMADOS <small>Em atendimento</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Serviço</th>
+                          <th>Setor</th>
+                          <th>Técnico Responsável</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php foreach ($this->view->chamados_atendimentos as $atendimento):?>
+                          <tr>
+                            <td><?php echo $atentimento['nome'];?></td>
+                            <td><?php echo $atendimento['setor'];?></td>
+                            <td><?php echo $atendimento['id_tecnico_responsavel'];?></td>
+                          </tr>
+                        <?php endforeach;?>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>SOLICITAÇÕES<small>pendentes</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <form name="client_call_request" method="post" action="admin/open_call_request">
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>Cliente</th>
+                            <th>Serviço</th>
+                            <th>Setor</th>
+                            <th>Descrição</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <?php foreach ($this->view->requisicoes_atendimento as $call_request): ?>
+                            <tr>
+                                <td><?php echo $this->view->clients_names[$call_request['id_cliente']]['nome'];?></td>
+                                <td><?php echo $this->view->service_names[$call_request['id_servico']];?></td>
+                                <td><?php echo $this->view->clients_names[$call_request['id_cliente']]['setor'];?></td>
+                                <td><?php echo $call_request['descricao'];?></td>
+                                <td> <input type="checkbox" value=<?php echo $call_request['id'];?> name="selections_call_request[]"/></td>
+                            </tr>
+                          <?php endforeach; ?>
+                        </tbody>
+                      </table>
+                    <input type="hidden" name="admin_open_client_call_request" value="admin_open_client_call_request"/>
+                    <button type="submit" class="btn btn-primary">Abrir Chamado</button>
+                  </form>
+                  </div>
+                </div>
+              </div>
+              <div class="clearfix"></div>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>CHAMADOS <small>Abertos</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>N°</th>
+                          <th>Cliente</th>
+                          <th>Serviço</th>
+                          <th>Setor</th>
+                          <th>Técnico Abertura</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                          <?php foreach ($this->view->chamados_abertos as $abertos):?>
+                            <tr>
+                              <td><?php echo $abertos['id'];?></td>
+                              <td><?php echo $this->view->clients_names[$call_request['id_cliente']]['nome'];?></td>
+                              <td><?php echo $this->view->service_names[$call_request['id_servico']];?></td>
+                              <td><?php echo $this->view->clients_names[$call_request['id_cliente']]['setor'];?></td>
+                              <td><?php echo $this->view->clients_names[$abertos['id_tecnico_abertura']]['nome'];?></td>
+                            </tr>
+                          <?php endforeach;?>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="x_panel">
+                  <div class="x_title">
+                    <h2>SOLICITAÇÕES<small>de acesso</small></h2>
+                    <ul class="nav navbar-right panel_toolbox">
+                      <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                      </li>
+                      <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                      </li>
+                      <li><a class="close-link"><i class="fa fa-close"></i></a>
+                      </li>
+                    </ul>
+                    <div class="clearfix"></div>
+                  </div>
+                  <div class="x_content">
+                    <table class="table table-hover">
+                      <thead>
+                        <tr>
+                          <th>Cliente</th>
+                          <th>Setor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php foreach ($this->view->requisicoes as $requisicao):?>
+                          <tr>
+                            <td><?php echo $requisicao['nome'];?></td>
+                            <td><?php echo $requisicao['setor'];?></td>
+                          </tr>
+                        <?php endforeach;?>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="clearfix"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- /page content -->
+
+      <!-- footer content -->
+      <footer>
+
+      </footer>
+      <!-- /footer content -->
+      <!-- SCRIPTS DASHBOARD THEME-->
+
+    </div>
+  </div>
+  <!-- jQuery -->
+  <script src="../App/View/js/jquery.min.js"></script>
+  <!-- Bootstrap -->
+  <script src="../App/View/js/bootstrap.min.js"></script>
+  <!-- FastClick -->
+  <script src="../App/View/js/fastclick.js"></script>
+  <!-- NProgress -->
+  <script src="../App/View/js/nprogress.js"></script>
+  <!-- iCheck -->
+  <script src="../App/View/js/icheck.min.js"></script>
+
+  <!-- Custom Theme Scripts -->
+  <script src="../App/View/js/custom.min.js"></script>
+</body>
