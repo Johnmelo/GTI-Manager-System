@@ -64,5 +64,50 @@ class TecnicoController extends Action{
       $this->forbidenAccess();
     }
   }
+
+  public function technician_select_request(){
+    session_start();
+    if($_SESSION['user_role'] === "TECNICO"){
+
+      //LOADING AND PREPARE INFORMATIONS ABOUT USERS TO IDENTIFY
+      //OPEN REQUEST TECHNICIAN AND CLIENT THAT HAVE REQUESTED
+      $user = Container::getClass("Usuario");
+      $users = $user->fetchAll();
+      $users_names = [];
+      foreach ($users as $client) {
+        $users_names[$client['id']]['nome'] = $client['nome'];
+        $users_names[$client['id']]['setor'] = $client['setor'];
+      }
+      //------------------------------------------------------------------------
+
+      //LOADING AND PREPARE INFORMATIONS ABOUT SERVICES
+      $servico = Container::getClass("Servico");
+      $servicos = $servico->fetchAll();
+      $servicos_names = [];
+      foreach ($servicos as $service) {
+        $servicos_names[$service['id']] = $service['nome'];
+      }
+      //-------------------------------------------------------
+
+      if(isset($_POST['btnDetail'])){
+
+        //GET INFORMATIONS ABOUT REQUESTS
+        $requestDb = Container::getClass("Chamado");
+        $request = $requestDb->findById($_POST['btnDetail']);
+        //------------------------------------------------------------------------
+
+        $this->view->request = $request;
+        $this->view->users = $users_names;
+        $this->view->services = $servicos_names;
+
+        $this->render('technician_view_open_request');
+      }elseif(isset($_POST['btnJoin'])){
+        echo "btnJoin";
+      }
+    }else{
+      $this->forbidenAccess();
+    }
+
+  }
 }
 ?>

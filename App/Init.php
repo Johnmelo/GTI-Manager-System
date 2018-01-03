@@ -27,8 +27,10 @@ class Init extends Bootstrap{
     //----------------------------------------------------------------------------------------------------------------------------
 
     //TECHNICIAN ROUTES-----------------------------------------------------------------------------------------------------------
-    $ar['cliente_panel'] = array('route' => '/gticchla/public/tecnico' , 'controller' => 'tecnicoController', 'action' => 'index');
+    $ar['technician_panel'] = array('route' => '/gticchla/public/tecnico' , 'controller' => 'tecnicoController', 'action' => 'index');
+    $ar['technician_panel_select_request'] = array('route' => '/gticchla/public/technician_select_request' , 'controller' => 'tecnicoController', 'action' => 'technician_select_request');
     //----------------------------------------------------------------------------------------------------------------------------
+
     $this->setRoutes($ar);
   }
 

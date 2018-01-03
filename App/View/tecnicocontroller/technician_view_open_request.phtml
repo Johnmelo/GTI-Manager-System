@@ -96,15 +96,21 @@
 
           </div>
           <div class="row">
-            <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="col-md-12 col-sm-12 col-xs-12">
               <div class="x_panel">
                 <div class="x_title">
-                  <h2>CHAMADOS<small>Em atendimento</small></h2>
+                  <h2>Chamado <small>Detalhe</small></h2>
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                     </li>
                     <li class="dropdown">
                       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
+                      <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Settings 1</a>
+                        </li>
+                        <li><a href="#">Settings 2</a>
+                        </li>
+                      </ul>
                     </li>
                     <li><a class="close-link"><i class="fa fa-close"></i></a>
                     </li>
@@ -112,78 +118,54 @@
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                  <form name="chamados_clientes">
-                  <table class="table table-hover">
-                    <thead>
-                      <tr>
-                        <th>Cliente</th>
-                        <th>Serviço</th>
-                        <th>Prazo</th>
-                        <th>Técnico Abertura</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php foreach ($this->view->myRequests as $callrequest):?>
-                        <tr>
-                          <a href="view_request">
-                            <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
-                            <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
-                            <td></td>
-                            <td><?php echo $this->view->users_names[$callrequest['id_tecnico_abertura']]['nome'];?></td>
-                          </a>
-                        </tr>
-                      <?php endforeach;?>
-                    </tbody>
-                  </table>
-                </form>
+
+                  <form class="form-horizontal form-label-left" novalidate>
+                    <div class="item form-group">
+                      <label class="control-label col-md-3 col-sm-3 col-xs-12" for="textarea">Cliente <span class="required">:</span>
+                      </label>
+                      <div class="col-md-6 col-sm-6 col-xs-12">
+                        <textarea id="text_client" required="required" readonly="readonly" name="text_client" class="form-control col-md-7 col-xs-12" ><?php echo $this->view->users[$this->view->request['id_cliente_solicitante']]['nome'];?></textarea>
+                      </div>
+                    </div>
+                    <div class="item form-group">
+                      <label class="control-label col-md-3 col-sm-3 col-xs-12" for="textarea">Serviço <span class="required">:</span>
+                      </label>
+                      <div class="col-md-6 col-sm-6 col-xs-12">
+                        <textarea id="text_servico" required="required" readonly="readonly" name="text_servico" class="form-control col-md-7 col-xs-12" ><?php echo $this->view->services[$this->view->request['id_servico']];?></textarea>
+                      </div>
+                    </div>
+                    <div class="item form-group">
+                      <label class="control-label col-md-3 col-sm-3 col-xs-12" for="occupation">Data abertura <span class="required">:</span>
+                      </label>
+                      <div class="col-md-6 col-sm-6 col-xs-12">
+                        <input value=<?php echo $this->view->request['data_abertura'];?> id="occupation" type="text" name="text_date" data-validate-length-range="5,20" class="optional form-control col-md-7 col-xs-12">
+                      </div>
+                    </div>
+                    <div class="item form-group">
+                      <label class="control-label col-md-3 col-sm-3 col-xs-12" for="textarea">Técnico abertura <span class="required">:</span>
+                      </label>
+                      <div class="col-md-6 col-sm-6 col-xs-12">
+                        <textarea id="text_technician" required="required" readonly="readonly" name="text_technician" class="form-control col-md-7 col-xs-12" ><?php echo $this->view->users[$this->view->request['id_tecnico_abertura']]['nome'];?></textarea>
+                      </div>
+                    </div>
+                    <div class="item form-group">
+                      <label class="control-label col-md-3 col-sm-3 col-xs-12" for="textarea">Descrição <span class="required">:</span>
+                      </label>
+                      <div class="col-md-6 col-sm-6 col-xs-12">
+                        <textarea id="text_description" required="required" readonly="readonly" name="text_description" class="form-control col-md-7 col-xs-12" ><?php echo $this->view->request['descricao'];?></textarea>
+                      </div>
+                    </div>
+                    <div class="ln_solid"></div>
+                    <div class="form-group">
+                      <div class="col-md-6 col-md-offset-3">
+                        <button type="submit" class="btn btn-primary">Back</button>
+                        <button id="send" type="submit" class="btn btn-success">Join</button>
+                      </div>
+                    </div>
+                  </form>
                 </div>
               </div>
             </div>
-            <div class="col-md-6 col-sm-6 col-xs-12">
-              <div class="x_panel">
-                <div class="x_title">
-                  <h2>CHAMADOS<small>Abertos</small></h2>
-                  <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                    </li>
-                    <li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                    </li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a>
-                    </li>
-                  </ul>
-                  <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                  <form name="chamados_clientes" method="post" action="technician_select_request">
-                  <table class="table table-hover">
-                    <thead>
-                      <tr>
-                        <th>Cliente</th>
-                        <th>Serviço</th>
-                        <th>Setor</th>
-                        <th>Técnico Abertura</th>
-                        <th></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php foreach ($this->view->openRequests as $callrequest):?>
-                        <tr>
-                          <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
-                          <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
-                          <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['setor'];?></td>
-                          <td><?php echo $this->view->users_names[$callrequest['id_tecnico_abertura']]['nome'];?></td>
-                          <td><button type="submit" class="btn btn-primary" name="btnDetail" value=<?php echo $callrequest['id'];?>>Ver</button></td>
-                          <td><button type="submit" class="btn btn-success" name="btnJoin" value=<?php echo $callrequest['id'];?>>Join</button></td>
-                        </tr>
-                      <?php endforeach;?>
-                    </tbody>
-                  </table>
-                </form>
-                </div>
-              </div>
-            </div>
-            <div class="clearfix"></div>
           </div>
         </div>
       </div>
