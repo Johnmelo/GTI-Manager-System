@@ -1,9 +1,7 @@
 var abas = document.getElementById("botoes-abas").children;
 
-for ( li of abas ) {
-
-    li.addEventListener("click", function(event) {
-
+var alternateTab = function (event) {
+    if (event.which == 1 || event.which == 32 || event.which == 13) {
         if ( this.id == "login_tab" && this.className.indexOf("selected") == -1 ) {
 
             document.getElementById("login_tab").className += "selected";
@@ -20,5 +18,10 @@ for ( li of abas ) {
             document.getElementById("login_tab").className = document.getElementById("login_tab").className.replace(/selected/g, "");
             document.getElementById("login-form").className = document.getElementById("login-form").className.replace(/selected/g, "");
         }
-    });
+    }
+};
+
+for ( li of abas ) {
+    li.addEventListener("click", alternateTab, false);
+    li.addEventListener("keydown", alternateTab, false);
 }

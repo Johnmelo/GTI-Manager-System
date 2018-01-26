@@ -45,11 +45,12 @@ header#top-menu.open {
 a.top-menu-home-link {
     height: 100%;
 }
-a.top-menu-home-link:hover {
+a.top-menu-home-link:hover, a.top-menu-home-link:focus {
     background-color: #333;
     cursor: pointer;
 }
-a.top-menu-home-link:hover > .top-menu-logo-area > .top-menu-logo-content {
+a.top-menu-home-link:hover > .top-menu-logo-area > .top-menu-logo-content,
+a.top-menu-home-link:focus > .top-menu-logo-area > .top-menu-logo-content {
     background-image: url("../img/logo.svg");
 }
 a.top-menu-home-link:active {
