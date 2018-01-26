@@ -1,0 +1,348 @@
+body {
+    background: url('../img/bg/bg-600-max.png') no-repeat left center fixed;
+    background-size: cover;
+}
+
+/* CONTEUDO */
+
+#content-area {
+    width: 100%;
+    height: 100%;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* CAIXA DO CONTEÚDO */
+
+#content-wrapper {
+    width: 100%;
+    height: 460px;
+    position: absolute;
+    border-top: 2px solid rgba(255, 255, 255, 0.7);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0px 4px 12px 5px rgba(0, 0, 0, 0.5);
+    background-color: rgba(245, 245, 245, 0.95);
+    overflow: hidden;
+}
+
+
+#content-form-wrapper {
+    position: absolute;
+    margin: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+
+
+
+/* ABAS */
+
+ul#botoes-abas {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    padding-left: 10px;
+}
+
+
+ul#botoes-abas li {
+    display: inline;
+    padding: 32px 22px;
+    color: #006699;
+    cursor: pointer;
+    font-size: 1.3em;
+}
+
+
+ul#botoes-abas li.selected {
+    font-weight: bold;
+}
+ul#botoes-abas li.selected > span {
+    padding-bottom: 16px;
+    border-bottom: 3px solid #006699;
+}
+
+
+
+
+/* FORMULÁRIOS */
+
+#forms-wrapper {
+    flex: 1;
+    display: flex;
+    position: relative;
+}
+
+
+#login-form-wrapper, #register-form-wrapper {
+    padding: 30px;
+    padding-bottom: 0;
+    position: absolute;
+    margin: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    visibility: collapse;
+    display: inherit;
+    flex: 1;
+    flex-direction: column;
+    opacity: 0;
+    transition: transform 120ms, opacity 120ms, visibility 0s linear 120ms;
+}
+#login-form-wrapper.selected, #register-form-wrapper.selected {
+    visibility: visible;
+    opacity: 1;
+    transition: transform 120ms, opacity 120ms;
+    transition-delay: 0s;
+}
+
+
+.form-input > input[type="text"], .form-input > input[type="password"], .form-input > input[type="submit"] {
+    width: 100%;
+}
+
+
+/* INPUTS NO GERAL */
+
+.form-input:not(:first-child) {
+    margin-top: 12px;
+}
+.form-input {
+    margin-bottom: 12px;
+    width: 100%;
+    border: 0;
+    position: relative;
+    display: inherit;
+    align-items: center;
+}
+
+
+.form-input > input[type="submit"] {
+    height: 64px;
+    color: #FFF;
+    font-size: 1.2em;
+    border: 0;
+    background-color: #006699;
+}
+
+
+
+
+/* FORM DE LOGIN */
+
+#login-form-wrapper {
+    transform: translateX(-64px);
+}
+#login-form-wrapper.selected {
+    transform: translateX(0);
+}
+
+#login-form-wrapper .form-input:not(:first-child) {
+    margin-top: 16px;
+}
+#login-form-wrapper .form-input {
+    margin-bottom: 16px;
+}
+
+
+/* INPUT DE USERNAME E SENHA */
+
+#login-form-wrapper .form-input > input[type="text"], #login-form-wrapper .form-input > input[type="password"] {
+    padding-top: 4px;
+    padding-left: 32px;
+    height: 32px;
+    font-size: 1.1em;
+    border: 0;
+}
+
+
+#login-form-wrapper .form-input > i.fa:first-child {
+    color: #006699;
+    position: absolute;
+    left: 12px;
+}
+
+
+#login-form-wrapper .form-input > input[type="checkbox"] {
+    width: 32px;
+    height: 32px;
+}
+#login-form-wrapper .form-input > input[type="checkbox"] + label {
+    font-size: 1.1em;
+    margin-left: 12px;
+}
+
+
+/* LINK PARA RECUPERAR ACESSO */
+
+#login-form-wrapper > span:last-child {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 32px;
+    text-align: center;
+}
+
+
+
+
+/* FORM DE CADASTRO */
+
+#register-form-wrapper {
+    transform: translateX(64px);
+}
+#register-form-wrapper.selected {
+    transform: translateX(0);
+}
+
+
+#register-form-wrapper .form-input > input[type="text"] {
+    padding-top: 4px;
+    padding-left: 12px;
+    height: 32px;
+    font-size: 1.1em;
+    border: 0;
+}
+
+
+
+
+/* RESPONSIVIDADE */
+
+@media (min-width: 600px) {
+
+    body {
+        background-image: url('../img/bg/bg-900-max.png');
+    }
+
+    /* WRAPPER */
+    #content-wrapper {
+        width: 520px;
+        height: 560px;
+        border: 0;
+    }
+
+
+    #login-form-wrapper, #register-form-wrapper {
+        padding: 48px;
+    }
+
+
+    /* ABAS */
+    ul#botoes-abas {
+        padding: 0;
+        margin-bottom: 10px;
+        justify-content: space-evenly;
+    }
+
+
+    ul#botoes-abas li {
+        color: #FFF;
+        background-color: #006699;
+        padding-top: 32px;
+        padding-bottom: 32px;
+        text-transform: uppercase;
+        flex: 1;
+        text-align: center;
+    }
+
+
+    ul#botoes-abas li.selected {
+        color: #006699;
+        font-weight: normal;
+        background-color: transparent;
+    }
+    ul#botoes-abas li.selected > span {
+        padding-bottom: 0;
+        border-bottom: 0;
+    }
+
+
+    /* INPUT */
+    #login-form-wrapper .form-input > input[type="text"], #login-form-wrapper .form-input > input[type="password"] {
+        padding-top: 2px;
+        padding-left: 42px;
+        height: 42px;
+        font-size: 1.2em;
+    }
+
+
+    #register-form-wrapper .form-input > input[type="text"] {
+        padding-top: 2px;
+        padding-left: 16px;
+        height: 42px;
+        font-size: 1.2em;
+    }
+
+
+    #login-form-wrapper .form-input > i.fa:first-child {
+        left: 18px;
+    }
+
+
+    .form-input:not(:first-child) {
+        margin-top: 26px;
+    }
+    .form-input {
+        margin-bottom: 0;
+    }
+
+
+    #register-form-wrapper > .form-input > input[type="submit"] {
+        margin-top: 20px;
+    }
+
+
+    #login-form-wrapper > span:last-child {
+        bottom: 42px;
+    }
+}
+
+
+
+
+@media (min-width: 900px) {
+    body {
+        background-image: url('../img/bg/bg-1200-max.png');
+    }
+}
+
+
+
+
+@media (min-width: 1200px) {
+    body {
+        background-image: url('../img/bg/bg.png');
+    }
+}
+
+
+
+
+@media (min-width: 1800px) {
+
+    /* WRAPPER */
+    #content-wrapper {
+    }
+
+
+    #login-form-wrapper, #register-form-wrapper {
+    }
+
+
+    ul#botoes-abas li {
+        padding-top: 42px;
+        padding-bottom: 42px;
+        font-size: 1.5em;
+    }
+}
