@@ -95,6 +95,8 @@ a.top-menu-home-link:active {
 
 .top-menu-link-list-button {
     height: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
     color: #FFF;
     display: flex;
     align-items: center;
@@ -103,31 +105,31 @@ a.top-menu-home-link:active {
 
 /* HAMBURGER BUTTON */
 
-i#hamburger-icon {
+i#hamburger-icon, svg#hamburger-icon {
     opacity: 1;
 }
-header#top-menu.open i#hamburger-icon {
+header#top-menu.open i#hamburger-icon, header#top-menu.open svg#hamburger-icon {
     opacity: 0;
 }
 
 
 /* CLOSE MENU LINK LIST BUTTON */
 
-i#close-menu-icon {
+i#close-menu-icon, svg#close-menu-icon {
     opacity: 0;
 }
-header#top-menu.open i#close-menu-icon {
+header#top-menu.open i#close-menu-icon, header#top-menu.open svg#close-menu-icon {
     opacity: 1;
 }
 
 
 /* ANIMAÇÕES DO BOTÃO DE LINKS DO MENU */
 
-i#hamburger-icon, i#close-menu-icon {
+i#hamburger-icon, i#close-menu-icon, svg#hamburger-icon, svg#close-menu-icon {
     transition: transform 500ms, opacity 500ms;
     transform: rotate(0deg);
 }
-header#top-menu.open i#hamburger-icon, header#top-menu.open i#close-menu-icon {
+header#top-menu.open i#hamburger-icon, header#top-menu.open i#close-menu-icon, header#top-menu.open svg#hamburger-icon, header#top-menu.open svg#close-menu-icon {
     transition: transform 700ms, opacity 500ms;
     transform: rotate(180deg);
 }

@@ -83,7 +83,7 @@ ul#botoes-abas li.selected > span {
 }
 
 
-#login-form-wrapper, #register-form-wrapper {
+#login-form, #register-form {
     padding: 30px;
     padding-bottom: 0;
     position: absolute;
@@ -99,7 +99,7 @@ ul#botoes-abas li.selected > span {
     opacity: 0;
     transition: transform 120ms, opacity 120ms, visibility 0s linear 120ms;
 }
-#login-form-wrapper.selected, #register-form-wrapper.selected {
+#login-form.selected, #register-form.selected {
     visibility: visible;
     opacity: 1;
     transition: transform 120ms, opacity 120ms;
@@ -140,24 +140,24 @@ ul#botoes-abas li.selected > span {
 
 /* FORM DE LOGIN */
 
-#login-form-wrapper {
+#login-form {
     transform: translateX(-64px);
 }
-#login-form-wrapper.selected {
+#login-form.selected {
     transform: translateX(0);
 }
 
-#login-form-wrapper .form-input:not(:first-child) {
+#login-form .form-input:not(:first-child) {
     margin-top: 16px;
 }
-#login-form-wrapper .form-input {
+#login-form .form-input {
     margin-bottom: 16px;
 }
 
 
 /* INPUT DE USERNAME E SENHA */
 
-#login-form-wrapper .form-input > input[type="text"], #login-form-wrapper .form-input > input[type="password"] {
+#login-form .form-input > input[type="text"], #login-form .form-input > input[type="password"] {
     padding-top: 4px;
     padding-left: 32px;
     height: 32px;
@@ -166,18 +166,18 @@ ul#botoes-abas li.selected > span {
 }
 
 
-#login-form-wrapper .form-input > i.fa:first-child {
+#login-form .form-input > svg.svg-inline--fa:first-child {
     color: #006699;
     position: absolute;
     left: 12px;
 }
 
 
-#login-form-wrapper .form-input > input[type="checkbox"] {
+#login-form .form-input > input[type="checkbox"] {
     width: 32px;
     height: 32px;
 }
-#login-form-wrapper .form-input > input[type="checkbox"] + label {
+#login-form .form-input > input[type="checkbox"] + label {
     font-size: 1.1em;
     margin-left: 12px;
 }
@@ -185,7 +185,7 @@ ul#botoes-abas li.selected > span {
 
 /* LINK PARA RECUPERAR ACESSO */
 
-#login-form-wrapper > span:last-child {
+#login-form > span:last-child {
     position: absolute;
     left: 0;
     right: 0;
@@ -198,15 +198,15 @@ ul#botoes-abas li.selected > span {
 
 /* FORM DE CADASTRO */
 
-#register-form-wrapper {
+#register-form {
     transform: translateX(64px);
 }
-#register-form-wrapper.selected {
+#register-form.selected {
     transform: translateX(0);
 }
 
 
-#register-form-wrapper .form-input > input[type="text"] {
+#register-form .form-input > input[type="text"] {
     padding-top: 4px;
     padding-left: 12px;
     height: 32px;
@@ -233,7 +233,7 @@ ul#botoes-abas li.selected > span {
     }
 
 
-    #login-form-wrapper, #register-form-wrapper {
+    #login-form, #register-form {
         padding: 48px;
     }
 
@@ -269,7 +269,7 @@ ul#botoes-abas li.selected > span {
 
 
     /* INPUT */
-    #login-form-wrapper .form-input > input[type="text"], #login-form-wrapper .form-input > input[type="password"] {
+    #login-form .form-input > input[type="text"], #login-form .form-input > input[type="password"] {
         padding-top: 2px;
         padding-left: 42px;
         height: 42px;
@@ -277,7 +277,7 @@ ul#botoes-abas li.selected > span {
     }
 
 
-    #register-form-wrapper .form-input > input[type="text"] {
+    #register-form .form-input > input[type="text"] {
         padding-top: 2px;
         padding-left: 16px;
         height: 42px;
@@ -285,8 +285,8 @@ ul#botoes-abas li.selected > span {
     }
 
 
-    #login-form-wrapper .form-input > i.fa:first-child {
-        left: 18px;
+    #login-form .form-input > svg.svg-inline--fa:first-child {
+        left: 16px;
     }
 
 
@@ -298,12 +298,12 @@ ul#botoes-abas li.selected > span {
     }
 
 
-    #register-form-wrapper > .form-input > input[type="submit"] {
+    #register-form > .form-input > input[type="submit"] {
         margin-top: 20px;
     }
 
 
-    #login-form-wrapper > span:last-child {
+    #login-form > span:last-child {
         bottom: 42px;
     }
 }
@@ -336,7 +336,7 @@ ul#botoes-abas li.selected > span {
     }
 
 
-    #login-form-wrapper, #register-form-wrapper {
+    #login-form, #register-form {
     }
 
 
