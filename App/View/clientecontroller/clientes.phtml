@@ -3,12 +3,14 @@
 <link href="../App/View/css/bootstrap.min.css" rel="stylesheet">
 <!-- Font Awesome -->
 <link href="../App/View/css/fontawesome-all.min.css" rel="stylesheet">
+<script defer src="../App/View/js/fontawesome-all.min.js"></script>
 <!-- NProgress -->
 <link href="../App/View/css/nprogress.css" rel="stylesheet">
 <!-- iCheck -->
 <link href="../App/View/css/green.css" rel="stylesheet">
 <!-- Custom Theme Style -->
 <link href="../App/View/css/custom.min.css" rel="stylesheet">
+<link href="../App/View/css/sidebar-override.css" rel="stylesheet">
 </head>
 
 <body class="nav-md">
@@ -18,7 +20,7 @@
     <div class="col-md-3 left_col">
       <div class="left_col scroll-view">
         <div class="navbar nav_title" style="border: 0;">
-          <a href="index.html" class="site_title"><img src="../App/View/img/logo.svg" alt="Logo" style="height: 27px"> <span style="font-size: 1.2em; position: relative; top: 3px;">TI CCHLA</span></a>
+          <a href="./cliente" class="site_title"><img src="../App/View/img/logo.svg" id="sidebar-logo" alt="Logo"><span id="sidebar-logo-text">TI CCHLA</span></a>
         </div>
 
         <div class="clearfix"></div>
@@ -29,7 +31,7 @@
             <img src="" alt="..." class="img-circle profile_img">
           </div>
           <div class="profile_info">
-            <span>Welcome,</span>
+            <span>Bem-vindo,</span>
             <h2><?php echo $_SESSION['user_name'];?></h2>
           </div>
         </div>
@@ -42,10 +44,7 @@
           <div class="menu_section">
             <h3></h3>
             <ul class="nav side-menu">
-              <li><a href="cliente/solicitar_atendimento"><i class="fa fa-table"></i> Solicitar atendimento <span class="fa fa-chevron-down"></span></a>
-
-              </li>
-
+              <li><a href="cliente/solicitar_atendimento"><i class="fas fa-chevron-right"></i> Solicitar atendimento</a></li>
             </ul>
           </div>
 
