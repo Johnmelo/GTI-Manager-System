@@ -1,0 +1,166 @@
+/* TOPNAV */
+
+div.nav.toggle {
+    padding: 0;
+    width: 0;
+}
+
+a#menu_toggle {
+    padding: 0;
+}
+
+.toggle a svg {
+    font-size: 26px;
+    margin: 15px 20px;
+}
+
+.top_nav .nav_menu ul.nav li a {
+    font-size: 1.05em;
+    font-weight: 600;
+}
+
+.top_nav .nav_menu ul.nav li a svg.fa-user {
+    margin-right: 8px;
+}
+
+.top_nav .nav_menu ul.nav li a svg.fa-angle-down {
+    margin-left: 8px;
+}
+
+
+
+
+/* CONTENT */
+
+html {
+    min-height: 100%;
+}
+
+body, .body {
+    min-height: 100%;
+    max-width: none;
+}
+
+.nav-sm .nav.side-menu li a svg.toggle-up,
+.nav-sm .nav.side-menu li a span.toggle-up {
+    display: none!important;
+}
+
+.right_col {
+    min-height: 100%;
+}
+
+.panel_toolbox {
+    margin-top: 4px;
+    min-width: 42px;
+}
+
+.x_title h2 {
+    font-weight: 600;
+    line-height: 1.4em;
+}
+
+.x_title h2 small {
+    display: inline;
+    font-size: 0.8em;
+}
+
+
+
+
+/* SIDEBAR LOGO */
+
+.nav-sm #sidebar-logo {
+    height: 36px;
+    margin-top: 8px;
+    margin-left: 6px;
+}
+
+#sidebar-logo {
+    height: 27px;
+    margin-top: -2px;
+}
+
+#sidebar-logo-text {
+    top: 4px;
+    font-size: 1.3em;
+    font-weight: 900;
+    position: relative;
+}
+
+#sidebar-logo-text span:nth-child(1) {
+    color: #2DA7F9;
+}
+
+#sidebar-logo-text span:nth-child(2) {
+    font-weight: 300;
+}
+
+
+
+
+/* SIDEBAR PROFILE */
+
+.profile_pic {
+    display: none;
+}
+
+.profile_info {
+    padding: 18px 10px 0px;
+}
+
+.profile_info span {
+    color: inherit;
+    font-size: 1.1em;
+}
+
+.profile_info h2 {
+    font-size: 1.2em;
+}
+
+
+
+
+/* SIDEBAR ITENS */
+
+#sidebar-menu {
+    font-size: 1.05em;
+}
+
+.nav.side-menu > li.active,
+.nav.side-menu > li.current-page {
+    border-color: #2DA7F9;
+}
+
+.nav-sm .nav.child_menu li.active,
+.nav-sm .nav.side-menu li.active-sm {
+    border-color: #2DA7F9;
+}
+
+.nav.child_menu > li > a,
+.nav.side-menu > li > a {
+    padding: 12px;
+}
+
+.nav.side-menu li a svg,
+.nav.side-menu li a span {
+    width:26px;
+    opacity:.99;
+    display:inline-block;
+    font-family:FontAwesome;
+    font-style:normal;
+    font-weight:400;
+    font-size:18px;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    margin-right: 4px;
+}
+
+.nav-sm .nav.side-menu li a svg,
+.nav-sm .nav.side-menu li a span {
+    font-size: 25px!important;
+    text-align: center;
+    width: 100%!important;
+    margin-bottom: 5px;
+    margin-right: 0;
+}

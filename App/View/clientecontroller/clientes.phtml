@@ -10,7 +10,8 @@
 <link href="../App/View/css/green.css" rel="stylesheet">
 <!-- Custom Theme Style -->
 <link href="../App/View/css/custom.min.css" rel="stylesheet">
-<link href="../App/View/css/sidebar-override.css" rel="stylesheet">
+<link href="../App/View/css/base-style.css" rel="stylesheet">
+<link href="../App/View/css/custom-style-override.css" rel="stylesheet">
 </head>
 
 <body class="nav-md">
@@ -20,7 +21,7 @@
     <div class="col-md-3 left_col">
       <div class="left_col scroll-view">
         <div class="navbar nav_title" style="border: 0;">
-          <a href="./cliente" class="site_title"><img src="../App/View/img/logo.svg" id="sidebar-logo" alt="Logo"><span id="sidebar-logo-text">TI CCHLA</span></a>
+          <a href="./cliente" class="site_title"><img src="../App/View/img/logo.svg" id="sidebar-logo" alt="Logo"><span id="sidebar-logo-text"><span>TI</span> <span>CCHLA</span></span></a>
         </div>
 
         <div class="clearfix"></div>
@@ -44,7 +45,14 @@
           <div class="menu_section">
             <h3></h3>
             <ul class="nav side-menu">
-              <li><a href="cliente/solicitar_atendimento"><i class="fas fa-chevron-right"></i> Solicitar atendimento</a></li>
+              <li>
+                <a href="cliente/solicitar_atendimento">
+                  <span class="fa-layers fa-fw">
+                    <i class="fas fa-user"></i>
+                    <i class="fas fa-wrench" data-fa-transform="shrink-4 down-4.2 right-7" style="color:#2DA7F9;"></i>
+                  </span> Solicitar atendimento
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -52,7 +60,7 @@
         <!-- /sidebar menu -->
 
         <!-- /menu footer buttons -->
-        <div class="sidebar-footer hidden-small">
+        <!--<div class="sidebar-footer hidden-small">
           <a data-toggle="tooltip" data-placement="top" title="Settings">
             <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
           </a>
@@ -65,7 +73,7 @@
           <a data-toggle="tooltip" data-placement="top" title="Logout" href="logout">
             <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
           </a>
-        </div>
+        </div>-->
         <!-- /menu footer buttons -->
       </div>
     </div>
@@ -75,11 +83,23 @@
       <div class="nav_menu">
         <nav>
           <div class="nav toggle">
-            <a id="menu_toggle"><i class="fa fa-bars"></i></a>
+            <a id="menu_toggle"><i class="fas fa-bars"></i></a>
           </div>
 
           <ul class="nav navbar-nav navbar-right">
-
+            <li>
+              <a href="" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-user"></i> <?php echo $_SESSION['user_name'];?>
+                <span class="fas fa-angle-down"></span>
+              </a>
+              <ul class="dropdown-menu dropdown-usermenu pull-right">
+                <li>
+                  <a href="logout" data-original-title="Sair">
+                    <i class="fas fa-sign-out-alt pull-right"></i> Sair
+                  </a>
+                </li>
+              </ul>
+            </li>
           </ul>
         </nav>
       </div>
@@ -95,17 +115,17 @@
 
           </div>
           <div class="row">
-            <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="col-md-6 col-xs-12">
               <div class="x_panel">
                 <div class="x_title">
                   <h2>CHAMADOS<small>Em atendimento</small></h2>
                   <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
                     </li>
-                    <li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                    </li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                    <!--<li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
+                    </li>-->
+                    <li><a class="close-link"><i class="fas fa-times"></i></a>
                     </li>
                   </ul>
                   <div class="clearfix"></div>
@@ -141,17 +161,17 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="col-md-6 col-xs-12">
               <div class="x_panel">
                 <div class="x_title">
                   <h2>CHAMADOS<small>Abertos</small></h2>
                   <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
+                    <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
                     </li>
-                    <li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fa fa-wrench"></i></a>
-                    </li>
-                    <li><a class="close-link"><i class="fa fa-close"></i></a>
+                    <!--<li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
+                    </li>-->
+                    <li><a class="close-link"><i class="fas fa-times"></i></a>
                     </li>
                   </ul>
                   <div class="clearfix"></div>
@@ -188,9 +208,9 @@
     <!-- /page content -->
 
     <!-- footer content -->
-    <footer>
+    <!--<footer>
 
-    </footer>
+    </footer>-->
     <!-- /footer content -->
     <!-- SCRIPTS DASHBOARD THEME-->
 

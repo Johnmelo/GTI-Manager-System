@@ -127,6 +127,11 @@ ul#botoes-abas li.selected > span {
 }
 
 
+.form-input > .icheckbox_square-blue + label {
+    margin-left: 20px;
+}
+
+
 .form-input > input[type="submit"] {
     height: 64px;
     color: #FFF;

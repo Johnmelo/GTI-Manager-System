@@ -13,6 +13,9 @@
 <!-- Font Awesome -->
 <link rel="stylesheet" href="../App/View/css/fontawesome-all.min.css">
 <script defer src="../App/View/js/fontawesome-all.min.js"></script>
+
+<!-- iCheck -->
+<link rel="stylesheet" href="../App/View/icheck/skins/square/blue.css">
 </head>
 
 <body>
@@ -131,7 +134,23 @@
 
 
 <!-- SCRIPTS -->
+
+<!-- jQuery -->
+<script src="../App/View/js/jquery.min.js"></script>
+<!-- iCheck -->
+<script src="../App/View/js/icheck.min.js"></script>
+<script>
+$(document).ready(function(){
+  $('input').iCheck({
+    checkboxClass: 'icheckbox_square-blue',
+    radioClass: 'iradio_square'
+  });
+});
+</script>
+<!-- To avoid sticky hover -->
 <script src="../App/View/js/no-sticky-hover.js"></script>
+<!-- Responsible for the topnav -->
 <script src="../App/View/js/nav-menu.js"></script>
+<!-- Responsible for the forms -->
 <script src="../App/View/js/login-page-form.js"></script>
 </body>
