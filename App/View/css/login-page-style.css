@@ -129,6 +129,7 @@ ul#botoes-abas li.selected > span {
 
 .form-input > .icheckbox_square-blue + label {
     margin-left: 20px;
+    cursor: pointer;
 }
 
 
