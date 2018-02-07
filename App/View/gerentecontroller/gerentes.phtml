@@ -204,7 +204,7 @@
                     </tbody>
                   </table>
                 <input type="hidden" name="admin_open_client_call_request" value="admin_open_client_call_request"/>
-                <button type="submit" class="btn btn-default">Abrir Chamado</button>
+                <button type="submit" class="btn btn-default" disabled>Abrir Chamado</button>
               </form>
               </div>
             </div>
@@ -320,4 +320,28 @@
   </script>
   <!-- Custom Theme Scripts -->
   <script src="../App/View/js/custom.min.js"></script>
+
+  <!-- Check if there is any demand selected -->
+  <script>
+  var btn_abrir_chamado = $('form[name=client_call_request] > button[type=submit]');
+  $('input').on('ifChecked', function(event) {
+      if (btn_abrir_chamado.hasClass('btn-default')) {
+          btn_abrir_chamado.toggleClass('btn-default btn-primary');
+          btn_abrir_chamado.prop('disabled', function(i, v) { return !v; });
+      }
+  });
+  $('input').on('ifUnchecked', function(event) {
+    var all_unchecked = true;
+    var form_inputs = $('form[name=client_call_request] > table td input[type=checkbox]');
+    form_inputs.each(function() {
+      if (this.checked){
+        all_unchecked = false;
+      }
+    });
+    if (all_unchecked) {
+      btn_abrir_chamado.toggleClass('btn-default btn-primary');
+      btn_abrir_chamado.prop('disabled', function(i, v) { return !v; });
+    }
+  });
+  </script>
 </body>
