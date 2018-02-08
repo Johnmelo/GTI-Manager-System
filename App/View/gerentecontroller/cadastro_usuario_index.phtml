@@ -156,18 +156,18 @@
                         <tr>
                             <td><?php echo $requisicao['nome'];?></td>
                             <td><?php echo $requisicao['setor'];?></td>
-                            <td> <input type="checkbox" value=<?php echo $requisicao['id'];?> name="selections[]"/></td>
+                            <td> <input type="checkbox" value=<?php echo $requisicao['id'];?> name="selections[]" id="r_id_<?php echo $requisicao['id']; ?>" /></td>
                             <td></td>
                             <td></td>
-                            <td><input type="checkbox" value=<?php echo $requisicao['id'];?> name="client_role[]"/></td>
-                            <td><input type="checkbox" value=<?php echo $requisicao['id'];?> name="technician_role[]"/></td>
-                            <td><input type="checkbox" value=<?php echo $requisicao['id'];?> name="manager_role[]"/></td>
+                            <td><input type="checkbox" value=<?php echo $requisicao['id'];?> name="client_role[]" id="r_client_role_<?php echo $requisicao['id']; ?>" /></td>
+                            <td><input type="checkbox" value=<?php echo $requisicao['id'];?> name="technician_role[]" id="r_technician_role_<?php echo $requisicao['id']; ?>" /></td>
+                            <td><input type="checkbox" value=<?php echo $requisicao['id'];?> name="manager_role[]" id="r_manager_role_<?php echo $requisicao['id']; ?>" /></td>
                         </tr>
                       <?php endforeach;?>
                     </tbody>
                   </table>
                   <input type="hidden" name="f_accept" value="f_accept"/>
-                  <input class="btn btn-default" type="submit" value="Cadastrar Usúario(s)" name="acept"/>
+                  <input class="btn btn-default" type="submit" value="Cadastrar Usúario(s)" name="accept" disabled/>
                 </form>
                 </div>
               </div>
@@ -206,4 +206,51 @@ $('input').iCheck({
 </script>
 <!-- Custom Theme Scripts -->
 <script src="../../App/View/js/custom.min.js"></script>
+
+<!-- Check if there is any solicitation selected -->
+<script>
+var btn_cadastrar = $('form[name=cadastro_usuario] input[type=submit]');
+
+function check_validity () {
+  var valid_form = true;
+  var has_valid_option = false;
+  $('input[name="selections[]"]').each(function() {
+    var id = this.value;
+    var selection_checked = $('input[id=r_id_'+id+']')[0].checked;
+    var client_role_checked = $('input[id=r_client_role_'+id+']')[0].checked;
+    var technician_role_checked = $('input[id=r_technician_role_'+id+']')[0].checked;
+    var manager_role_checked = $('input[id=r_manager_role_'+id+']')[0].checked;
+    if (!selection_checked && (!client_role_checked && !technician_role_checked && !manager_role_checked)) {
+      $(this).parents('tr').css("background-color", "initial");
+      $(this).parents('tr').css("color", "inherit");
+    }
+    if (selection_checked && (client_role_checked || technician_role_checked || manager_role_checked)) {
+      has_valid_option = true;
+      $(this).parents('tr').css("background-color", "initial");
+      $(this).parents('tr').css("color", "inherit");
+    }
+    if ((selection_checked && (!client_role_checked && !technician_role_checked && !manager_role_checked)) || (!selection_checked && (client_role_checked || technician_role_checked || manager_role_checked))) {
+      valid_form = false;
+      $(this).parents('tr').css("background-color", "#ff000033");
+      $(this).parents('tr').css("color", "#a70000");
+    }
+  });
+  if (has_valid_option && valid_form) {
+    btn_cadastrar.removeClass('btn-default');
+    btn_cadastrar.addClass('btn-primary');
+    btn_cadastrar.prop('disabled', false);
+  } else {
+    btn_cadastrar.addClass('btn-default');
+    btn_cadastrar.removeClass('btn-primary');
+    btn_cadastrar.prop('disabled', true);
+  }
+}
+
+$('input').on('ifChecked', function(event) {
+  check_validity();
+});
+$('input').on('ifUnchecked', function(event) {
+  check_validity();
+});
+</script>
 </body>
