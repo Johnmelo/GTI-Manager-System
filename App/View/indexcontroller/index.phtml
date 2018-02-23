@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="../App/View/css/base-style.css">
 
 <!-- Estilo da barra de navegação no topo -->
-<link rel="stylesheet" href="../App/View/css/header-style.css">
+<link rel="stylesheet" href="../App/View/css/top-nav-style.css">
 
 <!-- Estilo específico da página de login -->
 <link rel="stylesheet" href="../App/View/css/login-page-style.css">
@@ -16,6 +16,9 @@
 
 <!-- iCheck -->
 <link rel="stylesheet" href="../App/View/icheck/skins/square/blue.css">
+
+<!-- Google Chrome Mobile App Color -->
+<meta name="theme-color" content="#006699">
 </head>
 
 <body>
@@ -58,7 +61,7 @@
 <!-- ÁREA DO CONTEÚDO -->
 <div id="content-area">
 
-    <div id="content-wrapper">
+    <div id="content-wrapper" class="login-form-view">
 
         <!-- ÁREA DOS FORMULÁRIOS -->
         <div id="content-form-wrapper">
@@ -88,10 +91,10 @@
                         <input type="password" name="password" id="password" placeholder="Senha" tabindex="4">
                     </div>
 
-                    <div class="form-input">
+                    <!-- <div class="form-input">
                         <input type="checkbox" name="remember" id="remember" value="save_cred" tabindex="5">
                         <label for="remember"><span class="no-user-select">Lembrar meus dados</span></label>
-                    </div>
+                    </div> -->
 
                     <div class="form-input">
                         <input type="hidden" name="login_accept" value="login_accept"/>

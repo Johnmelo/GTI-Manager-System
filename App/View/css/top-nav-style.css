@@ -1,8 +1,5 @@
 /* BARRA DE NAVEGAÇÃO */
 
-header#nav-menu-push {
-    margin-bottom: 48px;
-}
 header#top-menu {
     width: 100%;
     height: auto;
@@ -206,9 +203,6 @@ header#top-menu.open i#hamburger-icon, header#top-menu.open i#close-menu-icon, h
 /* Tablet portrait up */
 @media (min-width: 600px) {
 
-    header#nav-menu-push {
-        margin-bottom: 64px;
-    }
     header#top-menu {
         max-height: 64px;
     }
@@ -230,9 +224,6 @@ header#top-menu.open i#hamburger-icon, header#top-menu.open i#close-menu-icon, h
 /* Tablet landscape up */
 @media (min-width: 900px) {
 
-    header#nav-menu-push {
-        display: none;
-    }
     header#top-menu {
         height: 64px;
         max-height: 64px;

@@ -9,6 +9,8 @@ body {
     width: 100%;
     height: 100%;
     min-height: 600px;
+    padding-top: 48px;
+    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -19,13 +21,18 @@ body {
 
 #content-wrapper {
     width: 100%;
-    height: 460px;
     position: absolute;
     border-top: 2px solid rgba(255, 255, 255, 0.7);
     border-bottom: 2px solid rgba(255, 255, 255, 0.7);
     box-shadow: 0px 4px 12px 5px rgba(0, 0, 0, 0.5);
     background-color: rgba(245, 245, 245, 0.95);
     overflow: hidden;
+}
+#content-wrapper.login-form-view {
+    min-height: 426px;
+}
+#content-wrapper.register-form-view {
+    min-height: 520px;
 }
 
 
@@ -118,7 +125,7 @@ ul#botoes-abas li.selected > span {
 /* INPUTS NO GERAL */
 
 .form-input {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     width: 100%;
     border: 0;
     position: relative;
@@ -172,9 +179,26 @@ ul#botoes-abas li.selected > span {
 #login-form .form-input > input[type="text"], #login-form .form-input > input[type="password"] {
     padding-top: 4px;
     padding-left: 36px;
-    height: 32px;
+    height: 52px;
     font-size: 1.1em;
     border: 0;
+
+    /* To override chrome pale yellow fill when autocompleting the form */
+    -webkit-box-shadow: 0 0 0px 50px #FFF inset;
+    background-clip: content-box;
+    color: #000 !important; /* Firefox dark theme */
+}
+
+/* Separated rules because Firefox fails with "::selection" and drops the rule */
+#login-form .form-input > input[type="text"]::selection,
+#login-form .form-input > input[type="password"]::selection {
+    background: #006699 !important;
+    color: #FFF !important;
+}
+#login-form .form-input > input[type="text"]::-moz-selection,
+#login-form .form-input > input[type="password"]::-moz-selection {
+    background: #006699 !important;
+    color: #FFF !important;
 }
 
 
@@ -219,11 +243,23 @@ ul#botoes-abas li.selected > span {
 
 
 #register-form .form-input > input[type="text"] {
+    background: #FFF !important;
+    color: #000 !important;
     padding-top: 4px;
     padding-left: 12px;
-    height: 32px;
+    height: 52px;
     font-size: 1.1em;
     border: 0;
+}
+
+/* Separated rules because Firefox fails with "::selection" and drops the rule */
+#register-form .form-input > input[type="text"]::selection {
+    background: #006699 !important;
+    color: #FFF !important;
+}
+#register-form .form-input > input[type="text"]::-moz-selection {
+    background: #006699 !important;
+    color: #FFF !important;
 }
 
 
@@ -237,11 +273,20 @@ ul#botoes-abas li.selected > span {
         background-image: url('../img/bg/bg-900-max.png');
     }
 
+    #content-area {
+        padding-top: 64px;
+    }
+
     /* WRAPPER */
     #content-wrapper {
         width: 520px;
-        height: 560px;
         border: 0;
+    }
+    #content-wrapper.login-form-view {
+        min-height: 450px;
+    }
+    #content-wrapper.register-form-view {
+        min-height: 570px;
     }
 
 
@@ -303,7 +348,7 @@ ul#botoes-abas li.selected > span {
 
 
     .form-input:not(:first-child) {
-        margin-top: 26px;
+        margin-top: 16px;
     }
     .form-input {
         margin-bottom: 0;
@@ -336,6 +381,10 @@ ul#botoes-abas li.selected > span {
     body {
         background-image: url('../img/bg/bg.png');
     }
+
+    #content-area {
+        padding-top: 72px;
+    }
 }
 
 
@@ -343,12 +392,16 @@ ul#botoes-abas li.selected > span {
 
 @media (min-width: 1800px) {
 
-    /* WRAPPER */
-    #content-wrapper {
+    #content-area {
+        padding-top: 92px;
     }
 
 
-    #login-form, #register-form {
+    #content-wrapper.login-form-view {
+        min-height: 472px;
+    }
+    #content-wrapper.register-form-view {
+        min-height: 590px;
     }
 
 

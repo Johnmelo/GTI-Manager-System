@@ -1,27 +1,21 @@
-var abas = document.getElementById("botoes-abas").children;
-
 var alternateTab = function (event) {
     if (event.which == 1 || event.which == 32 || event.which == 13) {
-        if ( this.id == "login_tab" && this.className.indexOf("selected") == -1 ) {
+        if ( this.id == "login_tab" && !$(this).hasClass("selected") ) {
 
-            document.getElementById("login_tab").className += "selected";
-            document.getElementById("login-form").className += "selected";
+            $('#login_tab, #login-form').addClass("selected");
+            $("#register_tab, #register-form").removeClass("selected");
+            $('#content-wrapper').toggleClass("login-form-view register-form-view");
 
-            document.getElementById("register_tab").className = document.getElementById("register_tab").className.replace(/selected/g, "");
-            document.getElementById("register-form").className = document.getElementById("register-form").className.replace(/selected/g, "");
+        } else if ( this.id == "register_tab" && !$(this).hasClass("selected") ) {
 
-        } else if ( this.id == "register_tab" && this.className.indexOf("selected") == -1 ) {
-
-            document.getElementById("register_tab").className += "selected";
-            document.getElementById("register-form").className += "selected";
-
-            document.getElementById("login_tab").className = document.getElementById("login_tab").className.replace(/selected/g, "");
-            document.getElementById("login-form").className = document.getElementById("login-form").className.replace(/selected/g, "");
+            $("#register_tab, #register-form").addClass("selected");
+            $("#login_tab, #login-form").removeClass("selected");
+            $('#content-wrapper').toggleClass("login-form-view register-form-view");
         }
     }
 };
 
-for ( li of abas ) {
-    li.addEventListener("click", alternateTab, false);
-    li.addEventListener("keydown", alternateTab, false);
-}
+$('#botoes-abas').children().each(function() {
+    this.addEventListener("click", alternateTab, false);
+    this.addEventListener("keydown", alternateTab, false);
+});
