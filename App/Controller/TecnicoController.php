@@ -56,7 +56,7 @@ class TecnicoController extends Action{
       $this->view->service_names = $array_servicos_names;
       //------------------------------------------------------------------------
 
-      //REDERING PAGE
+      //RENDERING PAGE
       $this->render('tecnicos');
       //------------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ class TecnicoController extends Action{
 
       if(isset($_POST['btnDetail'])){
 
-        //GET INFORMATIONS ABOUT REQUESTS
+        //GET INFORMATIONS ABOUT REQUEST
         $requestDb = Container::getClass("Chamado");
         $request = $requestDb->findById($_POST['btnDetail']);
         //------------------------------------------------------------------------
@@ -102,7 +102,11 @@ class TecnicoController extends Action{
 
         $this->render('technician_view_open_request');
       }elseif(isset($_POST['btnJoin'])){
-        echo "btnJoin";
+
+        $requestDb = Container::getClass("Chamado");
+        $requestDb->updateColumnById("id_tecnico_responsavel",$_SESSION['user_id'],$_POST['btnJoin']);
+        $requestDb->updateColumnById("status","ATENDIMENTO",$_POST['btnJoin']);
+        header('Location: /gticchla/public/tecnico');
       }
     }else{
       $this->forbidenAccess();

@@ -6,9 +6,21 @@ use \App\Model\SolicitarAcesso;
 use \SON\Di\Container;
 
 class IndexController extends Action{
+
   public function index(){
-      //redenrizando
-      $this->render('index');
+    session_start();
+    if(!isset($_SESSION['user_role'])){
+        $this->render('index');
+    }else{
+      if($_SESSION['user_role'] == "CLIENTE"){
+        header('Location: /gticchla/public/cliente');
+      }else if($_SESSION['user_role'] == "TECNICO"){
+        header('Location: /gticchla/public/tecnico');
+      }else if($_SESSION['user_role'] == "GERENTE"){
+        header('Location: /gticchla/public/admin');
+      }
+    }
+
   }
 
   public function solicitar_acesso(){
@@ -44,6 +56,7 @@ class IndexController extends Action{
             $_SESSION['user_turno'] = $user['turno'];
             $_SESSION['user_setor'] = $user['setor'];
             $_SESSION['user_matricula'] = $user['matricula'];
+
             if($role['cliente'] == 1){
               $_SESSION['user_role'] = "CLIENTE";
               header('Location: /gticchla/public/cliente');
