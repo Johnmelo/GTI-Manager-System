@@ -48,24 +48,12 @@ class TecnicoController extends Action{
       }
       //-------------------------------------------------------
 
-      //LOADING AND PREPARE INFORMATIONS ABOUT CALL REQUEST
-      $requisicao_atendendimento = Container::getClass("SolicitarChamado");
-      $requisicoes_atendimento = $requisicao_atendendimento->fetchAll();
-      $requisicoes_atendimento_aguardando = [];
-      foreach ($requisicoes_atendimento as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $requisicoes_atendimento_aguardando[] = $request;
-        }
-      }
-      //---------------------------------------------------
-
       //SENDING VALUES TO TECHNICIAN VIEW PAGE
       $this->view->myRequests = $myRequests;
       $this->view->myRequestsFinished = $myRequestsFinished;
       $this->view->openRequests = $chamados_abertos;
       $this->view->users_names = $array_users_names;
       $this->view->service_names = $array_servicos_names;
-      $this->view->open_requests = $requisicoes_atendimento_aguardando;
       //------------------------------------------------------------------------
 
       //RENDERING PAGE

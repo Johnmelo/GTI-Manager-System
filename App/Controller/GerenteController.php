@@ -165,7 +165,7 @@ class GerenteController extends Action{
 
   public function open_call_request(){
     session_start();
-    if(($_SESSION['user_role'] == "GERENTE")||($_SESSION['user_role'] == "TECNICO")){
+    if($_SESSION['user_role'] == "GERENTE"){
       if(isset($_POST['admin_open_client_call_request']) && isset($_POST['selections_call_request'])){
         $today = getdate();
         $date = ''.$today['year'].'-'.$today['mon'].'-'.$today['mday'];
@@ -180,7 +180,7 @@ class GerenteController extends Action{
           $request->updateColumnById("status","ATENDIDA",$id_request);
         }
         echo "<script>alert('Dados cadastrados!');</script>";
-        header('Location: /gticchla/public/admin');
+        header('Location: /gticchla/public/admin/cadastro_clientes');
 
       }else{
         echo "<script>alert('Não existe requisição aguardando ou não foi selecionada alguma para atender!'); history.back();</script>";

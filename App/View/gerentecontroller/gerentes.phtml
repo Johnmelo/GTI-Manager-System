@@ -167,9 +167,9 @@
                   <tbody>
                     <?php foreach ($this->view->chamados_atendimentos as $atendimento):?>
                       <tr>
-                        <td><?php echo $this->view->service_names[$atendimento['id']];?></td>
-                        <td><?php echo $this->view->clients_names[$atendimento['id_cliente_solicitante']]['setor'];?></td>
-                        <td><?php echo $this->view->clients_names[$atendimento['id_tecnico_responsavel']]['nome'];?></td>
+                        <td><?php echo $atendimento['nome'];?></td>
+                        <td><?php echo $atendimento['setor'];?></td>
+                        <td><?php echo $atendimento['id_tecnico_responsavel'];?></td>
                       </tr>
                     <?php endforeach;?>
                   </tbody>
@@ -252,9 +252,9 @@
                       <?php foreach ($this->view->chamados_abertos as $abertos):?>
                         <tr>
                           <td><?php echo $abertos['id'];?></td>
-                          <td><?php echo $this->view->clients_names[$abertos['id_cliente_solicitante']]['nome'];?></td>
-                          <td><?php echo $this->view->service_names[$abertos['id_servico']];?></td>
-                          <td><?php echo $this->view->clients_names[$abertos['id_cliente_solicitante']]['setor'];?></td>
+                          <td><?php echo $this->view->clients_names[$call_request['id_cliente']]['nome'];?></td>
+                          <td><?php echo $this->view->service_names[$call_request['id_servico']];?></td>
+                          <td><?php echo $this->view->clients_names[$call_request['id_cliente']]['setor'];?></td>
                           <td><?php echo $this->view->clients_names[$abertos['id_tecnico_abertura']]['nome'];?></td>
                         </tr>
                       <?php endforeach;?>
