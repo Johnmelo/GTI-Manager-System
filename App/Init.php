@@ -37,7 +37,7 @@ class Init extends Bootstrap{
 
   public static function getDb(){
     //o interessante aqui é envolver com try/catch remember about exceptions consequences
-    $db = new \PDO("mysql:host=localhost;dbname=gtichamados","root","");
+    $db = new \PDO("mysql:host=localhost;dbname=gtichamados;charset=utf8","root","");
     return $db;
   }
 }
