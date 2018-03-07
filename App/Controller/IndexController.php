@@ -80,6 +80,28 @@ class IndexController extends Action{
     }
   }
 
+  public function get_request_info(){
+    if (isset($_POST)) {
+      if (isset($_POST['request_id'])) {
+        $solicitacao_chamado = Container::getClass("SolicitarChamado");
+        $requests = $solicitacao_chamado->getChamadosById($_POST['request_id']);
+        foreach ($requests as $request) {
+          if (isset($request["data_abertura"])) {
+            $request["data_abertura"] = date('d/m/Y',strtotime($request["data_abertura"]));
+          }
+          if (isset($request["data_finalizado"])) {
+            $request["data_finalizado"] = date('d/m/Y',strtotime($request["data_finalizado"]));
+          }
+          if (isset($request["data_solicitacao"])) {
+            $request["data_solicitacao"] = date('d/m/Y',strtotime($request["data_solicitacao"]));
+          }
+          echo json_encode($request);
+          break;
+        }
+      }
+    }
+  }
+
   public function logout(){
     session_start();
     $_SESSION = array();

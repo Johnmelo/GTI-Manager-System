@@ -11,6 +11,7 @@ class Init extends Bootstrap{
     $ar['solicitar_acesso'] = array('route' => '/gticchla/public/solicitar_acesso' , 'controller' => 'indexController', 'action' => 'solicitar_acesso');
     $ar['index_logar'] = array('route' => '/gticchla/public/logar' , 'controller' => 'indexController', 'action' => 'logar');
     $ar['index_logout'] = array('route' => '/gticchla/public/logout' , 'controller' => 'indexController', 'action' => 'logout');
+    $ar['get_request_info'] = array('route' => '/gticchla/public/get_request_info', 'controller' => 'indexController', 'action' => 'get_request_info');
     //--------------------------------------------------------------------------------------------------------------------------
 
     //ADMIN ROUTES--------------------------------------------------------------------------------------------------------------
