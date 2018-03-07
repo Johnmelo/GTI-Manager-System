@@ -12,6 +12,7 @@
 <link href="../App/View/css/custom.min.css" rel="stylesheet">
 <link href="../App/View/css/base-style.css" rel="stylesheet">
 <link href="../App/View/css/custom-style-override.css" rel="stylesheet">
+<link href="../App/View/css/custom-modal.css" rel="stylesheet">
 </head>
 
 <body class="nav-md">
@@ -132,9 +133,10 @@
                 </div>
                 <div class="x_content">
                   <form name="chamados_clientes">
-                  <table class="table table-hover">
+                  <table class="table table-hover open-request-list">
                     <thead>
                       <tr>
+                        <th>ID</th>
                         <th>Serviço</th>
                         <th>Status</th>
                         <th>Técnico Responsável</th>
@@ -144,6 +146,7 @@
                     <tbody>
                       <?php foreach ($this->view->chamados_atendimento as $callrequest):?>
                         <tr>
+                            <td><?php echo $callrequest['id_solicitacao'];?></td>
                             <td><?php echo $this->view->services_names[$callrequest['id_servico']];?></td>
                             <td><?php echo $callrequest['status'];?></td>
                             <td><?php if($callrequest['status'] == "AGUARDANDO"){
@@ -178,9 +181,10 @@
                 </div>
                 <div class="x_content">
                   <form name="chamados_clientes">
-                  <table class="table table-hover">
+                  <table class="table table-hover open-request-list">
                     <thead>
                       <tr>
+                        <th>ID</th>
                         <th>Serviço</th>
                         <th>Status</th>
                         <th>Técnico Abertura</th>
@@ -189,6 +193,7 @@
                     <tbody>
                       <?php foreach ($this->view->chamados_abertos as $callrequest):?>
                         <tr>
+                            <td><?php echo $callrequest['id_solicitacao']; ?></td>
                             <td><?php echo $this->view->services_names[$callrequest['id_servico']];?></td>
                             <td><?php echo $callrequest['status'];?></td>
                             <td><?php echo $this->view->users_names[$callrequest['id_tecnico_abertura']]['nome'];?></td>
@@ -215,6 +220,85 @@
     <!-- SCRIPTS DASHBOARD THEME-->
 
   </div>
+
+  <!-- OPEN REQUEST MODAL -->
+  <div class="modal fade" id="detalhes_chamado" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Detalhes do chamado</h4>
+        </div>
+        <div class="modal-body">
+          <form id="detalhes-chamado-modal-form" class="form-horizontal">
+            <div class="form-group">
+              <label for="id_solicitacao_field" class="col-sm-4 control-label">Solicitação</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="id_solicitacao_field" disabled>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="status_field" class="col-sm-4 control-label">Status</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="status_field" disabled>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="servico_field" class="col-sm-4 control-label">Serviço</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="servico_field" disabled>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="data_abertura_field" class="col-sm-4 control-label">Data de abertura</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="data_abertura_field" disabled>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="data_finalizado_field" class="col-sm-4 control-label">Data finalizado</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="data_finalizado_field" disabled>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="prazo_field" class="col-sm-4 control-label">Prazo</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="prazo_field" disabled>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="tecnico_responsavel_field" class="col-sm-4 control-label">Técnico responsável</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="tecnico_responsavel_field" disabled>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="tecnico_abertura_field" class="col-sm-4 control-label">Técnico da abertura</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="tecnico_abertura_field" disabled>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="descricao_field" class="col-sm-4 control-label">Descrição</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="descricao_field" disabled>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="parecer_tecnico_field" class="col-sm-4 control-label">Parecer técnico</label>
+              <div class="col-sm-8">
+                <textarea class="form-control" rows="3" id="parecer_tecnico_field" disabled></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
 </div>
 <!-- jQuery -->
 <script src="../App/View/js/jquery.min.js"></script>
@@ -229,4 +313,5 @@
 
 <!-- Custom Theme Scripts -->
 <script src="../App/View/js/custom.min.js"></script>
+<script src="../App/View/js/request-modals.js"></script>
 </body>

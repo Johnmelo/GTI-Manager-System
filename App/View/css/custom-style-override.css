@@ -65,6 +65,10 @@ body, .body {
     font-size: 0.8em;
 }
 
+table > tbody > tr {
+    cursor: pointer;
+}
+
 
 
 
