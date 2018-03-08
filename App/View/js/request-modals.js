@@ -12,7 +12,7 @@ $('.table.table-hover > tbody > tr').on('click', function(e) {
 
 function fillOpenRequestModal (request_id) {
 
-    $.post("get_request_info",
+    $.post("/gticchla/public/get_request_info",
         {"request_id":request_id},
         function(data, status) {
             var request = JSON.parse(data);
@@ -32,7 +32,7 @@ function fillOpenRequestModal (request_id) {
 
 function fillRequestCallModal (request_id) {
 
-    $.post("../get_request_info",
+    $.post("/gticchla/public/get_request_info",
         {"request_id":request_id},
         function(data, status) {
             var request = JSON.parse(data);
