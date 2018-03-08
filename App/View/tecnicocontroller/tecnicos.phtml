@@ -73,9 +73,10 @@
                 </div>
                 <div class="x_content">
                   <form name="chamados_clientes">
-                  <table class="table table-hover">
+                  <table class="table table-hover open-request-list">
                     <thead>
                       <tr>
+                        <th>ID</th>
                         <th>Cliente</th>
                         <th>Serviço</th>
                         <th>Prazo</th>
@@ -86,6 +87,7 @@
                       <?php foreach ($this->view->myRequests as $callrequest):?>
                         <tr>
                           <a href="view_request">
+                            <td><?php echo $callrequest['id_solicitacao']; ?></td>
                             <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
                             <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
                             <td></td>
@@ -119,7 +121,7 @@
                   <table class="table table-hover open-request-list">
                     <thead>
                       <tr>
-                          <th>ID</th>
+                        <th>ID</th>
                         <th>Cliente</th>
                         <th>Serviço</th>
                         <th>Setor</th>
@@ -161,8 +163,8 @@
 
   </div>
 
-  <!-- OPEN REQUEST MODAL -->
-   <div class="modal fade" id="detalhes_chamado" tabindex="-1" role="dialog">
+  <!-- REQUEST MODAL -->
+   <div class="modal fade request-modal" tabindex="-1" role="dialog">
      <div class="modal-dialog" role="document">
        <div class="modal-content">
          <div class="modal-header">
@@ -170,7 +172,39 @@
            <h4 class="modal-title">Detalhes do chamado</h4>
          </div>
          <div class="modal-body">
-           <form id="detalhes-chamado-modal-form" class="form-horizontal">
+           <form class="form-horizontal call-request-modal-form">
+             <div class="form-group">
+               <label for="id_solicitacao_field" class="col-sm-4 control-label">Solicitação</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="id_solicitacao_field" disabled>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="status_field" class="col-sm-4 control-label">Status</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="status_field" disabled>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="servico_field" class="col-sm-4 control-label">Serviço</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="servico_field" disabled>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="data_solicitacao_field" class="col-sm-4 control-label">Data da solicitação</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="data_solicitacao_field" disabled>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="descricao_field" class="col-sm-4 control-label">Descrição</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="descricao_field" disabled>
+               </div>
+             </div>
+           </form>
+           <form class="form-horizontal open-request-modal-form">
              <div class="form-group">
                <label for="id_solicitacao_field" class="col-sm-4 control-label">Solicitação</label>
                <div class="col-sm-8">
