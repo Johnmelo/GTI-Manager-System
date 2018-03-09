@@ -197,7 +197,7 @@
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                  <form name="cadastro_cliente" method="post" action="cadastrar_clientes">
+                  <form name="solicitacoes_chamado" method="post" action="">
                   <table class="table table-hover call-request-list">
                     <thead>
                       <tr>
@@ -221,7 +221,7 @@
                     </tbody>
                   </table>
                   <input type="hidden" name="delete_request" value="delete_request"/>
-                  <button type="submit" class="btn btn-default">Excluir</button>
+                  <button type="submit" class="btn btn-default" disabled>Excluir</button>
                 </form>
                 </div>
               </div>
@@ -395,4 +395,33 @@ $(document).ready(function(){
 <!-- Custom Theme Scripts -->
 <script src="../../App/View/js/custom.min.js"></script>
 <script src="../../App/View/js/request-modals.js"></script>
+
+<!-- Check if there's request checked -->
+<script>
+
+var btn_del_request = $('form[name=solicitacoes_chamado] > button[type=submit]');
+
+$('form[name=solicitacoes_chamado] input').on('ifChecked', function(event) {
+  if (btn_del_request.hasClass('btn-default')) {
+    btn_del_request.toggleClass('btn-default btn-primary');
+    btn_del_request.prop('disabled', function(i, v) { return !v; });
+  }
+});
+
+$('form[name=solicitacoes_chamado] input').on('ifUnchecked', function(event) {
+  var all_unchecked = true;
+  var form_inputs = $('form[name=solicitacoes_chamado] input[type=checkbox]');
+
+  form_inputs.each(function() {
+    if (this.checked) {
+      all_unchecked = false;
+    }
+  });
+
+  if (all_unchecked) {
+    btn_del_request.toggleClass('btn-default btn-primary');
+    btn_del_request.prop('disabled', function(i, v) { return !v; });
+  }
+});
+</script>
 </body>

@@ -7,7 +7,7 @@
 <!-- NProgress -->
 <link href="../App/View/css/nprogress.css" rel="stylesheet">
 <!-- iCheck -->
-<link href="../App/View/css/green.css" rel="stylesheet">
+<link href="../App/View/icheck/skins/square/blue.css" rel="stylesheet">
 <!-- Custom Theme Style -->
 <link href="../App/View/css/custom.min.css" rel="stylesheet">
 <link href="../App/View/css/base-style.css" rel="stylesheet">
@@ -132,7 +132,7 @@
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                  <form name="chamados_clientes">
+                  <form name="chamados_atendimento_clientes" method="post" action="">
                   <table class="table table-hover open-request-list">
                     <thead>
                       <tr>
@@ -180,7 +180,7 @@
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
-                  <form name="chamados_clientes">
+                  <form name="chamados_abertos_clientes" method="post" action="">
                   <table class="table table-hover open-request-list">
                     <thead>
                       <tr>
@@ -188,6 +188,7 @@
                         <th>Serviço</th>
                         <th>Status</th>
                         <th>Técnico Abertura</th>
+                        <th>Ação</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -197,10 +198,13 @@
                             <td><?php echo $this->view->services_names[$callrequest['id_servico']];?></td>
                             <td><?php echo $callrequest['status'];?></td>
                             <td><?php echo $this->view->users_names[$callrequest['id_tecnico_abertura']]['nome'];?></td>
+                            <td> <input type="checkbox" value=<?php echo $callrequest['id_solicitacao'];?> name="selections[]"/></td>
                         </tr>
                       <?php endforeach;?>
                     </tbody>
                   </table>
+                  <input type="hidden" name="delete_request" value="delete_request"/>
+                  <button type="submit" class="btn btn-default" disabled>Excluir</button>
                 </form>
                 </div>
               </div>
@@ -342,8 +346,45 @@
 <script src="../App/View/js/nprogress.js"></script>
 <!-- iCheck -->
 <script src="../App/View/js/icheck.min.js"></script>
+<script>
+$(document).ready(function(){
+  $('input').iCheck({
+    checkboxClass: 'icheckbox_square-blue',
+    radioClass: 'iradio_square'
+  });
+});
+</script>
 
 <!-- Custom Theme Scripts -->
 <script src="../App/View/js/custom.min.js"></script>
 <script src="../App/View/js/request-modals.js"></script>
+
+<!-- Check if there's request checked -->
+<script>
+
+var btn_del_request = $('form[name=chamados_abertos_clientes] > button[type=submit]');
+
+$('form[name=chamados_abertos_clientes] input').on('ifChecked', function(event) {
+  if (btn_del_request.hasClass('btn-default')) {
+    btn_del_request.toggleClass('btn-default btn-primary');
+    btn_del_request.prop('disabled', function(i, v) { return !v; });
+  }
+});
+
+$('form[name=chamados_abertos_clientes] input').on('ifUnchecked', function(event) {
+  var all_unchecked = true;
+  var form_inputs = $('form[name=chamados_abertos_clientes] input[type=checkbox]');
+
+  form_inputs.each(function() {
+    if (this.checked) {
+      all_unchecked = false;
+    }
+  });
+
+  if (all_unchecked) {
+    btn_del_request.toggleClass('btn-default btn-primary');
+    btn_del_request.prop('disabled', function(i, v) { return !v; });
+  }
+});
+</script>
 </body>
