@@ -52,7 +52,7 @@ body, .body {
 
 .panel_toolbox {
     margin-top: 4px;
-    min-width: 42px;
+    min-width: 0px;
 }
 
 .x_title h2 {
@@ -63,6 +63,10 @@ body, .body {
 .x_title h2 small {
     display: inline;
     font-size: 0.8em;
+}
+
+.x_panel .x_content {
+    overflow-x: auto;
 }
 
 table > tbody > tr {
