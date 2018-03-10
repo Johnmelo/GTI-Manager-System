@@ -7,11 +7,12 @@
 <!-- NProgress -->
 <link href="../App/View/css/nprogress.css" rel="stylesheet">
 <!-- iCheck -->
-<link href="../App/View/css/green.css" rel="stylesheet">
+<link href="../App/View/icheck/skins/square/blue.css" rel="stylesheet">
 <!-- Custom Theme Style -->
 <link href="../App/View/css/custom.min.css" rel="stylesheet">
 <link href="../App/View/css/base-style.css" rel="stylesheet">
 <link href="../App/View/css/custom-style-override.css" rel="stylesheet">
+<link href="../App/View/css/custom-modal.css" rel="stylesheet">
 </head>
 
 <body class="nav-md">
@@ -65,16 +66,17 @@
                     <!--<li class="dropdown">
                       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
                     </li>-->
-                    <li><a class="close-link"><i class="fas fa-times"></i></a>
-                    </li>
+                    <!--<li><a class="close-link"><i class="fas fa-times"></i></a>
+                    </li>-->
                   </ul>
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
                   <form name="chamados_clientes">
-                  <table class="table table-hover">
+                  <table class="table table-hover open-request-list">
                     <thead>
                       <tr>
+                        <th>ID</th>
                         <th>Cliente</th>
                         <th>Serviço</th>
                         <th>Prazo</th>
@@ -85,9 +87,10 @@
                       <?php foreach ($this->view->myRequests as $callrequest):?>
                         <tr>
                           <a href="view_request">
+                            <td><?php echo $callrequest['id_solicitacao']; ?></td>
                             <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
                             <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
-                            <td></td>
+                            <td><?php echo $callrequest['prazo']; ?></td>
                             <td><?php echo $this->view->users_names[$callrequest['id_tecnico_abertura']]['nome'];?></td>
                           </a>
                         </tr>
@@ -97,8 +100,6 @@
                 </form>
                 </div>
               </div>
-            </div>
-            <div class="col-md-6 col-sm-6 col-xs-12">
               <div class="x_panel">
                 <div class="x_title">
                   <h2>CHAMADOS<small>Abertos</small></h2>
@@ -108,16 +109,17 @@
                     <!--<li class="dropdown">
                       <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
                     </li>-->
-                    <li><a class="close-link"><i class="fas fa-times"></i></a>
+                    <!-- <li><a class="close-link"><i class="fas fa-times"></i></a> -->
                     </li>
                   </ul>
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
                   <form name="chamados_clientes" method="post" action="technician_select_request">
-                  <table class="table table-hover">
+                  <table class="table table-hover open-request-list">
                     <thead>
                       <tr>
+                        <th>ID</th>
                         <th>Cliente</th>
                         <th>Serviço</th>
                         <th>Setor</th>
@@ -128,6 +130,7 @@
                     <tbody>
                       <?php foreach ($this->view->openRequests as $callrequest):?>
                         <tr>
+                          <td><?php echo $callrequest['id_solicitacao']; ?></td>
                           <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
                           <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
                           <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['setor'];?></td>
@@ -141,6 +144,48 @@
                 </form>
                 </div>
               </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>SOLICITAÇÕES<small>de chamado</small></h2>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
+                            </li>
+                        </ul>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+                        <form name="solicitacoes_chamados" method="post" action="">
+                            <table class="table table-hover call-request-list">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Cliente</th>
+                                        <th>Serviço</th>
+                                        <th>Setor</th>
+                                        <th>Descrição</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  <?php foreach ($this->view->requisicoes_atendimento as $call_request): ?>
+                                    <tr>
+                                        <td><?php echo $call_request['id']; ?></td>
+                                        <td><?php echo $this->view->users_names[$call_request['id_cliente']]['nome'];?></td>
+                                        <td><?php echo $this->view->service_names[$call_request['id_servico']];?></td>
+                                        <td><?php echo $this->view->users_names[$call_request['id_cliente']]['setor'];?></td>
+                                        <td><?php echo $call_request['descricao'];?></td>
+                                        <td> <input type="checkbox" value=<?php echo $call_request['id'];?> name="selections_call_request[]"/></td>
+                                    </tr>
+                                  <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                            <input type="hidden" name="admin_open_client_call_request" value="admin_open_client_call_request"/>
+                            <button type="submit" class="btn btn-default" value="open-request" disabled>Abrir Chamado</button>
+                        </form>
+                    </div>
+                </div>
             </div>
             <div class="clearfix"></div>
             <div class="col-md-6 col-sm-6 col-xs-12">
@@ -189,6 +234,9 @@
             </div>
             <div class="clearfix"></div>
           </div>
+          <!-- <div class="row"> -->
+
+          <!-- </div> -->
         </div>
       </div>
     </div>
@@ -202,6 +250,117 @@
     <!-- SCRIPTS DASHBOARD THEME-->
 
   </div>
+
+  <!-- REQUEST MODAL -->
+   <div class="modal fade request-modal" tabindex="-1" role="dialog">
+     <div class="modal-dialog" role="document">
+       <div class="modal-content">
+         <div class="modal-header">
+           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+           <h4 class="modal-title">Detalhes do chamado</h4>
+         </div>
+         <div class="modal-body">
+           <form class="form-horizontal call-request-modal-form">
+             <div class="form-group">
+               <label for="id_solicitacao_field" class="col-sm-4 control-label">Solicitação</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="id_solicitacao_field" readonly>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="status_field" class="col-sm-4 control-label">Status</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="status_field" readonly>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="servico_field" class="col-sm-4 control-label">Serviço</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="servico_field" readonly>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="data_solicitacao_field" class="col-sm-4 control-label">Data da solicitação</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="data_solicitacao_field" readonly>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="descricao_field" class="col-sm-4 control-label">Descrição</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="descricao_field" readonly>
+               </div>
+             </div>
+           </form>
+           <form class="form-horizontal open-request-modal-form">
+             <div class="form-group">
+               <label for="id_solicitacao_field" class="col-sm-4 control-label">Solicitação</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="id_solicitacao_field" readonly>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="status_field" class="col-sm-4 control-label">Status</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="status_field" readonly>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="servico_field" class="col-sm-4 control-label">Serviço</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="servico_field" readonly>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="data_abertura_field" class="col-sm-4 control-label">Data de abertura</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="data_abertura_field" readonly>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="data_finalizado_field" class="col-sm-4 control-label">Data finalizado</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="data_finalizado_field" readonly>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="prazo_field" class="col-sm-4 control-label">Prazo</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="prazo_field" readonly>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="tecnico_responsavel_field" class="col-sm-4 control-label">Técnico responsável</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="tecnico_responsavel_field" readonly>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="tecnico_abertura_field" class="col-sm-4 control-label">Técnico da abertura</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="tecnico_abertura_field" readonly>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="descricao_field" class="col-sm-4 control-label">Descrição</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="descricao_field" readonly>
+               </div>
+             </div>
+             <div class="form-group">
+               <label for="parecer_tecnico_field" class="col-sm-4 control-label">Parecer técnico</label>
+               <div class="col-sm-8">
+                 <textarea class="form-control" rows="3" id="parecer_tecnico_field" readonly></textarea>
+               </div>
+             </div>
+           </form>
+         </div>
+         <div class="modal-footer">
+           <button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+         </div>
+       </div><!-- /.modal-content -->
+     </div><!-- /.modal-dialog -->
+   </div><!-- /.modal -->
 </div>
 <!-- jQuery -->
 <script src="../App/View/js/jquery.min.js"></script>
@@ -213,7 +372,40 @@
 <script src="../App/View/js/nprogress.js"></script>
 <!-- iCheck -->
 <script src="../App/View/js/icheck.min.js"></script>
+<script>
+$(document).ready(function(){
+   $('input').iCheck({
+     checkboxClass: 'icheckbox_square-blue',
+     radioClass: 'iradio_square'
+   });
+ });
+</script>
 
 <!-- Custom Theme Scripts -->
 <script src="../App/View/js/custom.min.js"></script>
+<script src="../App/View/js/request-modals.js"></script>
+
+<!-- Check if there is any demand selected -->
+<script>
+ var btn_abrir_chamado = $('form[name=solicitacoes_chamados] > button[type=submit]');
+$('form[name=solicitacoes_chamados] input').on('ifChecked', function(event) {
+   if (btn_abrir_chamado.hasClass('btn-default')) {
+       btn_abrir_chamado.toggleClass('btn-default btn-primary');
+       btn_abrir_chamado.prop('disabled', function(i, v) { return !v; });
+   }
+});
+$('form[name=solicitacoes_chamados] input').on('ifUnchecked', function(event) {
+ var all_unchecked = true;
+ var form_inputs = $('form[name=solicitacoes_chamados] > table td input[type=checkbox]');
+ form_inputs.each(function() {
+   if (this.checked){
+     all_unchecked = false;
+   }
+ });
+ if (all_unchecked) {
+   btn_abrir_chamado.toggleClass('btn-default btn-primary');
+   btn_abrir_chamado.prop('disabled', function(i, v) { return !v; });
+ }
+});
+</script>
 </body>
