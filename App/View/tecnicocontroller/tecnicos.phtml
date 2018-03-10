@@ -169,12 +169,12 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                  <?php foreach ($this->view->openRequests as $call_request): ?>
+                                  <?php foreach ($this->view->requisicoes_atendimento as $call_request): ?>
                                     <tr>
-                                        <td><?php echo $call_request['id_solicitacao']; ?></td>
-                                        <td><?php echo $this->view->users[$call_request['id_cliente_solicitante']]['nome'];?></td>
+                                        <td><?php echo $call_request['id']; ?></td>
+                                        <td><?php echo $this->view->users_names[$call_request['id_cliente']]['nome'];?></td>
                                         <td><?php echo $this->view->service_names[$call_request['id_servico']];?></td>
-                                        <td><?php echo $this->view->clients_names[$call_request['id_cliente']]['setor'];?></td>
+                                        <td><?php echo $this->view->users_names[$call_request['id_cliente']]['setor'];?></td>
                                         <td><?php echo $call_request['descricao'];?></td>
                                         <td> <input type="checkbox" value=<?php echo $call_request['id'];?> name="selections_call_request[]"/></td>
                                     </tr>
@@ -339,4 +339,28 @@ $(document).ready(function(){
 <!-- Custom Theme Scripts -->
 <script src="../App/View/js/custom.min.js"></script>
 <script src="../App/View/js/request-modals.js"></script>
+
+<!-- Check if there is any demand selected -->
+<script>
+ var btn_abrir_chamado = $('form[name=solicitacoes_chamados] > button[type=submit]');
+$('form[name=solicitacoes_chamados] input').on('ifChecked', function(event) {
+   if (btn_abrir_chamado.hasClass('btn-default')) {
+       btn_abrir_chamado.toggleClass('btn-default btn-primary');
+       btn_abrir_chamado.prop('disabled', function(i, v) { return !v; });
+   }
+});
+$('form[name=solicitacoes_chamados] input').on('ifUnchecked', function(event) {
+ var all_unchecked = true;
+ var form_inputs = $('form[name=solicitacoes_chamados] > table td input[type=checkbox]');
+ form_inputs.each(function() {
+   if (this.checked){
+     all_unchecked = false;
+   }
+ });
+ if (all_unchecked) {
+   btn_abrir_chamado.toggleClass('btn-default btn-primary');
+   btn_abrir_chamado.prop('disabled', function(i, v) { return !v; });
+ }
+});
+</script>
 </body>
