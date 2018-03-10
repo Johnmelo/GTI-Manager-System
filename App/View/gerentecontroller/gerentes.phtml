@@ -157,9 +157,10 @@
                 <div class="clearfix"></div>
               </div>
               <div class="x_content">
-                <table class="table table-hover">
+                <table class="table table-hover open-request-list">
                   <thead>
                     <tr>
+                      <th>ID</th>
                       <th>Serviço</th>
                       <th>Setor</th>
                       <th>Técnico Responsável</th>
@@ -168,9 +169,10 @@
                   <tbody>
                     <?php foreach ($this->view->chamados_atendimentos as $atendimento):?>
                       <tr>
-                        <td><?php echo $atendimento['nome'];?></td>
-                        <td><?php echo $atendimento['setor'];?></td>
-                        <td><?php echo $atendimento['id_tecnico_responsavel'];?></td>
+                        <td><?php echo $atendimento['id_solicitacao'];?></td>
+                        <td><?php echo $this->view->service_names[$atendimento['id_servico']];?></td>
+                        <td><?php echo $this->view->clients_names[$atendimento['id_cliente_solicitante']]['setor'];?></td>
+                        <td><?php echo $this->view->clients_names[$atendimento['id_tecnico_responsavel']]['nome'];?></td>
                       </tr>
                     <?php endforeach;?>
                   </tbody>
