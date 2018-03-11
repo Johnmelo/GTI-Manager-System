@@ -156,7 +156,7 @@
                         <div class="clearfix"></div>
                     </div>
                     <div class="x_content">
-                        <form name="solicitacoes_chamados" method="post" action="">
+                        <form name="solicitacoes_chamados" method="post" action="admin/open_call_request">
                             <table class="table table-hover call-request-list">
                                 <thead>
                                     <tr>
@@ -186,51 +186,6 @@
                         </form>
                     </div>
                 </div>
-            </div>
-            <div class="clearfix"></div>
-            <div class="col-md-6 col-sm-6 col-xs-12">
-              <div class="x_panel">
-                <div class="x_title">
-                  <h2>SOLICITAÇÕES<small>pendentes</small></h2>
-                  <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
-                    </li>
-                    <!--<li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
-                    </li>-->
-                    <li><a class="close-link"><i class="fas fa-times"></i></a>
-                    </li>
-                  </ul>
-                  <div class="clearfix"></div>
-                </div>
-                <div class="x_content">
-                  <form name="client_call_request" method="post" action="admin/open_call_request">
-                    <table class="table table-hover">
-                      <thead>
-                        <tr>
-                          <th>Cliente</th>
-                          <th>Serviço</th>
-                          <th>Setor</th>
-                          <th>Descrição</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <?php foreach ($this->view->open_requests as $call_request): ?>
-                          <tr>
-                              <td><?php echo $this->view->users_names[$call_request['id_cliente']]['nome'];?></td>
-                              <td><?php echo $this->view->service_names[$call_request['id_servico']];?></td>
-                              <td><?php echo $this->view->users_names[$call_request['id_cliente']]['setor'];?></td>
-                              <td><?php echo $call_request['descricao'];?></td>
-                              <td> <input type="checkbox" value=<?php echo $call_request['id'];?> name="selections_call_request[]"/></td>
-                          </tr>
-                        <?php endforeach; ?>
-                      </tbody>
-                    </table>
-                  <input type="hidden" name="admin_open_client_call_request" value="technician_open_client_call_request"/>
-                  <button type="submit" class="btn btn-default" disabled>Abrir Chamado</button>
-                </form>
-                </div>
-              </div>
             </div>
             <div class="clearfix"></div>
           </div>

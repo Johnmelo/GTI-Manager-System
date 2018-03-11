@@ -180,7 +180,7 @@ class GerenteController extends Action{
           $request->updateColumnById("status","ATENDIDA",$id_request);
         }
         echo "<script>alert('Dados cadastrados!');</script>";
-        header('Location: /gticchla/public/admin');
+        header('Location: /gticchla/public/');
 
       }else{
         echo "<script>alert('Não existe requisição aguardando ou não foi selecionada alguma para atender!'); history.back();</script>";

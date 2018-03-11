@@ -26,16 +26,5 @@ class Chamado extends Table{
     $stmt->execute();
   }
 
-  public function updateColumnById($columnName, $value, $id){
-    $query = "update {$this->table} SET {$columnName}='{$value}' WHERE id=".$id;
-    $stmt = $this->db->prepare($query);
-    if($stmt->execute() === TRUE){
-      echo $stmt->rowCount() . " records UPDATED successfully";
-    }else{
-      echo "\nPDO::errorInfo():\n";
-      print_r($stmt->errorInfo());
-      //echo "Error updating record: " . $stmt->error;
-    }
-  }
 }
 ?>
