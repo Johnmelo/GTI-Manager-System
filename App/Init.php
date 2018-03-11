@@ -17,7 +17,7 @@ class Init extends Bootstrap{
     //ADMIN ROUTES--------------------------------------------------------------------------------------------------------------
     $ar['admin_panel'] = array('route' => '/gticchla/public/admin' , 'controller' => 'gerenteController', 'action' => 'index');
     $ar['admin_panel_cadastrar_usuario'] = array('route' => '/gticchla/public/admin/cadastro_usuarios' , 'controller' => 'gerenteController', 'action' => 'cadastro_usuario_index');
-    $ar['cadastrar_clientes'] = array('route' => '/gticchla/public/admin/cadastrar_clientes' , 'controller' => 'gerenteController', 'action' => 'cadastrar_clientes');
+    $ar['cadastrar_clientes'] = array('route' => '/gticchla/public/admin/cadastrar_usuarios' , 'controller' => 'gerenteController', 'action' => 'cadastrar_usuarios');
     $ar['admin_panel_open_client_request'] = array('route' => '/gticchla/public/admin/open_call_request' , 'controller' => 'gerenteController', 'action' => 'open_call_request');
     //---------------------------------------------------------------------------------------------------------------------------
 

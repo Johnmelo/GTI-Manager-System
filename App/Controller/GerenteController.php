@@ -151,7 +151,7 @@ class GerenteController extends Action{
 
           $user_role->save($cliente_role['id'],$client_role,$technician_role,$manager_role);
           echo "<script>alert('Dados cadastrados!');</script>";
-          header('Location: /gticchla/public/admin/cadastro_clientes');
+          header('Location: /gticchla/public/admin/cadastro_usuarios');
         }
 
       }else{

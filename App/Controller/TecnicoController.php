@@ -75,7 +75,7 @@ class TecnicoController extends Action{
       $this->view->requisicoes_atendimento = $requisicoes_atendimento_aguardando;
       $this->view->users_names = $array_users_names;
       $this->view->service_names = $array_servicos_names;
-      $this->view->open_requests = $requisicoes_atendimento_aguardando;
+      $this->view->requests_attendance = $chamados_atendimentos;
       //------------------------------------------------------------------------
 
       //RENDERING PAGE
