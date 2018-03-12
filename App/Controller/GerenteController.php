@@ -163,6 +163,22 @@ class GerenteController extends Action{
 
   }
 
+  public function finalize_request(){
+    session_start();
+    if(($_SESSION['user_role'] == "GERENTE")||($_SESSION['user_role'] == "TECNICO")){
+      if((isset($_POST['parecer_tecnico_field']))&&(isset($_POST['id_solicitacao_field']))){
+        $id = $_POST['id_solicitacao_field'];
+        $parecer = $_POST['parecer_tecnico_field'];
+        $status = "FINALIZADO";
+        $today = getdate();
+        $data_finalizado = ''.$today['year'].'-'.$today['mon'].'-'.$today['mday'];
+        $chamadoDb = Container::getClass("Chamado");
+        $chamadoDb->updateColumnById("status",$status,$id);
+        $chamadoDb->updateColumnById("parecer_tecnico",$parecer,$id);
+        $chamadoDb->updateColumnById("data_finalizado",$data_finalizado,$id);
+      }
+    }
+  }
   public function open_call_request(){
     session_start();
     if(($_SESSION['user_role'] == "GERENTE")||($_SESSION['user_role'] == "TECNICO")){

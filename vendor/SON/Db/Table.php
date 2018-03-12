@@ -34,5 +34,17 @@ abstract class Table{
     }
   }
 
+  public function deleteById($id){
+    $query = "DELETE FROM {$this->table} WHERE id=".$id;
+    $stmt = $this->db->prepare($query);
+    if($stmt->execute() === TRUE){
+      echo $stmt->rowCount() . " records UPDATED successfully";
+    }else{
+      echo "\nPDO::errorInfo():\n";
+      print_r($stmt->errorInfo());
+      //echo "Error updating record: " . $stmt->error;
+    }
+  }
+
 }
 ?>
