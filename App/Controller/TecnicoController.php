@@ -119,6 +119,7 @@ class TecnicoController extends Action{
         $requestDb = Container::getClass("Chamado");
         $requestDb->updateColumnById("id_tecnico_responsavel",$_SESSION['user_id'],$_POST['btnJoin']);
         $requestDb->updateColumnById("status","ATENDIMENTO",$_POST['btnJoin']);
+        $requestDb->updateColumnById("prazo",$_POST['prazo'],$_POST['btnJoin']);
         header('Location: /gticchla/public/tecnico');
       }
     }else{

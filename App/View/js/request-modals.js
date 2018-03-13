@@ -31,6 +31,31 @@ $('.table.table-hover > tbody > tr').on('click', function(e) {
     }
 });
 
+$('button[name=btnJoin]').on('click', function(e) {
+    if (e.target.nodeName == "BUTTON") {
+        var request_id = $(e.target).parents('tr')[0].children[0].innerHTML;
+        var modal_form_config = {
+            id_solicitacao_field: true,
+            cliente_field: true,
+            servico_field: true,
+            descricao_field: true,
+            data_solicitacao_field: true,
+            data_abertura_field: true,
+            prazo_field: false
+        }
+        var modal_footer_config = [
+            {
+                btnContent: "Assumir chamado",
+                class: "btn btn-primary",
+                callback: acquireRequest.bind(null, $(e.target).parents('tr'))
+            }
+        ];
+        $('.request-modal').find('.modal-header > h4')[0].innerHTML = "Assumir chamado";
+        fillUpRequestModal(request_id);
+        showRequestModal(modal_form_config, modal_footer_config);
+    }
+});
+
 $('button[name=btnFinalizarChamado]').on('click', function(e) {
     if (e.target.nodeName == "BUTTON") {
         var request_id = $(e.target).parents('tr')[0].children[0].innerHTML;
@@ -120,6 +145,29 @@ function finalizeRequest (tableRow) {
     .done(function() {
         tableRow.remove();
         $('.request-modal').modal('toggle');
+    })
+    .fail(function() {
+        alert("Não foi possível realizar a ação");
+    });
+}
+
+function acquireRequest (tableRow) {
+    var request_id = tableRow.find('button[name="btnJoin"]').val();
+    var data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
+    var data_abertura = $('.request-modal-form')[0].elements["data_abertura_field"].value;
+    var prazo_dias = moment(data_prazo, 'DD/MM/YYYY').diff(moment(data_abertura, 'DD/MM/YYYY'), 'days');
+
+    $.post("/gticchla/public/technician_select_request",
+    {
+        "btnJoin": request_id,
+        "prazo": prazo_dias
+    })
+    .done(function() {
+        tableRow.remove();
+        $('.request-modal').modal('toggle');
+        setTimeout(function() {
+            document.location.reload(true);
+        }, 500);
     })
     .fail(function() {
         alert("Não foi possível realizar a ação");
