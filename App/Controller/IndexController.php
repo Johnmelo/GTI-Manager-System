@@ -87,6 +87,7 @@ class IndexController extends Action{
         $requests = $solicitacao_chamado->getChamadosById($_POST['request_id'])[0];
         $arr = array(
           "id_solicitacao_field" => $requests["id_solicitacao"],
+          "id_chamado_field" => $requests["id_chamado"],
           "cliente_field" => $requests["id_cliente"], // Client name afterwards instead of id
           "servico_field" => $requests["id_servico"], // Service title afterwards instead of id
           "descricao_field" => $requests["descricao"],
@@ -101,7 +102,19 @@ class IndexController extends Action{
           "parecer_tecnico_field" => $requests["parecer_tecnico"]
         );
         echo json_encode($arr);
-      }
+    } elseif (isset($_POST['call_request_id'])) {
+        $solicitacao_chamado = Container::getClass("SolicitarChamado");
+        $requests = $solicitacao_chamado->getSolicitacoesById($_POST['call_request_id'])[0];
+        $arr = array(
+          "id_solicitacao_field" => $requests["id_solicitacao"],
+          "data_solicitacao_field" => (isset($requests["data_solicitacao"])) ? date('d/m/Y',strtotime($requests["data_solicitacao"])) : NULL,
+          "cliente_field" => $requests["id_cliente"], // Client name afterwards instead of id
+          "servico_field" => $requests["id_servico"], // Service title afterwards instead of id
+          "descricao_field" => $requests["descricao"],
+          "solicitacao_chamado_status_field" => $requests["solicitacao_chamado_status"]
+        );
+        echo json_encode($arr);
+    }
     }
   }
 
