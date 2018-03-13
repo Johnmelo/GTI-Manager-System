@@ -26,15 +26,6 @@ class TecnicoController extends Action{
           $myRequestsFinished[] = $request;
         }
       }
-
-      $requisicao_atendendimento = Container::getClass("SolicitarChamado");
-      $requisicoes_atendimento = $requisicao_atendendimento->fetchAll();
-      $requisicoes_atendimento_aguardando = [];
-      foreach ($requisicoes_atendimento as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $requisicoes_atendimento_aguardando[] = $request;
-        }
-      }
       //------------------------------------------------------------------------
 
       //LOADING AND PREPARE INFORMATIONS ABOUT USERS TO IDENTIFY
