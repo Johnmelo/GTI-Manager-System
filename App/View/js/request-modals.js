@@ -4,19 +4,21 @@ $('.table.table-hover > tbody > tr').on('click', function(e) {
         var table = $(e.currentTarget).parents('.table');
         $('.request-modal').find('.modal-header > h4')[0].innerHTML = "Detalhes do chamado";
 
+        var modal_form_config;
         if (table.hasClass('open-request-list')) {
-            var modal_form_config = {
+            modal_form_config = {
                 id_chamado_field: true,
                 chamado_status_field: true,
                 servico_field: true,
                 data_abertura_field: true,
-                prazo_field: true,
-                tecnico_responsavel_field: true,
                 tecnico_abertura_field: true,
                 descricao_field: true,
             };
+            if (table.hasClass('processing-requests')) {
+                modal_form_config.prazo_field = true;
+                modal_form_config.tecnico_responsavel_field = true;
+            }
             fillUpRequestModal({"request_id": request_id});
-            showRequestModal(modal_form_config);
         } else if (table.hasClass('call-request-list')) {
             var modal_form_config = {
                 id_solicitacao_field: true,
@@ -26,8 +28,8 @@ $('.table.table-hover > tbody > tr').on('click', function(e) {
                 descricao_field: true
             };
             fillUpRequestModal({"call_request_id": request_id});
-            showRequestModal(modal_form_config);
         }
+        showRequestModal(modal_form_config);
     }
 });
 
