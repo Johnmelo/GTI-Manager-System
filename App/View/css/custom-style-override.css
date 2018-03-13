@@ -73,6 +73,15 @@ table > tbody > tr {
     cursor: pointer;
 }
 
+.modal-header > button > span {
+    font-size: 36px;
+}
+
+.modal-header > h4.modal-title {
+    font-size: 1.5em;
+    line-height: 2;
+}
+
 
 
 
