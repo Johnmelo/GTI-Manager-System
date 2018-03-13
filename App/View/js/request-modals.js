@@ -28,7 +28,30 @@ $('.table.table-hover > tbody > tr').on('click', function(e) {
             fillUpRequestModal(request_id);
             showRequestModal(modal_form_config);
         }
+    }
+});
 
+$('button[name=btnFinalizarChamado]').on('click', function(e) {
+    if (e.target.nodeName == "BUTTON") {
+        var request_id = $(e.target).parents('tr')[0].children[0].innerHTML;
+        var modal_form_config = {
+            id_solicitacao_field: true,
+            servico_field: true,
+            data_abertura_field: true,
+            prazo_field: true,
+            descricao_field: true,
+            parecer_tecnico_field: false
+        };
+        var modal_footer_config = [
+            {
+                btnContent:"Finalizar",
+                class: "btn btn-primary",
+                callback: finalizeRequest.bind(null, $(e.target).parents('tr'))
+            }
+        ];
+        $('.request-modal').find('.modal-header > h4')[0].innerHTML = "Finalizar chamado";
+        fillUpRequestModal(request_id);
+        showRequestModal(modal_form_config, modal_footer_config);
     }
 });
 
@@ -79,6 +102,24 @@ function fillUpRequestModal (request_id) {
         for (key in request) {
             $('.request-modal-form')[0].elements[key].value = request[key];
         }
+    })
+    .fail(function() {
+        alert("Não foi possível realizar a ação");
+    });
+}
+
+function finalizeRequest (tableRow) {
+    var request_id = $('.request-modal-form')[0].elements["id_solicitacao_field"].value;
+    var parecer_tecnico = $('.request-modal-form')[0].elements["parecer_tecnico_field"].value;
+
+    $.post("/gticchla/public/admin/finalize_request",
+    {
+        "id_solicitacao_field": request_id,
+        "parecer_tecnico_field": parecer_tecnico
+    })
+    .done(function() {
+        tableRow.remove();
+        $('.request-modal').modal('toggle');
     })
     .fail(function() {
         alert("Não foi possível realizar a ação");
