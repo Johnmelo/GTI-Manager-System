@@ -126,5 +126,23 @@ class TecnicoController extends Action{
     }
 
   }
+
+  public function technician_history () {
+      session_start();
+      if($_SESSION['user_role'] === "TECNICO") {
+          $this->render('technician_request_history');
+      } else {
+          $this->forbidenAccess();
+      }
+  }
+
+  public function technician_account_settings () {
+      session_start();
+      if($_SESSION['user_role'] === "TECNICO") {
+          $this->render('technician_account_settings'); 
+      } else {
+          $this->forbidenAccess();
+      }
+  }
 }
 ?>

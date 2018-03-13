@@ -26,11 +26,14 @@ class Init extends Bootstrap{
     $ar['cliente_panel'] = array('route' => '/gticchla/public/cliente' , 'controller' => 'clienteController', 'action' => 'index');
     $ar['cliente_panel_solicitar_atendimento_index'] = array('route' => '/gticchla/public/cliente/solicitar_atendimento' , 'controller' => 'clienteController', 'action' => 'solicitar_atendimento');
     $ar['cliente_panel_solicitar_atendimento_submit'] = array('route' => '/gticchla/public/cliente/client_register_call_request' , 'controller' => 'clienteController', 'action' => 'client_register_call_request');
+    $ar['cliente_panel_historico_chamados'] = array('route' => '/gticchla/public/cliente/historico_chamados' , 'controller' => 'clienteController', 'action' => 'client_request_history');
     //----------------------------------------------------------------------------------------------------------------------------
 
     //TECHNICIAN ROUTES-----------------------------------------------------------------------------------------------------------
     $ar['technician_panel'] = array('route' => '/gticchla/public/tecnico' , 'controller' => 'tecnicoController', 'action' => 'index');
     $ar['technician_panel_select_request'] = array('route' => '/gticchla/public/technician_select_request' , 'controller' => 'tecnicoController', 'action' => 'technician_select_request');
+    $ar['technician_panel_history'] = array('route' => '/gticchla/public/tecnico/historico_chamados' , 'controller' => 'tecnicoController', 'action' => 'technician_history');
+    $ar['technician_panel_account_settings'] = array('route' => '/gticchla/public/tecnico/configuracoes' , 'controller' => 'tecnicoController', 'action' => 'technician_account_settings');
     //----------------------------------------------------------------------------------------------------------------------------
 
     $this->setRoutes($ar);

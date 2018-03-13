@@ -103,6 +103,15 @@ class ClienteController extends Action{
 
   }
 
+  public function client_request_history() {
+      session_start();
+      if($_SESSION['user_role'] === "CLIENTE") {
+          $this->render('cliente_historico');
+      } else {
+          $this->forbidenAccess();
+      }
+  }
+
 
 }
 ?>

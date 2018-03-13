@@ -1,0 +1,277 @@
+<!-- Layout Dashboard-->
+<!-- Bootstrap -->
+<link href="../../App/View/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link href="../../App/View/css/fontawesome-all.min.css" rel="stylesheet">
+<script defer src="../../App/View/js/fontawesome-all.min.js"></script>
+<!-- Custom Theme Style -->
+<link href="../../App/View/css/custom.min.css" rel="stylesheet">
+<link href="../../App/View/css/base-style.css" rel="stylesheet">
+<link href="../../App/View/css/custom-style-override.css" rel="stylesheet">
+<link href="../../App/View/css/custom-modal.css" rel="stylesheet">
+</head>
+
+<body class="nav-md">
+  <div class="container body">
+    <div class="main_container">
+
+      <div class="col-md-3 left_col">
+        <div class="left_col scroll-view">
+          <div class="navbar nav_title" style="border: 0;">
+            <a href="../tecnico" class="site_title"><img src="../../App/View/img/logo.svg" id="sidebar-logo" alt="Logo"><span id="sidebar-logo-text"><span>TI</span> <span>CCHLA</span></span></a>
+          </div>
+
+          <div class="clearfix"></div>
+
+          <!-- menu profile quick info -->
+          <div class="profile clearfix">
+            <div class="profile_pic">
+              <img src="" alt="..." class="img-circle profile_img">
+            </div>
+            <div class="profile_info">
+              <span>Bem-vindo,</span>
+              <h2><?php echo $_SESSION['user_name'];?></h2>
+            </div>
+          </div>
+          <!-- /menu profile quick info -->
+
+          <br />
+
+          <!-- sidebar menu -->
+          <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+            <div class="menu_section">
+              <h3></h3>
+              <ul class="nav side-menu">
+                <li>
+                  <a href="../tecnico">
+                    <span class="fa-layers fa-fw">
+                      <i class="fas fa-home"></i>
+                    </span> Início
+                  </a>
+                </li>
+                <li>
+                  <a href="./historico_chamados">
+                    <span class="fa-layers fa-fw">
+                      <i class="fas fa-list"></i>
+                      <i class="fas fa-history  " data-fa-transform="shrink-4 down-12.2 right-9" style="color:#2DA7F9;"></i>
+                    </span> Histórico de chamados
+                  </a>
+                </li>
+                <li>
+                  <a href="../tecnico/configuracoes">
+                    <span class="fa-layers fa-fw">
+                      <i class="fas fa-cog"></i>
+                      <i class="fas fa-cog" data-fa-transform="shrink-4 down-8.2 right-10" style="color:#2DA7F9;"></i>
+                    </span> Meu perfil
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+          <!-- /sidebar menu -->
+
+          <!-- /menu footer buttons -->
+          <!--<div class="sidebar-footer hidden-small">
+            <a data-toggle="tooltip" data-placement="top" title="Settings">
+              <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+              <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="Lock">
+              <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="Logout" href="logout">
+              <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+            </a>
+          </div>-->
+          <!-- /menu footer buttons -->
+        </div>
+      </div>
+
+      <!-- top navigation -->
+      <div class="top_nav">
+        <div class="nav_menu">
+          <nav>
+            <div class="nav toggle">
+              <a id="menu_toggle"><i class="fas fa-bars"></i></a>
+            </div>
+
+            <ul class="nav navbar-nav navbar-right">
+              <li>
+                <a href="" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-user"></i> <?php echo $_SESSION['user_name'];?>
+                  <span class="fas fa-angle-down"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                  <li>
+                    <a href="../logout" data-original-title="Sair">
+                      <i class="fas fa-sign-out-alt pull-right"></i> Sair
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <!-- /top navigation -->
+
+      <!-- page content -->
+
+      <div class="right_col" role="main">
+        <div class="">
+          <div class="page-title">
+            <div class="title_left" style="margin-bottom:20px;">
+              <h3>Histórico dos meus atendimentos</h3>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+
+          <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+              <div class="x_panel">
+                <div class="x_content">
+                  <form name="form_historico_chamados_cliente" method="post" action="">
+                  <table class="table table-hover open-request-list">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Serviço</th>
+                        <th>Data de abertura</th>
+                        <th>Data finalizado</th>
+                        <th>Prazo</th>
+                        <th>Descrição</th>
+                        <th>Parecer técnico</th>
+                        <th>Técnico Abertura</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                  </table>
+                </form>
+                </div>
+              </div>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /page content -->
+
+    <!-- footer content -->
+    <!--<footer>
+
+    </footer>-->
+    <!-- /footer content -->
+    <!-- SCRIPTS DASHBOARD THEME-->
+
+  </div>
+
+  <!-- REQUEST MODAL -->
+  <div class="modal fade request-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title"></h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-horizontal request-modal-form">
+            <div class="form-group" style="display: none;">
+              <label for="id_solicitacao_field" class="col-sm-4 control-label">Solicitação</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="id_solicitacao_field" readonly>
+              </div>
+            </div>
+            <div class="form-group" style="display: none;">
+              <label for="solicitacao_chamado_status_field" class="col-sm-4 control-label">Status</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="solicitacao_chamado_status_field" readonly>
+              </div>
+            </div>
+            <div class="form-group" style="display: none;">
+              <label for="chamado_status_field" class="col-sm-4 control-label">Status</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="chamado_status_field" readonly>
+              </div>
+            </div>
+            <div class="form-group" style="display: none;">
+              <label for="servico_field" class="col-sm-4 control-label">Serviço</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="servico_field" readonly>
+              </div>
+            </div>
+            <div class="form-group" style="display: none;">
+              <label for="cliente_field" class="col-sm-4 control-label">Cliente</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="cliente_field" readonly>
+              </div>
+            </div>
+            <div class="form-group" style="display: none;">
+              <label for="data_solicitacao_field" class="col-sm-4 control-label">Data da solicitação</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="data_solicitacao_field" readonly>
+              </div>
+            </div>
+            <div class="form-group" style="display: none;">
+              <label for="data_abertura_field" class="col-sm-4 control-label">Data de abertura</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="data_abertura_field" readonly>
+              </div>
+            </div>
+            <div class="form-group" style="display: none;">
+              <label for="data_finalizado_field" class="col-sm-4 control-label">Data finalizado</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="data_finalizado_field" readonly>
+              </div>
+            </div>
+            <div class="form-group" style="display: none;">
+              <label for="prazo_field" class="col-sm-4 control-label">Prazo</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="prazo_field" readonly>
+              </div>
+            </div>
+            <div class="form-group" style="display: none;">
+              <label for="tecnico_responsavel_field" class="col-sm-4 control-label">Técnico responsável</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="tecnico_responsavel_field" readonly>
+              </div>
+            </div>
+            <div class="form-group" style="display: none;">
+              <label for="tecnico_abertura_field" class="col-sm-4 control-label">Técnico da abertura</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="tecnico_abertura_field" readonly>
+              </div>
+            </div>
+            <div class="form-group" style="display: none;">
+              <label for="descricao_field" class="col-sm-4 control-label">Descrição</label>
+              <div class="col-sm-8">
+                <textarea class="form-control" rows="3" id="descricao_field" readonly></textarea>
+              </div>
+            </div>
+            <div class="form-group" style="display: none;">
+              <label for="parecer_tecnico_field" class="col-sm-4 control-label">Parecer técnico</label>
+              <div class="col-sm-8">
+                <textarea class="form-control" rows="3" id="parecer_tecnico_field" readonly></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer" style="display: none;"></div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
+  <!-- jQuery -->
+  <script src="../../App/View/js/jquery.min.js"></script>
+  <!-- Bootstrap -->
+  <script src="../../App/View/js/bootstrap.min.js"></script>
+
+  <!-- Custom Theme Scripts -->
+  <script src="../../App/View/js/custom.min.js"></script>
+  <script src="../../App/View/js/request-modals.js"></script>
+</body>
