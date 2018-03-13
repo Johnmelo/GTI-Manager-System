@@ -106,7 +106,37 @@ class ClienteController extends Action{
   public function client_request_history() {
       session_start();
       if($_SESSION['user_role'] === "CLIENTE") {
-          $this->render('cliente_historico');
+        $requestDb = Container::getClass("Chamado");
+        $requests = $requestDb->fetchAll();
+        $myRequests = [];
+
+        foreach ($requests as $request) {
+          if($request['id_cliente_solicitante'] == $_SESSION['user_id']){
+            $myRequests[] = $request;
+          }
+        }
+
+        $userDb = Container::getClass("Usuario");
+        $users = $userDb->fetchAll();
+        $user_info=[];
+        foreach ($users as $user) {
+          $user_info[$user['id']]['nome'] = $user['nome'];
+          // $user_info[$user['id']]['setor'] = $user['setor'];
+        }
+
+        //LOADING AND PREPARE INFORMATIONS ABOUT SERVICES
+        $servico = Container::getClass("Servico");
+        $servicos = $servico->fetchAll();
+        $array_servicos_names = [];
+        foreach ($servicos as $service) {
+          $array_servicos_names[$service['id']] = $service['nome'];
+        }
+        //-------------------------------------------------------
+
+        $this->view->requests = $myRequests;
+        $this->view->user_info = $user_info;
+        $this->view->service_names = $array_servicos_names;
+        $this->render('cliente_historico');
       } else {
           $this->forbidenAccess();
       }
