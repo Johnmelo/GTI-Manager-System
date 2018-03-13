@@ -19,12 +19,87 @@
 <div class="container body">
   <div class="main_container">
 
+    <div class="col-md-3 left_col">
+        <div class="left_col scroll-view">
+          <div class="navbar nav_title" style="border: 0;">
+            <a href="./cliente" class="site_title"><img src="../App/View/img/logo.svg" id="sidebar-logo" alt="Logo"><span id="sidebar-logo-text"><span>TI</span> <span>CCHLA</span></span></a>
+          </div>
+
+          <div class="clearfix"></div>
+
+          <!-- menu profile quick info -->
+          <div class="profile clearfix">
+            <div class="profile_pic">
+              <img src="" alt="..." class="img-circle profile_img">
+            </div>
+            <div class="profile_info">
+              <span>Bem-vindo,</span>
+              <h2><?php echo $_SESSION['user_name'];?></h2>
+            </div>
+          </div>
+          <!-- /menu profile quick info -->
+
+          <br />
+
+          <!-- sidebar menu -->
+          <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+            <div class="menu_section">
+              <h3></h3>
+              <ul class="nav side-menu">
+                <li>
+                  <a href="./tecnico">
+                    <span class="fa-layers fa-fw">
+                      <i class="fas fa-home"></i>
+                    </span> Início
+                  </a>
+                </li>
+                <li>
+                  <a href="tecnico/historico_chamados">
+                    <span class="fa-layers fa-fw">
+                      <i class="fas fa-list"></i>
+                      <i class="fas fa-history  " data-fa-transform="shrink-4 down-12.2 right-9" style="color:#2DA7F9;"></i>
+                  </span> Histórico de chamados
+                  </a>
+                </li>
+                <li>
+                  <a href="tecnico/configuracoes">
+                    <span class="fa-layers fa-fw">
+                      <i class="fas fa-cog"></i>
+                      <i class="fas fa-cog" data-fa-transform="shrink-4 down-8.2 right-10" style="color:#2DA7F9;"></i>
+                    </span> Meu perfil
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+          </div>
+          <!-- /sidebar menu -->
+
+          <!-- /menu footer buttons -->
+          <!--<div class="sidebar-footer hidden-small">
+            <a data-toggle="tooltip" data-placement="top" title="Settings">
+              <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+              <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="Lock">
+              <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="Logout" href="logout">
+              <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+            </a>
+          </div>-->
+          <!-- /menu footer buttons -->
+        </div>
+      </div>
+
     <!-- top navigation -->
-    <div class="top_nav" style="margin-left: 0;">
+    <div class="top_nav">
       <div class="nav_menu">
         <nav>
           <div class="nav toggle">
-            <a href="./tecnico" style="display:block;width:210px;font-size:1.8em;font-weight:900;padding:2px 20px;"><img src="../App/View/img/logo.svg" id="sidebar-logo" alt="Logo"><span id="sidebar-logo-text" style="top:3px;"><span>TI</span> <span>CCHLA</span></span></a>
+            <a id="menu_toggle"><i class="fas fa-bars"></i></a>
           </div>
 
           <ul class="nav navbar-nav navbar-right">
@@ -49,7 +124,7 @@
 
     <!-- page content -->
 
-    <div class="right_col" role="main" style="margin-left: 0;">
+    <div class="right_col" role="main">
       <div class="">
         <div class="page-title">
           <div class="row tile_count">
@@ -104,6 +179,51 @@
               </div>
               <div class="x_panel">
                 <div class="x_title">
+                  <h2>CHAMADOS<small>Em atendimento</small></h2>
+                  <ul class="nav navbar-right panel_toolbox">
+                    <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
+                    </li>
+                    <!--<li class="dropdown">
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
+                    </li>-->
+                    <!--<li><a class="close-link"><i class="fas fa-times"></i></a>
+                    </li>-->
+                  </ul>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                  <form name="chamados_clientes">
+                  <table class="table table-hover open-request-list">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Cliente</th>
+                        <th>Serviço</th>
+                        <th>Prazo</th>
+                        <th>Técnico Responsável</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <?php foreach ($this->view->requests_attendance as $callrequest):?>
+                        <tr>
+                          <a href="view_request">
+                            <td><?php echo $callrequest['id_solicitacao']; ?></td>
+                            <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
+                            <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
+                            <td><?php echo $callrequest['prazo']; ?></td>
+                            <td><?php echo $this->view->users_names[$callrequest['id_tecnico_responsavel']]['nome'];?></td>
+                          </a>
+                        </tr>
+                      <?php endforeach;?>
+                    </tbody>
+                  </table>
+                </form>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6 col-sm-6 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
                   <h2>CHAMADOS<small>Abertos</small></h2>
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
@@ -126,7 +246,7 @@
                         <th>Serviço</th>
                         <th>Setor</th>
                         <th>Técnico Abertura</th>
-                        <th></th>
+                        <th>Ação</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -137,8 +257,7 @@
                           <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
                           <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['setor'];?></td>
                           <td><?php echo $this->view->users_names[$callrequest['id_tecnico_abertura']]['nome'];?></td>
-                          <td><button type="submit" class="btn btn-primary" name="btnDetail" value=<?php echo $callrequest['id'];?>>Ver</button></td>
-                          <td><button type="submit" class="btn btn-primary" name="btnJoin" value=<?php echo $callrequest['id'];?>>Join</button></td>
+                          <td><button type="submit" class="btn btn-primary" name="btnJoin" value=<?php echo $callrequest['id'];?>>Assumir</button></td>
                         </tr>
                       <?php endforeach;?>
                     </tbody>
@@ -146,8 +265,6 @@
                 </form>
                 </div>
               </div>
-            </div>
-            <div class="col-md-6 col-sm-6 col-xs-12">
                 <div class="x_panel">
                     <div class="x_title">
                         <h2>SOLICITAÇÕES<small>de serviço</small></h2>
@@ -187,49 +304,6 @@
                             <button type="submit" class="btn btn-default" value="open-request" disabled>Abrir Chamado</button>
                         </form>
                     </div>
-                </div>
-                <div class="x_panel">
-                  <div class="x_title">
-                    <h2>CHAMADOS<small>Em atendimento</small></h2>
-                    <ul class="nav navbar-right panel_toolbox">
-                      <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
-                      </li>
-                      <!--<li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
-                      </li>-->
-                      <!--<li><a class="close-link"><i class="fas fa-times"></i></a>
-                      </li>-->
-                    </ul>
-                    <div class="clearfix"></div>
-                  </div>
-                  <div class="x_content">
-                    <form name="chamados_clientes">
-                    <table class="table table-hover open-request-list">
-                      <thead>
-                        <tr>
-                          <th>ID</th>
-                          <th>Cliente</th>
-                          <th>Serviço</th>
-                          <th>Prazo</th>
-                          <th>Técnico Responsável</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <?php foreach ($this->view->requests_attendance as $callrequest):?>
-                          <tr>
-                            <a href="view_request">
-                              <td><?php echo $callrequest['id_solicitacao']; ?></td>
-                              <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
-                              <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
-                              <td><?php echo $callrequest['prazo']; ?></td>
-                              <td><?php echo $this->view->users_names[$callrequest['id_tecnico_responsavel']]['nome'];?></td>
-                            </a>
-                          </tr>
-                        <?php endforeach;?>
-                      </tbody>
-                    </table>
-                  </form>
-                  </div>
                 </div>
             </div>
 
