@@ -149,6 +149,21 @@
                       </tr>
                     </thead>
                     <tbody>
+                      <?php foreach ($this->view->requests as $finished):?>
+                        <tr>
+                          <a href="view_request">
+                            <td><?php echo $finished['id']; ?></td>
+                            <td><?php echo $this->view->user_info[$finished['id_cliente_solicitante']]['nome'];?></td>
+                            <td><?php echo $this->view->service_names[$finished['id_servico']];?></td>
+                            <td><?php echo $finished['data_abertura']; ?></td>
+                            <td><?php echo $finished['data_finalizado']; ?></td>
+                            <td><?php echo $finished['prazo']; ?></td>
+                            <td><?php echo $finished['descricao']; ?></td>
+                            <td><?php echo $finished['parecer_tecnico']; ?></td>
+                            <td><?php echo $this->view->user_info[$finished['id_tecnico_abertura']]['nome'];?></td>
+                          </a>
+                        </tr>
+                      <?php endforeach;?>
                     </tbody>
                   </table>
                 </form>

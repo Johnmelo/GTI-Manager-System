@@ -130,7 +130,38 @@ class TecnicoController extends Action{
   public function technician_history () {
       session_start();
       if($_SESSION['user_role'] === "TECNICO") {
-          $this->render('technician_request_history');
+
+        $requestDb = Container::getClass("Chamado");
+        $requests = $requestDb->fetchAll();
+        $requestsFinished = [];
+
+        foreach ($requests as $request) {
+          if(($request['id_tecnico_responsavel'] == $_SESSION['user_id']) && ($request['status'] == "FINALIZADO")){
+            $requestsFinished[] = $request;
+          }
+        }
+
+        $userDb = Container::getClass("Usuario");
+        $users = $userDb->fetchAll();
+        $user_info=[];
+        foreach ($users as $user) {
+          $user_info[$user['id']]['nome'] = $user['nome'];
+          $user_info[$user['id']]['setor'] = $user['setor'];
+        }
+
+        //LOADING AND PREPARE INFORMATIONS ABOUT SERVICES
+        $servico = Container::getClass("Servico");
+        $servicos = $servico->fetchAll();
+        $array_servicos_names = [];
+        foreach ($servicos as $service) {
+          $array_servicos_names[$service['id']] = $service['nome'];
+        }
+        //-------------------------------------------------------
+
+        $this->view->requests = $requestsFinished;
+        $this->view->user_info = $user_info;
+        $this->view->service_names = $array_servicos_names;
+        $this->render('technician_request_history');
       } else {
           $this->forbidenAccess();
       }
@@ -139,7 +170,7 @@ class TecnicoController extends Action{
   public function technician_account_settings () {
       session_start();
       if($_SESSION['user_role'] === "TECNICO") {
-          $this->render('technician_account_settings'); 
+          $this->render('technician_account_settings');
       } else {
           $this->forbidenAccess();
       }
