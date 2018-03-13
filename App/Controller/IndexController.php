@@ -92,9 +92,9 @@ class IndexController extends Action{
           "descricao_field" => $requests["descricao"],
           "solicitacao_chamado_status_field" => $requests["solicitacao_chamado_status"],
           "chamado_status_field" => $requests["chamado_status"],
-          "data_solicitacao_field" => (isset($requests["data_solicitacao"])) ? date('d/m/Y',strtotime($request[0]["data_solicitacao"])) : NULL,
-          "data_abertura_field" => (isset($requests["data_abertura"])) ? date('d/m/Y',strtotime($request[0]["data_abertura"])) : NULL,
-          "data_finalizado_field" => (isset($requests["data_finalizado"])) ? date('d/m/Y',strtotime($request[0]["data_finalizado"])) : NULL,
+          "data_solicitacao_field" => (isset($requests["data_solicitacao"])) ? date('d/m/Y',strtotime($requests["data_solicitacao"])) : NULL,
+          "data_abertura_field" => (isset($requests["data_abertura"])) ? date('d/m/Y',strtotime($requests["data_abertura"])) : NULL,
+          "data_finalizado_field" => (isset($requests["data_finalizado"])) ? date('d/m/Y',strtotime($requests["data_finalizado"])) : NULL,
           "prazo_field" => $requests["prazo"],
           "tecnico_abertura_field" => $requests["id_tecnico_abertura"], // Technician name afterwards instead of id
           "tecnico_responsavel_field" => $requests["id_tecnico_responsavel"], // Technician name afterwards instead of id
