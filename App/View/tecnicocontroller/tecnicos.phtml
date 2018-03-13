@@ -163,7 +163,7 @@
                       <?php foreach ($this->view->myRequests as $callrequest):?>
                         <tr>
                           <a href="view_request">
-                            <td><?php echo $callrequest['id_solicitacao']; ?></td>
+                            <td><?php echo $callrequest['id']; ?></td>
                             <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
                             <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
                             <td><?php echo $callrequest['prazo']; ?></td>
@@ -207,7 +207,7 @@
                       <?php foreach ($this->view->requests_attendance as $callrequest):?>
                         <tr>
                           <a href="view_request">
-                            <td><?php echo $callrequest['id_solicitacao']; ?></td>
+                            <td><?php echo $callrequest['id']; ?></td>
                             <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
                             <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
                             <td><?php echo $callrequest['prazo']; ?></td>
@@ -252,7 +252,7 @@
                     <tbody>
                       <?php foreach ($this->view->openRequests as $callrequest):?>
                         <tr>
-                          <td><?php echo $callrequest['id_solicitacao']; ?></td>
+                          <td><?php echo $callrequest['id']; ?></td>
                           <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
                           <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
                           <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['setor'];?></td>

@@ -65,19 +65,19 @@ class ClienteController extends Action{
       $requisicoes = $requisicao->fetchAll();
 
       $array_servicos_names = [];
-
+      $myRequests =[];
       foreach ($servicos as $service) {
         $array_servicos_names[$service['id']] = $service['nome'];
       }
 
       foreach ($requisicoes as $request) {
         if($request['id_cliente'] == $_SESSION['user_id']){
-          $this->view->requisicoes[] = $request;
+          $myRequests[] = $request;
         }
       }
 
       $servicos = $servico->fetchAll();
-
+      $this->view->requisicoes = $myRequests;
       $this->view->servicos = $servicos;
       $this->view->requests_services_names = $array_servicos_names;
 
