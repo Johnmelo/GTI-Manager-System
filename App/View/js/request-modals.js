@@ -1,50 +1,86 @@
 $('.table.table-hover > tbody > tr').on('click', function(e) {
+    if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
+        var request_id = e.currentTarget.children[0].innerHTML;
+        var table = $(e.currentTarget).parents('.table');
+        $('.request-modal').find('.modal-header > h4')[0].innerHTML = "Detalhes do chamado";
 
-    var request_id = e.currentTarget.children[0].innerHTML;
-    var table = $(e.currentTarget).parents('.table');
+        if (table.hasClass('open-request-list')) {
+            var modal_form_config = {
+                id_solicitacao_field: true,
+                chamado_status_field: true,
+                servico_field: true,
+                data_abertura_field: true,
+                prazo_field: true,
+                tecnico_responsavel_field: true,
+                tecnico_abertura_field: true,
+                descricao_field: true,
+            };
+            fillUpRequestModal(request_id);
+            showRequestModal(modal_form_config);
+        } else if (table.hasClass('call-request-list')) {
+            var modal_form_config = {
+                id_solicitacao_field: true,
+                solicitacao_chamado_status_field: true,
+                servico_field: true,
+                data_solicitacao_field: true,
+                descricao_field: true
+            };
+            fillUpRequestModal(request_id);
+            showRequestModal(modal_form_config);
+        }
 
-    if (table.hasClass('open-request-list')) {
-        fillOpenRequestModal(request_id);
-    } else if (table.hasClass('call-request-list')) {
-        fillRequestCallModal(request_id);
     }
 });
 
-function fillOpenRequestModal (request_id) {
+function showRequestModal(formConfig, footerConfig) {
+    // form config structure: { "fieldToBeVisible": "readOnyBool", ... }
+    // footer config structure: [ { "btnContent": "content", "callback": "functionName", "class": "classes" }, ... ]
 
-    $.post("/gticchla/public/get_request_info",
-        {"request_id":request_id},
-        function(data, status) {
-            var request = JSON.parse(data);
-            $('.open-request-modal-form').css("display", "block");
-            $('.call-request-modal-form').css("display", "none");
-            $('.open-request-modal-form')[0].elements["id_solicitacao_field"].value = request.id_solicitacao ? request.id_solicitacao : "Indefinido";
-            $('.open-request-modal-form')[0].elements["status_field"].value = request.chamado_status ? request.chamado_status : "Indefinido";
-            $('.open-request-modal-form')[0].elements["servico_field"].value = request.id_servico ? request.id_servico : "Indefinido";
-            $('.open-request-modal-form')[0].elements["data_abertura_field"].value = request.data_abertura ? request.data_abertura : "Indefinido";
-            $('.open-request-modal-form')[0].elements["data_finalizado_field"].value = request.data_finalizado ? request.data_finalizado : "Indefinido";
-            $('.open-request-modal-form')[0].elements["prazo_field"].value = request.prazo ? request.prazo : "Indefinido";
-            $('.open-request-modal-form')[0].elements["tecnico_responsavel_field"].value = request.id_tecnico_responsavel ? request.id_tecnico_responsavel : "Indefinido";
-            $('.open-request-modal-form')[0].elements["tecnico_abertura_field"].value = request.id_tecnico_abertura ? request.id_tecnico_abertura : "Indefinido";
-            $('.open-request-modal-form')[0].elements["descricao_field"].value = request.descricao ? request.descricao : "Indefinido";
-            $('.open-request-modal-form')[0].elements["parecer_tecnico_field"].value = request.parecer_tecnico ? request.parecer_tecnico : "Indefinido";
-            $('.request-modal').modal('toggle');
-        });
+    // Reset modal config
+    $('.request-modal-form .form-group').css("display", "none");
+    $('.request-modal-form input, .request-modal-form textarea').val("");
+    $('.request-modal').find('.modal-footer').css("display", "none");
+    $('.request-modal').find('.modal-footer button').remove();
+
+    // Set new config
+
+    // Define the form inputs to be visible and its readonly setting
+    for (var key in formConfig) {
+        $('.request-modal-form')[0].elements[key].readOnly= formConfig[key];
+        $($('.request-modal-form')[0].elements[key]).parents('.form-group').css("display", "block");
+    }
+    // If footer is defined
+    if (footerConfig) {
+        // create each button
+        for (btn in footerConfig) {
+            var button = document.createElement("button");
+            button.setAttribute("type", "button");
+            // button text
+            button.innerHTML = footerConfig[btn].btnContent;
+            // if class is defined
+            button.setAttribute("class", (footerConfig[btn].class) ? footerConfig[btn].class : "btn btn-default");
+            // if a callback was passed to be executed when pressed the button
+            if (footerConfig[btn].callback) { $(button).on('click', footerConfig[btn].callback); }
+            // insert button in the modal footer
+            $('.request-modal').find('.modal-footer').append(button);
+        }
+        $('.request-modal').find('.modal-footer').css("display", "block");
+    }
+
+    // Show modal
+    $('.request-modal').modal('toggle');
 }
 
-function fillRequestCallModal (request_id) {
+function fillUpRequestModal (request_id) {
 
-    $.post("/gticchla/public/get_request_info",
-        {"request_id":request_id},
-        function(data, status) {
-            var request = JSON.parse(data);
-            $('.open-request-modal-form').css("display", "none");
-            $('.call-request-modal-form').css("display", "block");
-            $('.call-request-modal-form')[0].elements["id_solicitacao_field"].value = request.id_solicitacao ? request.id_solicitacao : "Indefinido";
-            $('.call-request-modal-form')[0].elements["status_field"].value = request.solicitacao_chamado_status ? request.solicitacao_chamado_status : "Indefinido";
-            $('.call-request-modal-form')[0].elements["servico_field"].value = request.id_servico ? request.id_servico : "Indefinido";
-            $('.call-request-modal-form')[0].elements["data_solicitacao_field"].value = request.data_solicitacao ? request.data_solicitacao : "Indefinido";
-            $('.call-request-modal-form')[0].elements["descricao_field"].value = request.descricao ? request.descricao : "Indefinido";
-            $('.request-modal').modal('toggle');
-        });
+    $.post("/gticchla/public/get_request_info", {"request_id": request_id})
+    .done(function(data) {
+        var request = JSON.parse(data);
+        for (key in request) {
+            $('.request-modal-form')[0].elements[key].value = request[key];
+        }
+    })
+    .fail(function() {
+        alert("Não foi possível realizar a ação");
+    });
 }

@@ -84,20 +84,23 @@ class IndexController extends Action{
     if (isset($_POST)) {
       if (isset($_POST['request_id'])) {
         $solicitacao_chamado = Container::getClass("SolicitarChamado");
-        $requests = $solicitacao_chamado->getChamadosById($_POST['request_id']);
-        foreach ($requests as $request) {
-          if (isset($request["data_abertura"])) {
-            $request["data_abertura"] = date('d/m/Y',strtotime($request["data_abertura"]));
-          }
-          if (isset($request["data_finalizado"])) {
-            $request["data_finalizado"] = date('d/m/Y',strtotime($request["data_finalizado"]));
-          }
-          if (isset($request["data_solicitacao"])) {
-            $request["data_solicitacao"] = date('d/m/Y',strtotime($request["data_solicitacao"]));
-          }
-          echo json_encode($request);
-          break;
-        }
+        $requests = $solicitacao_chamado->getChamadosById($_POST['request_id'])[0];
+        $arr = array(
+          "id_solicitacao_field" => $requests["id_solicitacao"],
+          "cliente_field" => $requests["id_cliente"], // Client name afterwards instead of id
+          "servico_field" => $requests["id_servico"], // Service title afterwards instead of id
+          "descricao_field" => $requests["descricao"],
+          "solicitacao_chamado_status_field" => $requests["solicitacao_chamado_status"],
+          "chamado_status_field" => $requests["chamado_status"],
+          "data_solicitacao_field" => (isset($requests["data_solicitacao"])) ? date('d/m/Y',strtotime($request[0]["data_solicitacao"])) : NULL,
+          "data_abertura_field" => (isset($requests["data_abertura"])) ? date('d/m/Y',strtotime($request[0]["data_abertura"])) : NULL,
+          "data_finalizado_field" => (isset($requests["data_finalizado"])) ? date('d/m/Y',strtotime($request[0]["data_finalizado"])) : NULL,
+          "prazo_field" => $requests["prazo"],
+          "tecnico_abertura_field" => $requests["id_tecnico_abertura"], // Technician name afterwards instead of id
+          "tecnico_responsavel_field" => $requests["id_tecnico_responsavel"], // Technician name afterwards instead of id
+          "parecer_tecnico_field" => $requests["parecer_tecnico"]
+        );
+        echo json_encode($arr);
       }
     }
   }
