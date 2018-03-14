@@ -32,7 +32,7 @@ class IndexController extends Action{
 
     $acesso = Container::getClass("SolicitarAcesso");
     $acesso->save($nome,$email,$login,$setor,$matricula);
-    echo 'dados:'.$nome.'-'.$email.'-'.$login.'-'.$setor.'-'.$matricula.'-'.'cadastrados!';
+    echo "<script>alert('Solicitação recebida.\\nAguarde entrarmos em contato através do email'); history.back();</script>";
   }
 
   public function logar(){
@@ -69,6 +69,8 @@ class IndexController extends Action{
             }
 
             echo '</br> role: '.$_SESSION['user_role'];
+        }else{
+          echo "<script>alert('Usuário não encontrado'); history.back();</script>";
         }
       }else{
         echo "<script>alert('digite login e senha!'); history.back();</script>";

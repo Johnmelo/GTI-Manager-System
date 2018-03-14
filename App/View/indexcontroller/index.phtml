@@ -157,3 +157,20 @@ $(document).ready(function(){
 <!-- Responsible for the forms -->
 <script src="../App/View/js/login-page-form.js"></script>
 </body>
+<script>
+$('#register-form, #login-form').submit(function(e) {
+    var all_inputs_filled = true;
+    $('#'+e.currentTarget.id+' input[type=text]').each(function() {
+        if ($(this).val().match(/^\s*$/)) {
+            all_inputs_filled = false;
+            return false;
+        }
+    });
+    if (all_inputs_filled) {
+        return true;
+    } else {
+        alert("Preencha todos os campos");
+        return false;
+    }
+});
+</script>
