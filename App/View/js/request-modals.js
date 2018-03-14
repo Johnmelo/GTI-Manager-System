@@ -4,19 +4,21 @@ $('.table.table-hover > tbody > tr').on('click', function(e) {
         var table = $(e.currentTarget).parents('.table');
         $('.request-modal').find('.modal-header > h4')[0].innerHTML = "Detalhes do chamado";
 
+        var modal_form_config;
         if (table.hasClass('open-request-list')) {
-            var modal_form_config = {
-                id_solicitacao_field: true,
+            modal_form_config = {
+                id_chamado_field: true,
                 chamado_status_field: true,
                 servico_field: true,
                 data_abertura_field: true,
-                prazo_field: true,
-                tecnico_responsavel_field: true,
                 tecnico_abertura_field: true,
                 descricao_field: true,
             };
-            fillUpRequestModal(request_id);
-            showRequestModal(modal_form_config);
+            if (table.hasClass('processing-requests')) {
+                modal_form_config.prazo_field = true;
+                modal_form_config.tecnico_responsavel_field = true;
+            }
+            fillUpRequestModal({"request_id": request_id});
         } else if (table.hasClass('call-request-list')) {
             var modal_form_config = {
                 id_solicitacao_field: true,
@@ -25,9 +27,9 @@ $('.table.table-hover > tbody > tr').on('click', function(e) {
                 data_solicitacao_field: true,
                 descricao_field: true
             };
-            fillUpRequestModal(request_id);
-            showRequestModal(modal_form_config);
+            fillUpRequestModal({"call_request_id": request_id});
         }
+        showRequestModal(modal_form_config);
     }
 });
 
@@ -35,7 +37,7 @@ $('button[name=btnJoin]').on('click', function(e) {
     if (e.target.nodeName == "BUTTON") {
         var request_id = $(e.target).parents('tr')[0].children[0].innerHTML;
         var modal_form_config = {
-            id_solicitacao_field: true,
+            id_chamado_field: true,
             cliente_field: true,
             servico_field: true,
             descricao_field: true,
@@ -51,7 +53,7 @@ $('button[name=btnJoin]').on('click', function(e) {
             }
         ];
         $('.request-modal').find('.modal-header > h4')[0].innerHTML = "Assumir chamado";
-        fillUpRequestModal(request_id);
+        fillUpRequestModal({"request_id": request_id});
         showRequestModal(modal_form_config, modal_footer_config);
     }
 });
@@ -60,7 +62,7 @@ $('button[name=btnFinalizarChamado]').on('click', function(e) {
     if (e.target.nodeName == "BUTTON") {
         var request_id = $(e.target).parents('tr')[0].children[0].innerHTML;
         var modal_form_config = {
-            id_solicitacao_field: true,
+            id_chamado_field: true,
             servico_field: true,
             data_abertura_field: true,
             prazo_field: true,
@@ -75,7 +77,7 @@ $('button[name=btnFinalizarChamado]').on('click', function(e) {
             }
         ];
         $('.request-modal').find('.modal-header > h4')[0].innerHTML = "Finalizar chamado";
-        fillUpRequestModal(request_id);
+        fillUpRequestModal({"request_id": request_id});
         showRequestModal(modal_form_config, modal_footer_config);
     }
 });
@@ -119,10 +121,11 @@ function showRequestModal(formConfig, footerConfig) {
     $('.request-modal').modal('toggle');
 }
 
-function fillUpRequestModal (request_id) {
+function fillUpRequestModal (id) {
 
-    $.post("/gticchla/public/get_request_info", {"request_id": request_id})
+    $.post("/gticchla/public/get_request_info", id)
     .done(function(data) {
+        // console.log(data);
         var request = JSON.parse(data);
         for (key in request) {
             $('.request-modal-form')[0].elements[key].value = request[key];
@@ -134,13 +137,13 @@ function fillUpRequestModal (request_id) {
 }
 
 function finalizeRequest (tableRow) {
-    var request_id = $('.request-modal-form')[0].elements["id_solicitacao_field"].value;
+    var request_id = $('.request-modal-form')[0].elements["id_chamado_field"].value;
     var parecer_tecnico = $('.request-modal-form')[0].elements["parecer_tecnico_field"].value;
 
     $.post("/gticchla/public/admin/finalize_request",
     {
-        "id_solicitacao_field": request_id,
-        "parecer_tecnico_field": parecer_tecnico
+        "request_id": request_id,
+        "technical_opinion": parecer_tecnico
     })
     .done(function() {
         tableRow.remove();

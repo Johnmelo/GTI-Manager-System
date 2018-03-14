@@ -166,9 +166,9 @@ class GerenteController extends Action{
   public function finalize_request(){
     session_start();
     if(($_SESSION['user_role'] == "GERENTE")||($_SESSION['user_role'] == "TECNICO")){
-      if((isset($_POST['parecer_tecnico_field']))&&(isset($_POST['id_solicitacao_field']))){
-        $id = $_POST['id_solicitacao_field'];
-        $parecer = $_POST['parecer_tecnico_field'];
+      if((isset($_POST['technical_opinion']))&&(isset($_POST['request_id']))){
+        $id = $_POST['request_id'];
+        $parecer = $_POST['technical_opinion'];
         $status = "FINALIZADO";
         $today = getdate();
         $data_finalizado = ''.$today['year'].'-'.$today['mon'].'-'.$today['mday'];

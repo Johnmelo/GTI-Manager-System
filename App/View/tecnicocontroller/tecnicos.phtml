@@ -148,7 +148,7 @@
                 </div>
                 <div class="x_content">
                   <form name="meus_servicos_atendimento_form">
-                  <table class="table table-hover open-request-list">
+                  <table class="table table-hover open-request-list processing-requests">
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -168,7 +168,7 @@
                             <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
                             <td><?php echo $callrequest['prazo']; ?></td>
                             <td><?php echo $this->view->users_names[$callrequest['id_tecnico_responsavel']]['nome'];?></td>
-                            <td><button type="button" class="btn btn-primary" name="btnFinalizarChamado" value=<?php echo $callrequest['id_solicitacao'];?>>Finalizar</button></td>
+                            <td><button type="button" class="btn btn-primary" name="btnFinalizarChamado" value=<?php echo $callrequest['id'];?>>Finalizar</button></td>
                           </a>
                         </tr>
                       <?php endforeach;?>
@@ -193,7 +193,7 @@
                 </div>
                 <div class="x_content">
                   <form name="chamados_clientes">
-                  <table class="table table-hover open-request-list">
+                  <table class="table table-hover open-request-list processing-requests">
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -238,7 +238,7 @@
                 </div>
                 <div class="x_content">
                   <form name="chamados_clientes" method="post" action="technician_select_request">
-                  <table class="table table-hover open-request-list">
+                  <table class="table table-hover open-request-list not-processing-requests">
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -340,6 +340,12 @@
                <label for="id_solicitacao_field" class="col-sm-4 control-label">Solicitação</label>
                <div class="col-sm-8">
                  <input type="text" class="form-control" id="id_solicitacao_field" readonly>
+               </div>
+             </div>
+             <div class="form-group" style="display: none;">
+               <label for="id_chamado_field" class="col-sm-4 control-label">Chamado</label>
+               <div class="col-sm-8">
+                 <input type="text" class="form-control" id="id_chamado_field" readonly>
                </div>
              </div>
              <div class="form-group" style="display: none;">
