@@ -176,5 +176,21 @@ class TecnicoController extends Action{
           $this->forbidenAccess();
       }
   }
+
+  public function change_password(){
+    session_start();
+    if(($_SESSION['user_role'] === "GERENTE")||($_SESSION['user_role'] === "CLIENTE")||($_SESSION['user_role'] === "TECNICO")) {
+      if(isset($_POST['current_password']) && isset($_POST['new_password'])){
+        $pass = $_POST['current_password'];
+        $userDb = Container::getClass("Usuario");
+        $user = $userDb->findById($_SESSION['user_id']);
+        if($pass == $user['password']){
+          $userDb->updateColumnById("password",$_POST['new_password'],$_SESSION['user_id']);
+        }
+      }
+    } else {
+        $this->forbidenAccess();
+    }
+  }
 }
 ?>

@@ -28,6 +28,7 @@ $('#btn-submit-password-form').on('click', function() {
     $.post("/gticchla/public/change_password", {"current_password":current_password, "new_password":new_password})
     .done(function(data) {
         $('div.page-title > div.title_left')[0].insertAdjacentHTML('afterbegin', '<div class="alert alert-success alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Sucesso!</strong> Sua senha foi modificada</div>');
+        console.log(data);
     })
     .fail(function(data) {
         $('div.page-title > div.title_left')[0].insertAdjacentHTML('afterbegin', '<div class="alert alert-error alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Ops!</strong> Houve um problema e a senha não foi modificada</div>');

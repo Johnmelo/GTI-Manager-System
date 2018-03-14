@@ -21,12 +21,13 @@ class Init extends Bootstrap{
     $ar['admin_panel_open_client_request'] = array('route' => '/gticchla/public/admin/open_call_request' , 'controller' => 'gerenteController', 'action' => 'open_call_request');
     $ar['admin_panel_finalize_request'] = array('route' => '/gticchla/public/admin/finalize_request' , 'controller' => 'gerenteController', 'action' => 'finalize_request');
     //---------------------------------------------------------------------------------------------------------------------------
-
+    $ar['change_password'] = array('route' => '/gticchla/public/change_password' , 'controller' => 'tecnicoController', 'action' => 'change_password');
     //CLIENT ROUTES--------------------------------------------------------------------------------------------------------------
     $ar['cliente_panel'] = array('route' => '/gticchla/public/cliente' , 'controller' => 'clienteController', 'action' => 'index');
     $ar['cliente_panel_solicitar_atendimento_index'] = array('route' => '/gticchla/public/cliente/solicitar_atendimento' , 'controller' => 'clienteController', 'action' => 'solicitar_atendimento');
     $ar['cliente_panel_solicitar_atendimento_submit'] = array('route' => '/gticchla/public/cliente/client_register_call_request' , 'controller' => 'clienteController', 'action' => 'client_register_call_request');
     $ar['cliente_panel_historico_chamados'] = array('route' => '/gticchla/public/cliente/historico_chamados' , 'controller' => 'clienteController', 'action' => 'client_request_history');
+    $ar['cliente_panel_account_settings'] = array('route' => '/gticchla/public/cliente/configuracoes' , 'controller' => 'clienteController', 'action' => 'cliente_account_settings');
     //----------------------------------------------------------------------------------------------------------------------------
 
     //TECHNICIAN ROUTES-----------------------------------------------------------------------------------------------------------
