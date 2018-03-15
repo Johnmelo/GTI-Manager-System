@@ -97,7 +97,7 @@ class GerenteController extends Action{
         $managers = [];
 
         if(isset($_POST['client_role'])){
-          foreach ($_POST['selections'] as $request) {
+          foreach ($_POST['client_role'] as $request) {
             $clients[$request] = 1;
           }
         }
