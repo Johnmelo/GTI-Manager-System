@@ -1,0 +1,22 @@
+.popover.tour-tour {
+    max-width: 80%;
+    padding: 0px;
+    border: none;
+}
+
+.popover-title {
+    background: #2A3F54;
+    color: #FFF;
+    padding: 26px 26px 18px;
+    font-size: 1.7em;
+}
+
+.popover-content {
+    color: #444;
+    padding: 26px 26px 18px;
+    font-size: 1.4em;
+}
+
+.popover-navigation {
+    padding: 9px 22px 18px !important;
+}

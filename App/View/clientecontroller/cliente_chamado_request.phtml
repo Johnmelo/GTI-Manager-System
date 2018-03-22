@@ -1,6 +1,9 @@
 <!-- Layout Dashboard-->
 <!-- Bootstrap -->
 <link href="../../App/View/css/bootstrap.min.css" rel="stylesheet">
+<!-- Bootstrap Tour -->
+<link href="../../App/View/css/bootstrap-tour.min.css" rel="stylesheet">
+<link href="../../App/View/css/tour-popover.css" rel="stylesheet">
 <!-- Font Awesome -->
 <link href="../../App/View/css/fontawesome-all.min.css" rel="stylesheet">
 <script defer src="../../App/View/js/fontawesome-all.min.js"></script>
@@ -148,7 +151,7 @@
           </div>
           <div class="row">
             <div class="col-md-6 col-xs-12">
-              <div class="x_panel">
+              <div id="solicitar-chamado-panel" class="x_panel">
                 <div class="x_title">
                   <h2>NOVA SOLICITAÇÃO</h2>
                   <ul class="nav navbar-right panel_toolbox">
@@ -202,7 +205,7 @@
               </div>
             </div>
             <div class="col-md-6 col-xs-12">
-              <div class="x_panel">
+              <div id="chamados-pendentes-panel" class="x_panel">
                 <div class="x_title">
                   <h2>SOLICITAÇÕES<small>pendentes</small></h2>
                   <ul class="nav navbar-right panel_toolbox">
@@ -367,6 +370,18 @@
 <script src="../../App/View/js/jquery.min.js"></script>
 <!-- Bootstrap -->
 <script src="../../App/View/js/bootstrap.min.js"></script>
+<!-- Bootstrap Tour -->
+<script src="../../App/View/js/bootstrap-tour.min.js"></script>
+<script src="../../App/View/js/cliente-tour.js"></script>
+<script>
+$(document).ready(function() {
+  if (localStorage.getItem('tour_current_step') == "5") {
+    tour.init();
+    tour.start();
+    tour.next();
+  }
+});
+</script>
 <!-- FastClick -->
 <script src="../../App/View/js/fastclick.js"></script>
 <!-- NProgress -->
