@@ -5,7 +5,7 @@ class SolicitarChamado extends Table{
   protected $table = "solicitacao_chamado";
 
   public function save($id_usuario,$id_servico,$descricao,$data){
-    $query = "Insert into ".$this->table." (data_solicitacao,id_cliente,id_servico,descricao) values ('{$data}','{$id_usuario}','{$id_servico}','{$data}')";
+    $query = "Insert into ".$this->table." (data_solicitacao,id_cliente,id_servico,descricao) values ('{$data}','{$id_usuario}','{$id_servico}','{$descricao}')";
     $stmt = $this->db->prepare($query);
     $stmt->execute();
   }
