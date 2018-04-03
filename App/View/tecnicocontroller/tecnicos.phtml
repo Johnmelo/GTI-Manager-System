@@ -145,7 +145,7 @@
                 </div>
                 <div class="x_content">
                   <form name="meus_servicos_atendimento_form">
-                  <table class="table table-hover open-request-list processing-requests">
+                  <table id="my-processing-requests" class="table table-hover">
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -190,7 +190,7 @@
                 </div>
                 <div class="x_content">
                   <form name="chamados_clientes">
-                  <table class="table table-hover open-request-list processing-requests">
+                  <table id="processing-requests" class="table table-hover">
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -235,7 +235,7 @@
                 </div>
                 <div class="x_content">
                   <form name="chamados_clientes" method="post" action="technician_select_request">
-                  <table class="table table-hover open-request-list not-processing-requests">
+                  <table id="open-requests" class="table table-hover">
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -273,7 +273,7 @@
                     </div>
                     <div class="x_content">
                         <form name="solicitacoes_chamados" method="post" action="admin/open_call_request">
-                            <table class="table table-hover call-request-list">
+                            <table id="call-requests" class="table table-hover">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -324,105 +324,7 @@
   </div>
 
   <!-- REQUEST MODAL -->
-   <div class="modal fade request-modal" tabindex="-1" role="dialog">
-     <div class="modal-dialog" role="document">
-       <div class="modal-content">
-         <div class="modal-header">
-           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-           <h4 class="modal-title"></h4>
-         </div>
-         <div class="modal-body">
-           <form class="form-horizontal request-modal-form">
-             <div class="form-group" style="display: none;">
-               <label for="id_solicitacao_field" class="col-sm-4 control-label">Solicitação</label>
-               <div class="col-sm-8">
-                 <input type="text" class="form-control" id="id_solicitacao_field" readonly>
-               </div>
-             </div>
-             <div class="form-group" style="display: none;">
-               <label for="id_chamado_field" class="col-sm-4 control-label">Chamado</label>
-               <div class="col-sm-8">
-                 <input type="text" class="form-control" id="id_chamado_field" readonly>
-               </div>
-             </div>
-             <div class="form-group" style="display: none;">
-               <label for="solicitacao_chamado_status_field" class="col-sm-4 control-label">Status</label>
-               <div class="col-sm-8">
-                 <input type="text" class="form-control" id="solicitacao_chamado_status_field" readonly>
-               </div>
-             </div>
-             <div class="form-group" style="display: none;">
-               <label for="chamado_status_field" class="col-sm-4 control-label">Status</label>
-               <div class="col-sm-8">
-                 <input type="text" class="form-control" id="chamado_status_field" readonly>
-               </div>
-             </div>
-             <div class="form-group" style="display: none;">
-               <label for="servico_field" class="col-sm-4 control-label">Serviço</label>
-               <div class="col-sm-8">
-                 <input type="text" class="form-control" id="servico_field" readonly>
-               </div>
-             </div>
-             <div class="form-group" style="display: none;">
-               <label for="cliente_field" class="col-sm-4 control-label">Cliente</label>
-               <div class="col-sm-8">
-                 <input type="text" class="form-control" id="cliente_field" readonly>
-               </div>
-             </div>
-             <div class="form-group" style="display: none;">
-               <label for="data_solicitacao_field" class="col-sm-4 control-label">Data da solicitação</label>
-               <div class="col-sm-8">
-                 <input type="text" class="form-control" id="data_solicitacao_field" readonly>
-               </div>
-             </div>
-             <div class="form-group" style="display: none;">
-               <label for="data_abertura_field" class="col-sm-4 control-label">Data de abertura</label>
-               <div class="col-sm-8">
-                 <input type="text" class="form-control" id="data_abertura_field" readonly>
-               </div>
-             </div>
-             <div class="form-group" style="display: none;">
-               <label for="data_finalizado_field" class="col-sm-4 control-label">Data finalizado</label>
-               <div class="col-sm-8">
-                 <input type="text" class="form-control" id="data_finalizado_field" readonly>
-               </div>
-             </div>
-             <div class="form-group" style="display: none;">
-               <label for="prazo_field" class="col-sm-4 control-label">Prazo</label>
-               <div class="col-sm-8">
-                 <input type="text" class="form-control" id="prazo_field" readonly>
-               </div>
-             </div>
-             <div class="form-group" style="display: none;">
-               <label for="tecnico_responsavel_field" class="col-sm-4 control-label">Técnico responsável</label>
-               <div class="col-sm-8">
-                 <input type="text" class="form-control" id="tecnico_responsavel_field" readonly>
-               </div>
-             </div>
-             <div class="form-group" style="display: none;">
-               <label for="tecnico_abertura_field" class="col-sm-4 control-label">Técnico da abertura</label>
-               <div class="col-sm-8">
-                 <input type="text" class="form-control" id="tecnico_abertura_field" readonly>
-               </div>
-             </div>
-             <div class="form-group" style="display: none;">
-               <label for="descricao_field" class="col-sm-4 control-label">Descrição</label>
-               <div class="col-sm-8">
-                 <textarea class="form-control" rows="3" id="descricao_field" readonly></textarea>
-               </div>
-             </div>
-             <div class="form-group" style="display: none;">
-               <label for="parecer_tecnico_field" class="col-sm-4 control-label">Parecer técnico</label>
-               <div class="col-sm-8">
-                 <textarea class="form-control" rows="3" id="parecer_tecnico_field" readonly></textarea>
-               </div>
-             </div>
-           </form>
-         </div>
-         <div class="modal-footer" style="display: none;"></div>
-       </div><!-- /.modal-content -->
-     </div><!-- /.modal-dialog -->
-   </div><!-- /.modal -->
+   <div class="modal fade request-modal" tabindex="-1" role="dialog"></div>
 </div>
 <!-- jQuery -->
 <script src="../App/View/js/jquery.min.js"></script>
@@ -450,7 +352,49 @@ moment.locale('pt-br');
 
 <!-- Custom Theme Scripts -->
 <script src="../App/View/js/custom.min.js"></script>
+
+<!-- Request modal settings -->
 <script src="../App/View/js/request-modals.js"></script>
+<script>
+$('#processing-requests tr, #my-processing-requests tr').on('click', function(e) {
+  modal_form_config = {
+    id_chamado_field: true,
+    chamado_status_field: true,
+    cliente_field: true,
+    servico_field: true,
+    data_abertura_field: true,
+    tecnico_abertura_field: true,
+    descricao_field: true,
+    prazo_field: true,
+    tecnico_responsavel_field: true
+  };
+  defineAndShowModal("open-request-type", e, modal_form_config);
+});
+$('#call-requests tr').on('click', function(e) {
+  modal_form_config = {
+    id_solicitacao_field: true,
+    cliente_field: true,
+    solicitacao_chamado_status_field: true,
+    servico_field: true,
+    data_solicitacao_field: true,
+    descricao_field: true
+  };
+  defineAndShowModal("call-request-type", e, modal_form_config);
+});
+$('#open-requests tr').on('click', function(e) {
+  modal_form_config = {
+    id_chamado_field: true,
+    chamado_status_field: true,
+    cliente_field: true,
+    servico_field: true,
+    data_abertura_field: true,
+    tecnico_abertura_field: true,
+    descricao_field: true,
+    prazo_field: true
+  };
+  defineAndShowModal("open-request-type", e, modal_form_config);
+});
+</script>
 
 <!-- Check if there is any demand selected -->
 <script>

@@ -1,38 +1,3 @@
-$('.table.table-hover > tbody > tr').on('click', function(e) {
-    if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
-        var request_id = e.currentTarget.children[0].innerHTML;
-        var table = $(e.currentTarget).parents('.table');
-        $('.request-modal').find('.modal-header > h4')[0].innerHTML = "Detalhes do chamado";
-
-        var modal_form_config;
-        if (table.hasClass('open-request-list')) {
-            modal_form_config = {
-                id_chamado_field: true,
-                chamado_status_field: true,
-                servico_field: true,
-                data_abertura_field: true,
-                tecnico_abertura_field: true,
-                descricao_field: true,
-            };
-            if (table.hasClass('processing-requests')) {
-                modal_form_config.prazo_field = true;
-                modal_form_config.tecnico_responsavel_field = true;
-            }
-            fillUpRequestModal({"request_id": request_id});
-        } else if (table.hasClass('call-request-list')) {
-            var modal_form_config = {
-                id_solicitacao_field: true,
-                solicitacao_chamado_status_field: true,
-                servico_field: true,
-                data_solicitacao_field: true,
-                descricao_field: true
-            };
-            fillUpRequestModal({"call_request_id": request_id});
-        }
-        showRequestModal(modal_form_config);
-    }
-});
-
 $('button[name=btnJoin]').on('click', function(e) {
     if (e.target.nodeName == "BUTTON") {
         var request_id = $(e.target).parents('tr')[0].children[0].innerHTML;
@@ -82,6 +47,21 @@ $('button[name=btnFinalizarChamado]').on('click', function(e) {
     }
 });
 
+function defineAndShowModal(typeRequest, element, formConfig, footerConfig) {
+    if (element.target.nodeName == "TR" || element.target.nodeName == "TD") {
+        var request_id = element.currentTarget.children[0].innerHTML;
+        var table = $(element.currentTarget).parents('.table');
+        $('.request-modal').find('.modal-header > h4')[0].innerHTML = "Detalhes do chamado";
+
+        if (typeRequest == "call-request-type") {
+            fillUpRequestModal({"call_request_id": request_id});
+        } else if (typeRequest == "open-request-type") {
+            fillUpRequestModal({"request_id": request_id});
+        }
+        showRequestModal(modal_form_config);
+    }
+}
+
 function showRequestModal(formConfig, footerConfig) {
     // form config structure: { "fieldToBeVisible": "readOnyBool", ... }
     // footer config structure: [ { "btnContent": "content", "callback": "functionName", "class": "classes" }, ... ]
@@ -125,7 +105,6 @@ function fillUpRequestModal (id) {
 
     $.post("/gticchla/public/get_request_info", id)
     .done(function(data) {
-        // console.log(data);
         var request = JSON.parse(data);
         for (key in request) {
             $('.request-modal-form')[0].elements[key].value = request[key];
@@ -176,3 +155,105 @@ function acquireRequest (tableRow) {
         alert("Não foi possível realizar a ação");
     });
 }
+
+// Inserting HTML structure into modal tag
+$(document).ready(function() {
+    $('.modal.request-modal').get(0).innerHTML = '\
+    <div class="modal-dialog" role="document">\
+      <div class="modal-content">\
+        <div class="modal-header">\
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
+          <h4 class="modal-title"></h4>\
+        </div>\
+        <div class="modal-body">\
+          <form class="form-horizontal request-modal-form">\
+            <div class="form-group" style="display: none;">\
+              <label for="id_solicitacao_field" class="col-sm-4 control-label">Solicitação</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="id_solicitacao_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="id_chamado_field" class="col-sm-4 control-label">Chamado</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="id_chamado_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="cliente_field" class="col-sm-4 control-label">Cliente</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="cliente_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="solicitacao_chamado_status_field" class="col-sm-4 control-label">Status</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="solicitacao_chamado_status_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="chamado_status_field" class="col-sm-4 control-label">Status</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="chamado_status_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="servico_field" class="col-sm-4 control-label">Serviço</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="servico_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="data_solicitacao_field" class="col-sm-4 control-label">Data da solicitação</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="data_solicitacao_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="data_abertura_field" class="col-sm-4 control-label">Data de abertura</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="data_abertura_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="data_finalizado_field" class="col-sm-4 control-label">Data finalizado</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="data_finalizado_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="prazo_field" class="col-sm-4 control-label">Prazo</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="prazo_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="tecnico_responsavel_field" class="col-sm-4 control-label">Técnico responsável</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="tecnico_responsavel_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="tecnico_abertura_field" class="col-sm-4 control-label">Técnico da abertura</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="tecnico_abertura_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="descricao_field" class="col-sm-4 control-label">Descrição</label>\
+              <div class="col-sm-8">\
+                <textarea class="form-control" rows="3" id="descricao_field" readonly></textarea>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="parecer_tecnico_field" class="col-sm-4 control-label">Parecer técnico</label>\
+              <div class="col-sm-8">\
+                <textarea class="form-control" rows="3" id="parecer_tecnico_field" readonly></textarea>\
+              </div>\
+            </div>\
+          </form>\
+        </div>\
+        <div class="modal-footer" style="display: none;"></div>\
+      </div>\
+    </div>';
+});
