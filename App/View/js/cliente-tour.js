@@ -1,5 +1,7 @@
 var tour = new Tour({
   orphan: true,
+  onNext: detectStep,
+  onEnd: detectTourEnding,
   template: "<div class='popover tour'>\
                 <div class='arrow'></div>\
                 <h3 class='popover-title'></h3>\
@@ -52,13 +54,13 @@ var tour = new Tour({
     {
       title: 'Fazendo um chamado',
       content: 'É nesse formulário que você solicita<br>um chamado.<br>Você seleciona uma das opções de<br>motivo e descreve melhor a situação<br>no campo de texto seguinte.<br>Depois, é só clicar em "Solicitar".',
-      element: '#solicitar-chamado-panel',
+      element: '#nova-solicitacao-panel',
       backdrop: true
     },
     {
       title: 'Chamados pendentes',
       content: '<small>Quando você solicita um chamado no formulário ao<br>lado, ele não é imediatamente aberto.<br>As suas solicitações de chamado feitas no formulário<br>ao lado ficam nessa tabela de "Solicitações pendentes"<br>na espera de serem aceitas pelo suporte.<br><br>Após a solicitação ser aceita, o chamado é aberto e<br>você passa a acompanha-lo na tabela de "Chamados<br>abertos" na página inicial.<br><br>Vamos voltar para a página inicial para ver as tabelas<br>dos chamados depois de serem abertos...</small>',
-      element: '#chamados-pendentes-panel',
+      element: '#solicitacoes-nao-abertas-panel',
       placement: 'left',
       backdrop: true
     },
@@ -74,7 +76,7 @@ var tour = new Tour({
     },
     {
       title: 'Seus chamados em atendimento',
-      content: 'Quando chegar a vez do seu chamado ser atendido,<br>ele sairá da tabela de "Chamados abertos" e ficará<br>nessa tabela de "Chamados em atendimeto".',
+      content: 'Quando chegar a vez do seu chamado ser atendido,<br>ele sairá da tabela de "Chamados abertos" e ficará<br>nessa tabela de "Chamados em atendimento".',
       element: '#chamados-em-atendimento-panel',
       placement: 'bottom',
       backdrop: true
@@ -82,7 +84,7 @@ var tour = new Tour({
     {
       title: 'Detalhes dos chamados',
       content: 'Em qualquer tabela do sistema você pode clicar<br>numa linha para ver as informações completas<br>de um chamado!',
-      element: 'form[name=chamados_atendimento_clientes] tbody tr:nth-child(1)',
+      element: 'form[name=chamados_abertos_clientes] tbody tr:nth-child(1)',
       placement: 'bottom',
       backdrop: true
     },
@@ -94,3 +96,64 @@ var tour = new Tour({
     }
   ]
 });
+
+
+function detectStep (tour) {
+  console.log(tour._current);
+  if (tour._current == 0) {
+    $('.dropdown-menu.dropdown-usermenu a').css("pointer-events", "none");
+  }
+  if (tour._current == 1 || tour._current == 5) {
+    $('.left_col').css("pointer-events", "none");
+  }
+  if (tour._current == 5) {
+    $('form[action=client_register_call_request] button').css("pointer-events", "none");
+  }
+  if (tour._current == 6) {
+    $('form[name=solicitacoes_chamado] button').css("pointer-events", "none");
+  }
+  if (tour._current == 8) {
+    $('form[name=chamados_abertos_clientes] button').css("pointer-events", "none");
+  }
+  if (tour._current == 10) {
+    // Insert temp request row for illustration
+    addExampleRow();
+  }
+  if (tour._current == 11) {
+    // Remove the temp row afterwards
+    removeExampleRow();
+  }
+}
+
+function detectTourEnding (tour) {
+  // Undo measures to prevent exiting the tour if tour is skipped prematurely
+  $('.dropdown-menu.dropdown-usermenu a').css("pointer-events", "auto");
+  $('.left_col').css("pointer-events", "auto");
+  $('form[action=client_register_call_request] button').css("pointer-events", "auto");
+  $('form[name=solicitacoes_chamado] button').css("pointer-events", "auto");
+  $('form[name=chamados_abertos_clientes] button').css("pointer-events", "block");
+  if (tour._current == 11)
+    removeExampleRow();
+}
+
+function addExampleRow () {
+  var table = document.getElementById("not-processing-requests").getElementsByTagName('tbody')[0];
+  var temp_row = table.insertRow(0);
+
+  id_cell = temp_row.insertCell(0);
+  servico_cell = temp_row.insertCell(1);
+  status_cell = temp_row.insertCell(2);
+  tec_abert_cell = temp_row.insertCell(3);
+  acao_cell = temp_row.insertCell(4);
+
+  id_cell.innerText = "1";
+  servico_cell.innerText = "Exemplo de chamado";
+  status_cell.innerText = "AGUARDANDO";
+  tec_abert_cell.innerText = "João";
+  acao_cell.innerHTML = '<div class="icheckbox_square-blue" style="position: relative;"><input type="checkbox" value="8" name="selections[]" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div>';
+}
+
+function removeExampleRow () {
+  var table = document.getElementById("not-processing-requests").getElementsByTagName('tbody')[0];
+  table.deleteRow(0);
+}
