@@ -99,7 +99,6 @@ var tour = new Tour({
 
 
 function detectStep (tour) {
-  console.log(tour._current);
   if (tour._current == 0) {
     $('.dropdown-menu.dropdown-usermenu a').css("pointer-events", "none");
   }

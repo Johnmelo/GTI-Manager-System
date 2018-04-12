@@ -106,8 +106,8 @@ function fillUpRequestModal (id) {
     $.post("/gticchla/public/get_request_info", id)
     .done(function(data) {
         var request = JSON.parse(data);
-        for (key in request) {
-            $('.request-modal-form')[0].elements[key].value = request[key];
+        for (field of fieldList) {
+            $('.request-modal-form')[0].elements[field].value = request[field];
         }
     })
     .fail(function() {
@@ -115,7 +115,7 @@ function fillUpRequestModal (id) {
     });
 }
 
-function finalizeRequest (tableRow) {
+function finalizeRequest(tableRow) {
     var request_id = $('.request-modal-form')[0].elements["id_chamado_field"].value;
     var parecer_tecnico = $('.request-modal-form')[0].elements["parecer_tecnico_field"].value;
 
@@ -133,7 +133,7 @@ function finalizeRequest (tableRow) {
     });
 }
 
-function acquireRequest (tableRow) {
+function acquireRequest(tableRow) {
     var request_id = tableRow.find('button[name="btnJoin"]').val();
     var data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
     var data_abertura = $('.request-modal-form')[0].elements["data_abertura_field"].value;
