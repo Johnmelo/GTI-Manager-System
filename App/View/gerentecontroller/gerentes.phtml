@@ -157,7 +157,7 @@
                 <div class="clearfix"></div>
               </div>
               <div class="x_content">
-                <table id="processing-requests" class="table table-hover">
+                <table id="processing-requests" class="table table-hover clickable-rows">
                   <thead>
                     <tr>
                       <th>ID</th>
@@ -169,7 +169,7 @@
                   </thead>
                   <tbody>
                     <?php foreach ($this->view->chamados_atendimentos as $atendimento):?>
-                      <tr>
+                      <tr data-request-id="<?php echo $atendimento['id'];?>">
                         <td><?php echo $atendimento['id'];?></td>
                         <td><?php echo $this->view->clients_names[$atendimento['id_cliente_solicitante']]['nome'];?></td>
                         <td><?php echo $this->view->service_names[$atendimento['id_servico']];?></td>
@@ -199,9 +199,10 @@
               </div>
               <div class="x_content">
                 <form name="client_call_request" method="post" action="admin/open_call_request">
-                  <table id="call-request-list" class="table table-hover">
+                  <table id="call-request-list" class="table table-hover clickable-rows">
                     <thead>
                       <tr>
+                        <th></th>
                         <th>ID</th>
                         <th>Cliente</th>
                         <th>Serviço</th>
@@ -211,13 +212,13 @@
                     </thead>
                     <tbody>
                       <?php foreach ($this->view->requisicoes_atendimento as $call_request): ?>
-                        <tr>
+                        <tr data-request-id="<?php echo $call_request['id'];?>">
+                            <td><input type="checkbox" value="<?php echo $call_request['id'];?>" name="selections_call_request[]"></td>
                             <td><?php echo $call_request['id']; ?></td>
                             <td><?php echo $this->view->clients_names[$call_request['id_cliente']]['nome'];?></td>
                             <td><?php echo $this->view->service_names[$call_request['id_servico']];?></td>
                             <td><?php echo $this->view->clients_names[$call_request['id_cliente']]['setor'];?></td>
                             <td><?php echo $call_request['descricao'];?></td>
-                            <td> <input type="checkbox" value=<?php echo $call_request['id'];?> name="selections_call_request[]"/></td>
                         </tr>
                       <?php endforeach; ?>
                     </tbody>
@@ -245,7 +246,7 @@
                 <div class="clearfix"></div>
               </div>
               <div class="x_content">
-                <table id="not-processing-requests" class="table table-hover">
+                <table id="not-processing-requests" class="table table-hover clickable-rows">
                   <thead>
                     <tr>
                       <th>ID</th>
@@ -257,7 +258,7 @@
                   </thead>
                   <tbody>
                       <?php foreach ($this->view->chamados_abertos as $abertos):?>
-                        <tr>
+                        <tr data-request-id="<?php echo $abertos['id'];?>">
                           <td><?php echo $abertos['id'];?></td>
                           <td><?php echo $this->view->clients_names[$abertos['id_cliente_solicitante']]['nome'];?></td>
                           <td><?php echo $this->view->service_names[$abertos['id_servico']];?></td>
@@ -389,13 +390,20 @@
   <!-- Check if there is any demand selected -->
   <script>
   var btn_abrir_chamado = $('form[name=client_call_request] > button[type=submit]');
+  var qtd_checked = 0;
+  btn_teste = null;
   $('input').on('ifChecked', function(event) {
+      qtd_checked++;
       if (btn_abrir_chamado.hasClass('btn-default')) {
           btn_abrir_chamado.toggleClass('btn-default btn-primary');
           btn_abrir_chamado.prop('disabled', function(i, v) { return !v; });
       }
+      if (qtd_checked > 1) {
+        btn_abrir_chamado.text("Abrir chamados");
+      }
   });
   $('input').on('ifUnchecked', function(event) {
+    qtd_checked--;
     var all_unchecked = true;
     var form_inputs = $('form[name=client_call_request] > table td input[type=checkbox]');
     form_inputs.each(function() {
@@ -406,6 +414,9 @@
     if (all_unchecked) {
       btn_abrir_chamado.toggleClass('btn-default btn-primary');
       btn_abrir_chamado.prop('disabled', function(i, v) { return !v; });
+    }
+    if (qtd_checked < 2) {
+      btn_abrir_chamado.text("Abrir chamado");
     }
   });
   </script>

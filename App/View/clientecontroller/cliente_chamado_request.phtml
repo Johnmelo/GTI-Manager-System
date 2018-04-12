@@ -221,24 +221,24 @@
                 </div>
                 <div class="x_content">
                   <form name="solicitacoes_chamado" method="post" action="">
-                  <table id="call-request-list" class="table table-hover">
+                  <table id="call-request-list" class="table table-hover clickable-rows">
                     <thead>
                       <tr>
+                        <th></th>
                         <th>ID</th>
                         <th>Data</th>
                         <th>Serviço</th>
                         <th>Status</th>
-                        <th>Ação</th>
                       </tr>
                     </thead>
                     <tbody>
                       <?php foreach ($this->view->requisicoes as $requisicao):?>
-                        <tr>
+                        <tr data-request-id="<?php echo $requisicao['id'];?>">
+                            <td> <input type="checkbox" value=<?php echo $requisicao['id'];?> name="selections[]"/></td>
                             <td><?php echo $requisicao['id']; ?></td>
                             <td><?php $data = strtotime($requisicao['data_solicitacao']); $data = date('d/m/Y',$data); echo $data;?></td>
                             <td><?php echo $this->view->requests_services_names[$requisicao['id_servico']];?></td>
                             <td><?php echo $requisicao['status'];?></td>
-                            <td> <input type="checkbox" value=<?php echo $requisicao['id'];?> name="selections[]"/></td>
                         </tr>
                       <?php endforeach;?>
                     </tbody>

@@ -131,7 +131,7 @@
               <div class="x_panel">
                 <div class="x_content">
                   <form name="form_historico_chamados_cliente" method="post" action="">
-                  <table id="closed-requests" class="table table-hover">
+                  <table id="closed-requests" class="table table-hover clickable-rows">
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -147,7 +147,7 @@
                     </thead>
                     <tbody>
                       <?php foreach ($this->view->requests as $finished):?>
-                        <tr>
+                        <tr data-request-id="<?php echo $finished['id'];?>">
                           <a href="view_request">
                             <td><?php echo $finished['id']; ?></td>
                             <td><?php echo $this->view->user_info[$finished['id_cliente_solicitante']]['nome'];?></td>

@@ -69,7 +69,7 @@ body, .body {
     overflow-x: auto;
 }
 
-table > tbody > tr {
+table.clickable-rows > tbody > tr {
     cursor: pointer;
 }
 

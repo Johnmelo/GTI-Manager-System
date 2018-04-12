@@ -145,7 +145,7 @@
                 </div>
                 <div class="x_content">
                   <form name="meus_servicos_atendimento_form">
-                  <table id="my-processing-requests" class="table table-hover">
+                  <table id="my-processing-requests" class="table table-hover clickable-rows">
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -158,7 +158,7 @@
                     </thead>
                     <tbody>
                       <?php foreach ($this->view->myRequests as $callrequest):?>
-                        <tr>
+                        <tr data-request-id="<?php echo $callrequest['id'];?>">
                           <a href="view_request">
                             <td><?php echo $callrequest['id']; ?></td>
                             <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
@@ -190,7 +190,7 @@
                 </div>
                 <div class="x_content">
                   <form name="chamados_clientes">
-                  <table id="processing-requests" class="table table-hover">
+                  <table id="processing-requests" class="table table-hover clickable-rows">
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -202,7 +202,7 @@
                     </thead>
                     <tbody>
                       <?php foreach ($this->view->requests_attendance as $callrequest):?>
-                        <tr>
+                        <tr data-request-id="<?php echo $callrequest['id'];?>">
                           <a href="view_request">
                             <td><?php echo $callrequest['id']; ?></td>
                             <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
@@ -235,7 +235,7 @@
                 </div>
                 <div class="x_content">
                   <form name="chamados_clientes" method="post" action="technician_select_request">
-                  <table id="open-requests" class="table table-hover">
+                  <table id="open-requests" class="table table-hover clickable-rows">
                     <thead>
                       <tr>
                         <th>ID</th>
@@ -248,7 +248,7 @@
                     </thead>
                     <tbody>
                       <?php foreach ($this->view->openRequests as $callrequest):?>
-                        <tr>
+                        <tr data-request-id="<?php echo $callrequest['id'];?>">
                           <td><?php echo $callrequest['id']; ?></td>
                           <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
                           <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
@@ -273,7 +273,7 @@
                     </div>
                     <div class="x_content">
                         <form name="solicitacoes_chamados" method="post" action="admin/open_call_request">
-                            <table id="call-requests" class="table table-hover">
+                            <table id="call-requests" class="table table-hover clickable-rows">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -286,7 +286,7 @@
                                 </thead>
                                 <tbody>
                                   <?php foreach ($this->view->requisicoes_atendimento as $call_request): ?>
-                                    <tr>
+                                    <tr data-request-id="<?php echo $call_request['id'];?>">
                                         <td><?php echo $call_request['id']; ?></td>
                                         <td><?php echo $this->view->users_names[$call_request['id_cliente']]['nome'];?></td>
                                         <td><?php echo $this->view->service_names[$call_request['id_servico']];?></td>
