@@ -47,24 +47,29 @@ $('button[name=btnFinalizarChamado]').on('click', function(e) {
     }
 });
 
-function defineAndShowModal(typeRequest, element, formConfig, footerConfig) {
-    if (element.target.nodeName == "TR" || element.target.nodeName == "TD") {
-        var request_id = element.currentTarget.children[0].innerHTML;
-        var table = $(element.currentTarget).parents('.table');
-        $('.request-modal').find('.modal-header > h4')[0].innerHTML = "Detalhes do chamado";
-
-        if (typeRequest == "call-request-type") {
-            fillUpRequestModal({"call_request_id": request_id});
-        } else if (typeRequest == "open-request-type") {
-            fillUpRequestModal({"request_id": request_id});
-        }
-        showRequestModal(modal_form_config);
+function getRowId(e) {
+    if (e.target.nodeName == "TR") {
+        return $(e.target).get(0).dataset.requestId;
+    } else {
+        return $(e.target).parents('tr').get(0).dataset.requestId;
     }
 }
 
-function showRequestModal(formConfig, footerConfig) {
-    // form config structure: { "fieldToBeVisible": "readOnyBool", ... }
-    // footer config structure: [ { "btnContent": "content", "callback": "functionName", "class": "classes" }, ... ]
+function defineModal(modalConfig) {
+    // modal config structure: {
+    //   title: <string>,
+    //   visible_fields: {
+    //     "fieldToBeVisible": "readOnyBool",
+    //     ...
+    //   },
+    //   footer_config: [
+    //     {
+    //       btnContent:"text",
+    //       class:"classes",
+    //       callback: callback
+    //     }
+    //   ]
+    // }
 
     // Reset modal config
     $('.request-modal-form .form-group').css("display", "none");
@@ -72,36 +77,59 @@ function showRequestModal(formConfig, footerConfig) {
     $('.request-modal').find('.modal-footer').css("display", "none");
     $('.request-modal').find('.modal-footer button').remove();
 
-    // Set new config
+    // Set config
+    $('.request-modal').find('.modal-header > h4')[0].innerHTML = modalConfig.title;
 
     // Define the form inputs to be visible and its readonly setting
-    for (var key in formConfig) {
-        $('.request-modal-form')[0].elements[key].readOnly= formConfig[key];
+    var visibleFields = modalConfig.visible_fields;
+    for (var key in visibleFields) {
+        $('.request-modal-form')[0].elements[key].readOnly= visibleFields[key];
         $($('.request-modal-form')[0].elements[key]).parents('.form-group').css("display", "block");
     }
+
     // If footer is defined
-    if (footerConfig) {
+    if (modalConfig.footer_config && modalConfig.footer_config.length > 0) {
+        var footerBtns = modalConfig.footer_config;
         // create each button
-        for (btn in footerConfig) {
+        for (btn in footerBtns) {
             var button = document.createElement("button");
             button.setAttribute("type", "button");
             // button text
-            button.innerHTML = footerConfig[btn].btnContent;
+            button.innerHTML = footerBtns[btn].btnContent;
             // if class is defined
-            button.setAttribute("class", (footerConfig[btn].class) ? footerConfig[btn].class : "btn btn-default");
+            button.setAttribute("class", (footerBtns[btn].class) ? footerBtns[btn].class : "btn btn-default");
             // if a callback was passed to be executed when pressed the button
-            if (footerConfig[btn].callback) { $(button).on('click', footerConfig[btn].callback); }
+            if (footerBtns[btn].callback) { $(button).on('click', footerBtns[btn].callback); }
             // insert button in the modal footer
             $('.request-modal').find('.modal-footer').append(button);
         }
         $('.request-modal').find('.modal-footer').css("display", "block");
     }
+}
 
+function defineSimpleModal(modalConfig, typeRequest, requestId) {
+    var visibleFields = [];
+    for (key in modalConfig.visible_fields) {
+        visibleFields.push(key)
+    }
+    defineModal(modalConfig);
+    fillUpRequestModal(typeRequest, requestId, visibleFields);
+    showRequestModal();
+}
+
+function showRequestModal() {
     // Show modal
     $('.request-modal').modal('toggle');
 }
 
-function fillUpRequestModal (id) {
+function fillUpRequestModal(typeRequest, requestId, fieldList) {
+
+    var id;
+    if (typeRequest == "call-request-type") {
+        id = {"call_request_id": requestId};
+    } else if (typeRequest == "open-request-type") {
+        id = {"request_id": requestId};
+    }
 
     $.post("/gticchla/public/get_request_info", id)
     .done(function(data) {

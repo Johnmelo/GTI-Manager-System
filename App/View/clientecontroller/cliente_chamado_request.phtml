@@ -326,15 +326,23 @@ $(document).ready(function(){
 <script src="../../App/View/js/request-modals.js"></script>
 <script>
 $('#call-request-list tr').on('click', function(e) {
-  modal_form_config = {
-    id_solicitacao_field: true,
-    cliente_field: true,
-    solicitacao_chamado_status_field: true,
-    servico_field: true,
-    data_solicitacao_field: true,
-    descricao_field: true
-  };
-  defineAndShowModal("call-request-type", e, modal_form_config);
+  if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
+    var request_id = getRowId(e);
+    if (request_id) {
+      modal_config = {
+        title: "Detalhes da solicitação",
+        visible_fields: {
+          id_solicitacao_field: true,
+          cliente_field: true,
+          solicitacao_chamado_status_field: true,
+          servico_field: true,
+          data_solicitacao_field: true,
+          descricao_field: true
+        }
+      };
+      defineSimpleModal(modal_config, "call-request-type", request_id);
+    }
+  }
 });
 </script>
 

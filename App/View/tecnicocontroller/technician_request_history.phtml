@@ -198,18 +198,26 @@
   <script src="../../App/View/js/request-modals.js"></script>
   <script>
   $('#closed-requests tr').on('click', function(e) {
-    modal_form_config = {
-      id_chamado_field: true,
-      chamado_status_field: true,
-      cliente_field: true,
-      servico_field: true,
-      data_abertura_field: true,
-      tecnico_abertura_field: true,
-      descricao_field: true,
-      prazo_field: true,
-      tecnico_responsavel_field: true
-    };
-    defineAndShowModal("open-request-type", e, modal_form_config);
+    if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
+      var request_id = getRowId(e);
+      if (request_id) {
+        modal_config = {
+          title: "Detalhes do chamado",
+          visible_fields: {
+              id_chamado_field: true,
+              chamado_status_field: true,
+              cliente_field: true,
+              servico_field: true,
+              data_abertura_field: true,
+              tecnico_abertura_field: true,
+              descricao_field: true,
+              prazo_field: true,
+              tecnico_responsavel_field: true
+          }
+        };
+        defineSimpleModal(modal_config, "open-request-type", request_id);
+      }
+    }
   });
   </script>
 </body>
