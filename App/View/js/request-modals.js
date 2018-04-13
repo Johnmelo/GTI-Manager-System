@@ -184,6 +184,27 @@ function acquireRequest(tableRow) {
     });
 }
 
+function refuseRequest(tableRow) {
+    var request_id = tableRow.get(0).dataset.requestId;
+    var refusal_reason = $('.request-modal-form')[0].elements["motivo_recusa_field"].value;
+
+    $.post("",
+    {
+        "request_id": request_id,
+        "refusal_reason": refusal_reason
+    })
+    .done(function() {
+        tableRow.remove();
+        $('.request-modal').modal('toggle');
+        setTimeout(function() {
+            document.location.reload(true);
+        }, 500);
+    })
+    .fail(function() {
+        alert("Não foi possível realizar a ação");
+    });
+}
+
 // Inserting HTML structure into modal tag
 $(document).ready(function() {
     $('.modal.request-modal').get(0).innerHTML = '\
@@ -277,6 +298,12 @@ $(document).ready(function() {
               <label for="parecer_tecnico_field" class="col-sm-4 control-label">Parecer técnico</label>\
               <div class="col-sm-8">\
                 <textarea class="form-control" rows="3" id="parecer_tecnico_field" readonly></textarea>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="motivo_recusa_field" class="col-sm-4 control-label">Motivo da recusa</label>\
+              <div class="col-sm-8">\
+                <textarea class="form-control" rows="3" id="motivo_recusa_field" readonly></textarea>\
               </div>\
             </div>\
           </form>\
