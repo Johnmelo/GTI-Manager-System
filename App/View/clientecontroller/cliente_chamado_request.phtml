@@ -233,13 +233,15 @@
                     </thead>
                     <tbody>
                       <?php foreach ($this->view->requisicoes as $requisicao):?>
-                        <tr data-request-id="<?php echo $requisicao['id'];?>">
-                            <td> <input type="checkbox" value=<?php echo $requisicao['id'];?> name="selections[]"/></td>
-                            <td><?php echo $requisicao['id']; ?></td>
-                            <td><?php $data = strtotime($requisicao['data_solicitacao']); $data = date('d/m/Y',$data); echo $data;?></td>
-                            <td><?php echo $this->view->requests_services_names[$requisicao['id_servico']];?></td>
-                            <td><?php echo $requisicao['status'];?></td>
-                        </tr>
+                          <?php if ($requisicao['status'] === "AGUARDANDO"): ?>
+                            <tr data-request-id="<?php echo $requisicao['id'];?>">
+                                <td> <input type="checkbox" value=<?php echo $requisicao['id'];?> name="selections[]"/></td>
+                                <td><?php echo $requisicao['id']; ?></td>
+                                <td><?php $data = strtotime($requisicao['data_solicitacao']); $data = date('d/m/Y',$data); echo $data;?></td>
+                                <td><?php echo $this->view->requests_services_names[$requisicao['id_servico']];?></td>
+                                <td><?php echo $requisicao['status'];?></td>
+                            </tr>
+                          <?php endif; ?>
                       <?php endforeach;?>
                     </tbody>
                   </table>
