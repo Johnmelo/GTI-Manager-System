@@ -185,8 +185,22 @@ class TecnicoController extends Action{
         $userDb = Container::getClass("Usuario");
         $user = $userDb->findById($_SESSION['user_id']);
         if($pass == $user['password']){
+          ob_start();
           $userDb->updateColumnById("password",$_POST['new_password'],$_SESSION['user_id']);
-        }
+          $buffer = ob_get_clean();
+          header('Content-Type: application/json; charset=UTF-8');
+          if (strpos($buffer, "UPDATED successfully") !== false) {
+            echo json_encode(array('event' => 'success', 'type' => 'password_reset', 'message' => 'Senha alterada com sucesso'));
+          } else {
+            header("HTTP/1.1 500 Internal Server Error");
+            echo json_encode(array('event' => 'error', 'type' => 'db_error', 'message' => $buffer));
+          }
+      } else {
+        ob_end_clean();
+        header("HTTP/1.1 401 Unauthorized");
+        header('Content-Type: application/json; charset=UTF-8');
+        echo json_encode(array('event' => 'error', 'type' => 'wrong_current_password', 'message' => 'Senha atual incorreta'));
+      }
       }
     } else {
         $this->forbidenAccess();

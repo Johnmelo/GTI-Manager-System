@@ -1,3 +1,7 @@
+function showAlert(title, message, type = "alert-info") {
+    $('div.page-title > div.title_left')[0].insertAdjacentHTML('afterbegin', '<div class="alert ' + type + ' alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>' + title + '</strong> ' + message + '</div>');
+}
+
 $('#new-password-1, #new-password-2').on('keyup', function() {
 
     var pass1 = $('#new-password-1').val();
@@ -27,10 +31,23 @@ $('#btn-submit-password-form').on('click', function() {
 
     $.post("/gticchla/public/change_password", {"current_password":current_password, "new_password":new_password})
     .done(function(data) {
-        $('div.page-title > div.title_left')[0].insertAdjacentHTML('afterbegin', '<div class="alert alert-success alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Sucesso!</strong> Sua senha foi modificada</div>');
-        console.log(data);
+        var response = data;
+        if (response) {
+            showAlert("Sucesso!", "Sua senha foi alterada", "alert-success");
+            console.log(response.message);
+        }
     })
     .fail(function(data) {
-        $('div.page-title > div.title_left')[0].insertAdjacentHTML('afterbegin', '<div class="alert alert-error alert-dismissible fade in" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button><strong>Ops!</strong> Houve um problema e a senha não foi modificada</div>');
+        var response = data.responseJSON;
+        if (response && response.event === "error") {
+            if (response.type === "wrong_current_password") {
+                showAlert("Ops!", "Você errou a senha atual.", "alert-error");
+            } else {
+                showAlert("Ops!", "Ocorreu um erro e a senha não foi alterada.", "alert-error");
+            }
+            console.error(response.message);
+        } else {
+            showAlert("Ops!", "Ocorreu um erro e a senha não foi alterada.", "alert-error");
+        }
     });
 });
