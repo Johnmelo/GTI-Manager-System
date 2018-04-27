@@ -20,6 +20,7 @@ class Init extends Bootstrap{
     $ar['cadastrar_clientes'] = array('route' => '/gticchla/public/admin/cadastrar_usuarios' , 'controller' => 'gerenteController', 'action' => 'cadastrar_usuarios');
     $ar['admin_panel_open_client_request'] = array('route' => '/gticchla/public/admin/open_call_request' , 'controller' => 'gerenteController', 'action' => 'open_call_request');
     $ar['admin_panel_finalize_request'] = array('route' => '/gticchla/public/admin/finalize_request' , 'controller' => 'gerenteController', 'action' => 'finalize_request');
+    $ar['admin_panel_refuse_support_request'] = array('route' => '/gticchla/public/admin/refuse_support_request' , 'controller' => 'gerenteController', 'action' => 'refuse_support_request');
     //---------------------------------------------------------------------------------------------------------------------------
     $ar['change_password'] = array('route' => '/gticchla/public/change_password' , 'controller' => 'tecnicoController', 'action' => 'change_password');
     //CLIENT ROUTES--------------------------------------------------------------------------------------------------------------
