@@ -20,7 +20,6 @@ class Init extends Bootstrap{
     $ar['cadastrar_clientes'] = array('route' => '/gticchla/public/admin/cadastrar_usuarios' , 'controller' => 'gerenteController', 'action' => 'cadastrar_usuarios');
     $ar['admin_panel_open_client_request'] = array('route' => '/gticchla/public/admin/open_call_request' , 'controller' => 'gerenteController', 'action' => 'open_call_request');
     $ar['admin_panel_finalize_request'] = array('route' => '/gticchla/public/admin/finalize_request' , 'controller' => 'gerenteController', 'action' => 'finalize_request');
-    $ar['admin_panel_refuse_support_request'] = array('route' => '/gticchla/public/admin/refuse_support_request' , 'controller' => 'gerenteController', 'action' => 'refuse_support_request');
     //---------------------------------------------------------------------------------------------------------------------------
     $ar['change_password'] = array('route' => '/gticchla/public/change_password' , 'controller' => 'tecnicoController', 'action' => 'change_password');
     //CLIENT ROUTES--------------------------------------------------------------------------------------------------------------
@@ -36,6 +35,7 @@ class Init extends Bootstrap{
     $ar['technician_panel_select_request'] = array('route' => '/gticchla/public/technician_select_request' , 'controller' => 'tecnicoController', 'action' => 'technician_select_request');
     $ar['technician_panel_history'] = array('route' => '/gticchla/public/tecnico/historico_chamados' , 'controller' => 'tecnicoController', 'action' => 'technician_history');
     $ar['technician_panel_account_settings'] = array('route' => '/gticchla/public/tecnico/configuracoes' , 'controller' => 'tecnicoController', 'action' => 'technician_account_settings');
+    $ar['technician_panel_refuse_support_request'] = array('route' => '/gticchla/public/tecnico/refuse_support_request' , 'controller' => 'tecnicoController', 'action' => 'refuse_support_request');
     //----------------------------------------------------------------------------------------------------------------------------
 
     $this->setRoutes($ar);

@@ -188,7 +188,7 @@ function refuseRequest(tableRow) {
     var request_id = tableRow.get(0).dataset.requestId;
     var refusal_reason = $('.request-modal-form')[0].elements["motivo_recusa_field"].value;
 
-    $.post("/gticchla/public/admin/refuse_support_request",
+    $.post("/gticchla/public/tecnico/refuse_support_request",
     {
         "request_id": request_id,
         "refusal_reason": refusal_reason

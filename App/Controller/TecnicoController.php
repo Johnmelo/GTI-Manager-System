@@ -206,5 +206,21 @@ class TecnicoController extends Action{
         $this->forbidenAccess();
     }
   }
+
+    public function refuse_support_request() {
+        session_start();
+        if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
+            if (isset($_POST['request_id']) && isset($_POST['refusal_reason'])) {
+                $date = date("Y-m-d");
+                $request = Container::getClass("SolicitarChamado");
+                $request->updateColumnById("status", "RECUSADA", $_POST['request_id']);
+                $request->updateColumnById("data_recusado", $date, $_POST['request_id']);
+                $request->updateColumnById("id_recusante", $_SESSION['user_id'], $_POST['request_id']);
+                $request->updateColumnById("motivo_recusa", $_POST['refusal_reason'], $_POST['request_id']);
+            }
+        } else {
+            $this->forbidenAccess();
+        }
+    }
 }
 ?>

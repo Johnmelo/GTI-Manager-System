@@ -276,6 +276,7 @@
                             <table id="call-requests" class="table table-hover clickable-rows">
                                 <thead>
                                     <tr>
+                                        <td></td>
                                         <th>ID</th>
                                         <th>Cliente</th>
                                         <th>Serviço</th>
@@ -287,12 +288,13 @@
                                 <tbody>
                                   <?php foreach ($this->view->requisicoes_atendimento as $call_request): ?>
                                     <tr data-request-id="<?php echo $call_request['id'];?>">
+                                        <td><input type="checkbox" value=<?php echo $call_request['id'];?> name="selections_call_request[]"/></td>
                                         <td><?php echo $call_request['id']; ?></td>
                                         <td><?php echo $this->view->users_names[$call_request['id_cliente']]['nome'];?></td>
                                         <td><?php echo $this->view->service_names[$call_request['id_servico']];?></td>
                                         <td><?php echo $this->view->users_names[$call_request['id_cliente']]['setor'];?></td>
                                         <td><?php echo $call_request['descricao'];?></td>
-                                        <td> <input type="checkbox" value=<?php echo $call_request['id'];?> name="selections_call_request[]"/></td>
+                                        <td><button class="btn btn-primary" type="button" value="<?php echo $call_request['id'];?>" name="request-refusal">Recusar</button></td>
                                     </tr>
                                   <?php endforeach; ?>
                                 </tbody>
@@ -418,6 +420,35 @@ $('#open-requests tr').on('click', function(e) {
     }
   }
 });
+$('#call-requests button[name=request-refusal]').on('click', function(e) {
+   if (e.target.nodeName == "BUTTON") {
+     var request_id = getRowId(e);
+     if (request_id) {
+       var modal_config = {
+         title: "Recusar solicitação de chamado",
+         visible_fields: {
+           id_solicitacao_field: true,
+           cliente_field: true,
+           servico_field: true,
+           data_solicitacao_field: true,
+           descricao_field: true,
+           motivo_recusa_field: false
+         },
+         footer_config: [
+           {
+             btnContent: "Recusar solicitação",
+             class: "btn btn-primary",
+             callback: refuseRequest.bind(null, $(e.target).parents('tr'))
+           }
+         ]
+       };
+       var filled_form_fields = ["id_solicitacao_field", "cliente_field", "servico_field", "data_solicitacao_field", "descricao_field"];
+       defineModal(modal_config);
+       fillUpRequestModal("call-request-type", request_id, filled_form_fields);
+       showRequestModal();
+     }
+   }
+ });
 </script>
 
 <!-- Check if there is any demand selected -->
