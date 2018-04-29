@@ -26,6 +26,7 @@ class Init extends Bootstrap{
     $ar['cliente_panel'] = array('route' => '/gticchla/public/cliente' , 'controller' => 'clienteController', 'action' => 'index');
     $ar['cliente_panel_solicitar_atendimento_index'] = array('route' => '/gticchla/public/cliente/solicitar_atendimento' , 'controller' => 'clienteController', 'action' => 'solicitar_atendimento');
     $ar['cliente_panel_solicitar_atendimento_submit'] = array('route' => '/gticchla/public/cliente/client_register_call_request' , 'controller' => 'clienteController', 'action' => 'client_register_call_request');
+    $ar['cliente_panel_cancelar_solicitacao_atendimento'] = array('route' => '/gticchla/public/cliente/client_cancel_call_request' , 'controller' => 'clienteController', 'action' => 'client_cancel_call_request');
     $ar['cliente_panel_historico_chamados'] = array('route' => '/gticchla/public/cliente/historico_chamados' , 'controller' => 'clienteController', 'action' => 'client_request_history');
     $ar['cliente_panel_account_settings'] = array('route' => '/gticchla/public/cliente/configuracoes' , 'controller' => 'clienteController', 'action' => 'cliente_account_settings');
     //----------------------------------------------------------------------------------------------------------------------------

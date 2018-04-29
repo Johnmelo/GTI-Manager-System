@@ -229,6 +229,7 @@
                         <th>Data</th>
                         <th>Serviço</th>
                         <th>Status</th>
+                        <th>Ação</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -240,13 +241,13 @@
                                 <td><?php $data = strtotime($requisicao['data_solicitacao']); $data = date('d/m/Y',$data); echo $data;?></td>
                                 <td><?php echo $this->view->requests_services_names[$requisicao['id_servico']];?></td>
                                 <td><?php echo $requisicao['status'];?></td>
+                                <td><button type="button" class="btn btn-primary" name="btnCancelarSolicitacao" value=<?php echo $requisicao['id'];?>>Cancelar</button></td>
                             </tr>
                           <?php endif; ?>
                       <?php endforeach;?>
                     </tbody>
                   </table>
-                  <input type="hidden" name="delete_request" value="delete_request"/>
-                  <button type="submit" class="btn btn-default" disabled>Excluir</button>
+                  <button name="cancel-selected-requests" type="button" class="btn btn-default" disabled>Cancelar os selecionados</button>
                 </form>
                 </div>
               </div>
@@ -348,10 +349,84 @@ $('#call-request-list tr').on('click', function(e) {
 });
 </script>
 
+<!-- Simple message modal -->
+<div class="modal fade" id="simple-modal" tabindex="-1" role="dialog" data-backdrop="false">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="simple-modal-title">Modal title</h4>
+      </div>
+      <div class="modal-body" id="simple-modal-body">
+        ...
+      </div>
+      <div class="modal-footer">
+        <button id="simple-modal-secondary-button" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="simple-modal-primary-button" type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function setSimpleModalContent(title, body, primaryButtonAction, primaryButtonText = "Confirmar", secondaryButtonText = "Cancelar") {
+  $('#simple-modal-title')[0].innerHTML = title;
+  $('#simple-modal-body')[0].innerHTML = body;
+  $('#simple-modal-primary-button')[0].innerHTML = primaryButtonText;
+  $('#simple-modal-primary-button').off('click');
+  $('#simple-modal-primary-button').on('click', primaryButtonAction);
+  $('#simple-modal-secondary-button')[0].innerHTML = secondaryButtonText;
+}
+</script>
+
+<!-- Archive request confirmation -->
+<script>
+$('#call-request-list button[name=btnCancelarSolicitacao]').on('click', function(e) {
+  var request_id = [e.target.value];
+  var confirm_action = function () {
+    $.post("/gticchla/public/cliente/client_cancel_call_request", {
+      "request_id_list": request_id,
+      "requestType": "pending_acceptance"
+    })
+    .done(function() {
+      $('#simple-modal').modal('hide');
+      document.location.reload(true);
+    })
+    .fail(function() {
+      alert("Não foi possível realizar a operação");
+    });
+  };
+  setSimpleModalContent("Cancelar solicitação?", "<h4>Tem certeza que deseja cancelar a solicitação de chamado?</h4>", confirm_action, "Cancelar solicitação", "Voltar");
+  $('#simple-modal').modal('show');
+});
+$('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]').on('click', function(e) {
+  var id_array = [];
+  $('form[name=solicitacoes_chamado]').find('input[type=checkbox]').each(function(){
+    if (this.checked) {
+      id_array.push(this.value);
+    }
+  });
+  var confirm_action = function () {
+    $.post("/gticchla/public/cliente/client_cancel_call_request", {
+      "request_id_list": id_array,
+      "requestType": "pending_acceptance"
+    })
+    .done(function() {
+      $('#simple-modal').modal('hide');
+      document.location.reload(true);
+    })
+    .fail(function() {
+      alert("Não foi possível realizar a operação");
+    });
+  };
+  setSimpleModalContent("Cancelar solicitações selecionadas?", "<h4>Tem certeza que deseja cancelar as solicitações de chamado selecionadas?</h4>", confirm_action, "Cancelar solicitações selecionadas", "Voltar");
+  $('#simple-modal').modal('show');
+});
+</script>
+
 <!-- Check if there's request checked -->
 <script>
 
-var btn_del_request = $('form[name=solicitacoes_chamado] > button[type=submit]');
+var btn_del_request = $('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]');
 
 $('form[name=solicitacoes_chamado] input').on('ifChecked', function(event) {
   if (btn_del_request.hasClass('btn-default')) {
