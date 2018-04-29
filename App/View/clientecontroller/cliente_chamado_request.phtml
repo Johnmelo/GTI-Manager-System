@@ -173,7 +173,7 @@
                 </div>
                 <div class="x_content">
                   <br />
-                  <form class="form-horizontal form-label-left" method="post" action="client_register_call_request">
+                  <form class="form-horizontal form-label-left" name="solicitar_chamado" method="post" action="client_register_call_request">
 
                     <div class="form-group">
                       <label class="control-label col-md-3 col-sm-3 col-xs-12">Motivo para atendimento</label>
@@ -195,8 +195,8 @@
                     <div class="ln_solid"></div>
                     <div class="form-group">
                       <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
-                        <button type="reset" class="btn btn-default">Resetar campos</button>
-                        <button type="submit" class="btn btn-default">Solicitar</button>
+                        <button type="reset" class="btn btn-default" disabled>Resetar campos</button>
+                        <button type="submit" class="btn btn-default" disabled>Solicitar</button>
                       </div>
                     </div>
 
@@ -420,6 +420,54 @@ $('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]').on(
   };
   setSimpleModalContent("Cancelar solicitações selecionadas?", "<h4>Tem certeza que deseja cancelar as solicitações de chamado selecionadas?</h4>", confirm_action, "Cancelar solicitações selecionadas", "Voltar");
   $('#simple-modal').modal('show');
+});
+</script>
+
+<!-- Check if request form can be submitted or reset -->
+<script>
+function checkFormValidity() {
+    var servico = $('form[name=solicitar_chamado] select[name=servico]').find('option:checked')[0].innerText;
+    var descricao = $('form[name=solicitar_chamado] input[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    if (servico != "" || descricao != "") {
+      enableButton($('form[name=solicitar_chamado] button[type=reset]'));
+    } else {
+      disableButton($('form[name=solicitar_chamado] button[type=reset]'));
+    }
+    if (servico != "" && descricao != "") {
+      enableButton($('form[name=solicitar_chamado] button[type=submit]'));
+    } else {
+      disableButton($('form[name=solicitar_chamado] button[type=submit]'));
+    }
+}
+
+$("select[name=servico]").change(function() {
+    checkFormValidity();
+});
+$('input[name=descricao]').on('input', function() {
+    checkFormValidity();
+});
+$('form button[type=reset]').on('click', function() {
+  disableButton($('form[name=solicitar_chamado] button[type=reset]'));
+  disableButton($('form[name=solicitar_chamado] button[type=submit]'));
+});
+
+function enableButton(button) {
+  button.removeClass("btn-default");
+  button.addClass("btn-primary");
+  button.prop("disabled", false);
+}
+
+function disableButton(button) {
+  button.addClass("btn-default");
+  button.removeClass("btn-primary");
+  button.prop("disabled", true);
+}
+
+$('form[name=solicitar_chamado]').submit(function() {
+  var descricao = $('form[name=solicitar_chamado] input[name=descricao]').val();
+  var descricao_tratada = descricao.replace(/^\s+/g, '').replace(/\s+$/g, '');
+  $('form[name=solicitar_chamado] input[name=descricao]').val(descricao_tratada);
+  return true;
 });
 </script>
 
