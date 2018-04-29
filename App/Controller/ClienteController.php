@@ -99,7 +99,7 @@ class ClienteController extends Action{
 
     $requisicao = Container::getClass("SolicitarChamado");
     $requisicao->save($id_usuario,$id_servico,$descricao,$date);
-    header('Location: ../cliente');
+    header('Location: ./solicitar_atendimento');
 
   }
 
