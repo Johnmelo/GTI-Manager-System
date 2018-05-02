@@ -1,49 +1,51 @@
 $('button[name=btnJoin]').on('click', function(e) {
     if (e.target.nodeName == "BUTTON") {
-        var request_id = $(e.target).parents('tr')[0].children[0].innerHTML;
-        var modal_form_config = {
-            id_chamado_field: true,
-            cliente_field: true,
-            servico_field: true,
-            descricao_field: true,
-            data_solicitacao_field: true,
-            data_abertura_field: true,
-            prazo_field: false
-        }
-        var modal_footer_config = [
-            {
-                btnContent: "Assumir chamado",
-                class: "btn btn-primary",
-                callback: acquireRequest.bind(null, $(e.target).parents('tr'))
-            }
-        ];
-        $('.request-modal').find('.modal-header > h4')[0].innerHTML = "Assumir chamado";
-        fillUpRequestModal({"request_id": request_id});
-        showRequestModal(modal_form_config, modal_footer_config);
+        var request_id = getRowId(e);
+        var modal_config = {
+            title: "Assumir chamado",
+            visible_fields: {
+                id_chamado_field: true,
+                cliente_field: true,
+                servico_field: true,
+                descricao_field: true,
+                data_solicitacao_field: true,
+                data_abertura_field: true,
+                prazo_field: false
+            },
+            footer_config: [
+                {
+                    btnContent: "Assumir chamado",
+                    class: "btn btn-primary",
+                    callback: acquireRequest.bind(null, $(e.target).parents('tr'))
+                }
+            ]
+        };
+        defineSimpleModal(modal_config, "open-request-type", request_id);
     }
 });
 
 $('button[name=btnFinalizarChamado]').on('click', function(e) {
     if (e.target.nodeName == "BUTTON") {
-        var request_id = $(e.target).parents('tr')[0].children[0].innerHTML;
-        var modal_form_config = {
-            id_chamado_field: true,
-            servico_field: true,
-            data_abertura_field: true,
-            prazo_field: true,
-            descricao_field: true,
-            parecer_tecnico_field: false
+        var request_id = getRowId(e);
+        var modal_config = {
+            title: "Finalizar chamado",
+            visible_fields: {
+                id_chamado_field: true,
+                servico_field: true,
+                data_abertura_field: true,
+                prazo_field: true,
+                descricao_field: true,
+                parecer_tecnico_field: false
+            },
+            footer_config: [
+                {
+                    btnContent:"Finalizar",
+                    class: "btn btn-primary",
+                    callback: finalizeRequest.bind(null, $(e.target).parents('tr'))
+                }
+            ]
         };
-        var modal_footer_config = [
-            {
-                btnContent:"Finalizar",
-                class: "btn btn-primary",
-                callback: finalizeRequest.bind(null, $(e.target).parents('tr'))
-            }
-        ];
-        $('.request-modal').find('.modal-header > h4')[0].innerHTML = "Finalizar chamado";
-        fillUpRequestModal({"request_id": request_id});
-        showRequestModal(modal_form_config, modal_footer_config);
+        defineSimpleModal(modal_config, "open-request-type", request_id);
     }
 });
 
