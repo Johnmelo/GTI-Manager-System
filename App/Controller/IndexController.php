@@ -85,13 +85,25 @@ class IndexController extends Action{
   public function get_request_info(){
     if (isset($_POST)) {
       if (isset($_POST['request_id'])) {
+        // Get request data
         $solicitacao_chamado = Container::getClass("SolicitarChamado");
         $requests = $solicitacao_chamado->getChamadosById($_POST['request_id'])[0];
+
+        // Get client and technician data
+        $user = Container::getClass("Usuario");
+        $request_client = $user->findById($requests["id_cliente"]);
+        $request_admission_technician = $user->findById($requests["id_tecnico_abertura"]);
+        $request_responsible_technician = $user->findById($requests["id_tecnico_responsavel"]);
+
+        // Get service data
+        $servico = Container::getClass("Servico");
+        $request_service = $servico->findById($requests["id_servico"]);
+
         $arr = array(
           "id_solicitacao_field" => $requests["id_solicitacao"],
           "id_chamado_field" => $requests["id_chamado"],
-          "cliente_field" => $requests["id_cliente"], // Client name afterwards instead of id
-          "servico_field" => $requests["id_servico"], // Service title afterwards instead of id
+          "cliente_field" => $request_client['nome'],
+          "servico_field" => $request_service["nome"],
           "descricao_field" => $requests["descricao"],
           "solicitacao_chamado_status_field" => $requests["solicitacao_chamado_status"],
           "chamado_status_field" => $requests["chamado_status"],
@@ -99,19 +111,29 @@ class IndexController extends Action{
           "data_abertura_field" => (isset($requests["data_abertura"])) ? date('d/m/Y',strtotime($requests["data_abertura"])) : NULL,
           "data_finalizado_field" => (isset($requests["data_finalizado"])) ? date('d/m/Y',strtotime($requests["data_finalizado"])) : NULL,
           "prazo_field" => (isset($requests["data_abertura"]) && isset($requests["prazo"])) ? date('d/m/Y', strtotime("+".$requests["prazo"]." days", strtotime($requests["data_abertura"]))) : NULL,
-          "tecnico_abertura_field" => $requests["id_tecnico_abertura"], // Technician name afterwards instead of id
-          "tecnico_responsavel_field" => $requests["id_tecnico_responsavel"], // Technician name afterwards instead of id
+          "tecnico_abertura_field" => $request_admission_technician['nome'],
+          "tecnico_responsavel_field" => $request_responsible_technician['nome'],
           "parecer_tecnico_field" => $requests["parecer_tecnico"]
         );
         echo json_encode($arr);
     } elseif (isset($_POST['call_request_id'])) {
+        // Get request data
         $solicitacao_chamado = Container::getClass("SolicitarChamado");
         $requests = $solicitacao_chamado->getSolicitacoesById($_POST['call_request_id'])[0];
+
+        // Get client data
+        $user = Container::getClass("Usuario");
+        $request_client = $user->findById($requests["id_cliente"]);
+
+        // Get service data
+        $servico = Container::getClass("Servico");
+        $request_service = $servico->findById($requests["id_servico"]);
+
         $arr = array(
           "id_solicitacao_field" => $requests["id_solicitacao"],
           "data_solicitacao_field" => (isset($requests["data_solicitacao"])) ? date('d/m/Y',strtotime($requests["data_solicitacao"])) : NULL,
-          "cliente_field" => $requests["id_cliente"], // Client name afterwards instead of id
-          "servico_field" => $requests["id_servico"], // Service title afterwards instead of id
+          "cliente_field" => $request_client["nome"],
+          "servico_field" => $request_service["nome"],
           "descricao_field" => $requests["descricao"],
           "solicitacao_chamado_status_field" => $requests["solicitacao_chamado_status"]
         );
