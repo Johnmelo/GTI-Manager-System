@@ -90,77 +90,47 @@ class GerenteController extends Action{
   public function cadastrar_usuarios(){
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
-      if(isset($_POST['f_accept']) && isset($_POST['selections'])){
-
-        $clients = [];
-        $technicians = [];
-        $managers = [];
-
-        if(isset($_POST['client_role'])){
-          foreach ($_POST['client_role'] as $request) {
-            $clients[$request] = 1;
-          }
-        }
-
-        if(isset($_POST['technician_role'])){
-          foreach ($_POST['technician_role'] as $request) {
-            $technicians[$request] = 1;
-          }
-        }
-
-        if(isset($_POST['manager_role'])){
-          foreach ($_POST['manager_role'] as $request) {
-            $managers[$request] = 1;
-          }
-        }
-
-        foreach ($_POST['selections'] as $cadastro) {
-
-          $requisicao_acessoDb = Container::getClass("SolicitarAcesso");
-          $requisicao = $requisicao_acessoDb->findById($cadastro);
-
+      if (isset($_POST['requests'])) {
+        foreach ($_POST['requests'] as $request) {
+          // client admission
           $clienteDb = Container::getClass("Usuario");
-          $clienteDb->save($requisicao['nome'],$requisicao['email'],$requisicao['login'],$requisicao['setor'],$requisicao['matricula']);
+          $clienteDb->save($request['nome'],$request['email'],$request['usuario'],$request['setor'],$request['matricula']);
+          $requisicao_acessoDb = Container::getClass("SolicitarAcesso");
+          $requisicao_acessoDb->updateColumnById("status","ATENDIDA",$request['idSolicitacao']);
 
-          $requisicao_acessoDb->updateColumnById("status","ATENDIDA",$requisicao['id']);
-
-          $cliente_role = $clienteDb->findByLogin($requisicao['login']);
+          // role
+          $cliente_role = $clienteDb->findByLogin($request['usuario']);
           $user_role =  Container::getClass("UsuarioRole");
-
-          $client_role;
-          $technician_role;
-          $manager_role;
-
-          if(isset($clients[$cadastro]) && $clients[$cadastro] != null){
-            $client_role = $clients[$cadastro];
-          }else{
-            $client_role = 0;
-          }
-
-          if(isset($technicians[$cadastro]) && $technicians[$cadastro] != null){
-            $technician_role = $technicians[$cadastro];
-          }else{
-            $technician_role = 0;
-          }
-
-          if(isset($managers[$cadastro]) && $managers[$cadastro] != null){
-            $manager_role = $managers[$cadastro];
-          }else{
-            $manager_role = 0;
-          }
-
-          $user_role->save($cliente_role['id'],$client_role,$technician_role,$manager_role);
-          echo "<script>alert('Dados cadastrados!');</script>";
-          header('Location: /gticchla/public/admin/cadastro_usuarios');
+          $user_role->save($cliente_role['id'],1,0,0);
         }
+      } elseif ($_POST['new_user'] && $_POST['new_user']['idSolicitacao']) {
+          $request = $_POST['new_user'];
 
-      }else{
-        echo "<script>alert('Não existe requisição aguardando ou não foi selecionada alguma para atender!'); history.back();</script>";
+          // client admission
+          $clienteDb = Container::getClass("Usuario");
+          $clienteDb->save($request['nome'],$request['email'],$request['usuario'],$request['setor'],$request['matricula']);
+          $requisicao_acessoDb = Container::getClass("SolicitarAcesso");
+          $requisicao_acessoDb->updateColumnById("status","ATENDIDA",$request['idSolicitacao']);
+
+          // role
+          $cliente_role = $clienteDb->findByLogin($request['usuario']);
+          $user_role =  Container::getClass("UsuarioRole");
+          $user_role->save($cliente_role['id'],1,0,0);
+      } elseif ($_POST['new_user']) {
+          $request = $_POST['new_user'];
+
+          // Client insertion
+          $clienteDb = Container::getClass("Usuario");
+          $clienteDb->save($request['nome'],$request['email'],$request['usuario'],$request['setor'],$request['matricula']);
+
+          // role
+          $cliente_role = $clienteDb->findByLogin($request['usuario']);
+          $user_role =  Container::getClass("UsuarioRole");
+          $user_role->save($cliente_role['id'],$request['isClient'],$request['isTechnician'],$request['isAdmin']);
       }
-    }else{
+  } else {
       $this->forbidenAccess();
-    }
-
+  }
   }
 
   public function finalize_request(){

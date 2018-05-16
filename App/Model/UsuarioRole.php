@@ -5,9 +5,14 @@ class UsuarioRole extends Table{
   protected $table = "usuarios_roles";
 
   public function save($id_user,$cliente,$tecnico,$gerente){
-    $query = "Insert into ".$this->table." (id_usuario, cliente, tecnico, gerente) values ('{$id_user}','{$cliente}','{$tecnico}','{$gerente}')";
+    $query = "Insert into ".$this->table." (id_usuario, cliente, tecnico, gerente) values (?,?,?,?)";
+    $params = array($id_user, $cliente, $tecnico, $gerente);
     $stmt = $this->db->prepare($query);
-    $stmt->execute();
+    if ($stmt->execute($params) && $stmt->rowCount() > 0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public function findByIdUser($id){

@@ -12,6 +12,7 @@
 <link href="../../App/View/css/custom.min.css" rel="stylesheet">
 <link href="../../App/View/css/base-style.css" rel="stylesheet">
 <link href="../../App/View/css/custom-style-override.css" rel="stylesheet">
+<link href="../../App/View/css/account-request-page.css" rel="stylesheet">
 </head>
 
 <body class="nav-md">
@@ -132,60 +133,58 @@
     <!-- page content -->
 
     <div class="right_col" role="main">
-      <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-10 col-xl-9">
-              <div class="x_panel">
-                <div class="x_title">
-                  <h2>SOLICITAÇÕES<small>de acesso</small></h2>
-                  <ul class="nav navbar-right panel_toolbox">
-                    <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
-                    </li>
-                    <!--<li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
-                    </li>-->
-                    <!-- <li><a class="close-link"><i class="fas fa-times"></i></a> -->
-                    </li>
-                  </ul>
-                  <div class="clearfix"></div>
+        <div class="">
+            <div class="page-title">
+                <div class="title_left">
+                    <h3>Solicitações de acesso</h3>
                 </div>
-                <div class="x_content">
-                  <form name="cadastro_usuario" method="post" action="cadastrar_usuarios">
-                  <table class="table table-hover">
-                    <thead>
-                      <tr>
-                        <th>Cliente</th>
-                        <th>Setor</th>
-                        <th>Selecionar</th>
-                        <th> | </th>
-                        <th>Permissões:</th>
-                        <th>Cliente</th>
-                        <th>Técnico</th>
-                        <th>Gerente</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <?php foreach ($this->view->requisicoes as $requisicao):?>
-                        <tr>
-                            <td><?php echo $requisicao['nome'];?></td>
-                            <td><?php echo $requisicao['setor'];?></td>
-                            <td> <input type="checkbox" value=<?php echo $requisicao['id'];?> name="selections[]" id="r_id_<?php echo $requisicao['id']; ?>" /></td>
-                            <td></td>
-                            <td></td>
-                            <td><input type="checkbox" value=<?php echo $requisicao['id'];?> name="client_role[]" id="r_client_role_<?php echo $requisicao['id']; ?>" /></td>
-                            <td><input type="checkbox" value=<?php echo $requisicao['id'];?> name="technician_role[]" id="r_technician_role_<?php echo $requisicao['id']; ?>" /></td>
-                            <td><input type="checkbox" value=<?php echo $requisicao['id'];?> name="manager_role[]" id="r_manager_role_<?php echo $requisicao['id']; ?>" /></td>
-                        </tr>
-                      <?php endforeach;?>
-                    </tbody>
-                  </table>
-                  <input type="hidden" name="f_accept" value="f_accept"/>
-                  <input class="btn btn-default" type="submit" value="Cadastrar Usúario(s)" name="accept" disabled/>
-                </form>
+                <div class="title_right">
+                    <div class="pull-right">
+                        <button id="btn-new-user" type="button" class="btn btn-primary"><i class="fas fa-plus"></i> Criar novo usuário</button>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix">
+            </div>
+            <div id="selection-options-wrapper" class="row col-xs-12">
+              <button id="accept-selection" class="btn btn-default" disabled>Aceitar selecionados</button>
+              <button id="archive-selection" class="btn btn-default" disabled>Arquivar selecionados</button>
+            </div>
+            <div id="request-list-wrapper" class="row">
+              <?php foreach ($this->view->requisicoes as $requisicao):?>
+              <div class="col-xs-12 col-lg-6">
+                <div class="x_panel">
+                    <div class="x_title" data-id-solicitacao="<?php echo $requisicao['id'];?>" data-nome="<?php echo $requisicao['nome'];?>" data-usuario="<?php echo $requisicao['login'];?>" data-email="<?php echo $requisicao['email'];?>" data-setor="<?php echo $requisicao['setor'];?>" data-matricula="<?php echo $requisicao['matricula'];?>">
+                        <input type="checkbox" value="<?php echo $requisicao['id'];?>" name="selections[]" id="r_client_role_<?php echo $requisicao['id'];?>" />
+                        <label for="r_client_role_<?php echo $requisicao['id'];?>"><h2><?php echo $requisicao['nome'];?></h2></label>
+                        <ul class="nav navbar-right panel_toolbox">
+                            <li><button type="button" class="btn btn-primary btn-edit-request" title="Editar dados" value="<?php echo $requisicao['id'];?>"><i class="fas fa-pencil-alt"></i></button></li>
+                            <li><button type="button" class="btn btn-primary btn-accept-request" title="Cadastrar usuário" value="<?php echo $requisicao['id'];?>"><i class="fas fa-check"></i> Cadastrar</button></li>
+                        </ul>
+                        <div class="clearfix">
+                        </div>
+                    </div>
+                    <div class="x_content">
+                        <div class="request-info-summary-wrapper">
+                            <div class="info-column">
+                                <h4>Usuário</h4>
+                                <h4>E-mail</h4>
+                                <h4>Unidade de lotação</h4>
+                                <h4>Matrícula</h4>
+                            </div>
+                            <div class="value-column">
+                                <h4><?php echo $requisicao['login'];?></h4>
+                                <h4><?php echo $requisicao['email'];?></h4>
+                                <h4><?php echo $requisicao['setor'];?></h4>
+                                <h4><?php echo $requisicao['matricula'];?></h4>
+                            </div>
+                        </div>
+                    </div>
                 </div>
               </div>
+              <?php endforeach;?>
             </div>
-            <div class="clearfix"></div>
-          </div>
+        </div>
     </div>
     <!-- /page content -->
 
@@ -196,6 +195,75 @@
     <!-- /footer content -->
     <!-- SCRIPTS DASHBOARD THEME-->
 
+  </div>
+
+  <!-- Edit request/Register new user modal -->
+  <div id="edit-request-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title"></h4>
+        </div>
+        <div class="modal-body">
+          <form id="edit-request-form" class="form-horizontal">
+            <input type="hidden" class="form-control" id="id_solicitacao_field">
+            <div class="form-group">
+              <label for="nome_field" class="col-sm-4 control-label">Nome</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="nome_field">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="usuario_field" class="col-sm-4 control-label">Usuário</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="usuario_field">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="email_field" class="col-sm-4 control-label">E-mail</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="email_field">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="lotacao_field" class="col-sm-4 control-label">Unidade de lotação</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="lotacao_field">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="matricula_field" class="col-sm-4 control-label">Matrícula</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="matricula_field">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="role_field" class="col-sm-4 control-label">Atividade</label>
+              <div class="col-sm-8" style="padding-top: 8px;">
+                <div class="form-group">
+                  <input type="checkbox" class="form-control" id="client_role_field">
+                  <label for="client_role_field" style="font-weight: 600; margin-left: 10px; cursor: pointer;">Cliente</label>
+                </div>
+                <div class="form-group">
+                  <input type="checkbox" class="form-control" id="technician_role_field">
+                  <label for="technician_role_field" style="font-weight: 600; margin-left: 10px; cursor: pointer;">Técnico</label>
+                </div>
+                <div class="form-group">
+                  <input type="checkbox" class="form-control" id="admin_role_field">
+                  <label for="admin_role_field" style="font-weight: 600; margin-left: 10px; cursor: pointer;">Gerente</label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="modal-btn-cancel" type="button" class="btn btn-primary">Cancelar</button>
+          <button id="modal-btn-archive-request" type="button" class="btn btn-primary">Arquivar</button>
+          <button id="modal-btn-confirm" type="button" class="btn btn-primary">Cadastrar</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 <!-- jQuery -->
@@ -221,48 +289,169 @@ $('input').iCheck({
 
 <!-- Check if there is any solicitation selected -->
 <script>
-var btn_cadastrar = $('form[name=cadastro_usuario] input[type=submit]');
+var btn_cadastrar = $('div#request-list-wrapper input[type=submit]');
 
-function check_validity () {
-  var valid_form = true;
-  var has_valid_option = false;
-  $('input[name="selections[]"]').each(function() {
-    var id = this.value;
-    var selection_checked = $('input[id=r_id_'+id+']')[0].checked;
-    var client_role_checked = $('input[id=r_client_role_'+id+']')[0].checked;
-    var technician_role_checked = $('input[id=r_technician_role_'+id+']')[0].checked;
-    var manager_role_checked = $('input[id=r_manager_role_'+id+']')[0].checked;
-    if (!selection_checked && (!client_role_checked && !technician_role_checked && !manager_role_checked)) {
-      $(this).parents('tr').css("background-color", "initial");
-      $(this).parents('tr').css("color", "inherit");
-    }
-    if (selection_checked && (client_role_checked || technician_role_checked || manager_role_checked)) {
-      has_valid_option = true;
-      $(this).parents('tr').css("background-color", "initial");
-      $(this).parents('tr').css("color", "inherit");
-    }
-    if ((selection_checked && (!client_role_checked && !technician_role_checked && !manager_role_checked)) || (!selection_checked && (client_role_checked || technician_role_checked || manager_role_checked))) {
-      valid_form = false;
-      $(this).parents('tr').css("background-color", "#ff000033");
-      $(this).parents('tr').css("color", "#a70000");
-    }
-  });
-  if (has_valid_option && valid_form) {
-    btn_cadastrar.removeClass('btn-default');
-    btn_cadastrar.addClass('btn-primary');
-    btn_cadastrar.prop('disabled', false);
+function toggleOptionsButtons () {
+  if ($('div#request-list-wrapper input[type=checkbox]:checked').length > 0) {
+    $('button#accept-selection').removeClass("btn-default");
+    $('button#accept-selection').addClass("btn-primary");
+    $('button#accept-selection').prop("disabled", false);
+    $('button#archive-selection').removeClass("btn-default");
+    $('button#archive-selection').addClass("btn-primary");
+    $('button#archive-selection').prop("disabled", false);
   } else {
-    btn_cadastrar.addClass('btn-default');
-    btn_cadastrar.removeClass('btn-primary');
-    btn_cadastrar.prop('disabled', true);
+    $('button#accept-selection').addClass("btn-default");
+    $('button#accept-selection').removeClass("btn-primary");
+    $('button#accept-selection').prop("disabled", true);
+    $('button#archive-selection').addClass("btn-default");
+    $('button#archive-selection').removeClass("btn-primary");
+    $('button#archive-selection').prop("disabled", true);
   }
 }
 
-$('input').on('ifChecked', function(event) {
-  check_validity();
+$('div#request-list-wrapper input').on('ifChecked', function(event) {
+  toggleOptionsButtons();
 });
-$('input').on('ifUnchecked', function(event) {
-  check_validity();
+$('div#request-list-wrapper input').on('ifUnchecked', function(event) {
+  toggleOptionsButtons();
+});
+</script>
+
+<!-- Edit request/Register new user modal -->
+<script>
+  // Abrir modal de novo ou editar usuário
+  $('#btn-new-user, button.btn-edit-request').on('click', function() {
+    $('#modal-btn-cancel').css("display", "inline-block");
+    $('#modal-btn-archive-request').css("display", "none");
+    $('#modal-btn-confirm').css("display", "inline-block");
+  });
+
+  // Configuração do modal de novo usuário
+  $('#btn-new-user').on('click', function() {
+    $('#edit-request-modal h4.modal-title').text("Criar novo usuário");
+    $('#edit-request-modal').modal('show');
+    $('#edit-request-modal').on('shown.bs.modal', function(){
+      $('#nome_field').get(0).focus();
+      $('#edit-request-modal').off('shown.bs.modal');
+    });
+  });
+
+  // Configuração do modal de editar usuário
+  $('button.btn-edit-request').on('click', function(e) {
+    $('#edit-request-modal h4.modal-title').text("Corrigir e cadastrar");
+
+    // Preencher modal
+    var dataset_DOM = $(e.currentTarget).parents('.x_title')[0].dataset;
+    var dataset = JSON.parse(JSON.stringify(dataset_DOM));
+    $('#id_solicitacao_field').val(dataset.idSolicitacao);
+    $('#nome_field').val(dataset.nome);
+    $('#usuario_field').val(dataset.usuario);
+    $('#email_field').val(dataset.email);
+    $('#lotacao_field').val(dataset.setor);
+    $('#matricula_field').val(dataset.matricula);
+    $('#client_role_field').iCheck("check");
+
+    $('#edit-request-modal').modal('show');
+  });
+
+  // Ao fechar o modal
+  $('#edit-request-modal').on('hidden.bs.modal', function() {
+    $('#id_solicitacao_field').val("");
+    $('#nome_field').val("");
+    $('#usuario_field').val("");
+    $('#email_field').val("");
+    $('#lotacao_field').val("");
+    $('#matricula_field').val("");
+    $('#client_role_field').iCheck("uncheck");
+    $('#technician_role_field').iCheck("uncheck");
+    $('#admin_role_field').iCheck("uncheck");
+  });
+
+
+  // Botões do modal
+
+  // Cancelar
+  $('#modal-btn-cancel').on('click', function() {
+    $('#edit-request-modal').modal('hide');
+  });
+
+  // Confirmar
+  $('#modal-btn-confirm').on('click', function() {
+    // Check if all necessary info was given
+    var formIsValid = true;
+    $('#edit-request-form input[type=text]').each(function() {
+      if ($(this).val().match(/^\s*$/)) {
+        formIsValid = false;
+        return false;
+      }
+    });
+    if ($('#edit-request-form input[type=checkbox]:checked').length == 0) {
+      formIsValid = false;
+      alert("Preencha todos os dados");
+    }
+
+    // If info is complete, send to the server
+    if (formIsValid) {
+      var user_data = {
+        nome: $('#nome_field').val(),
+        email: $('#email_field').val(),
+        usuario: $('#usuario_field').val(),
+        setor: $('#lotacao_field').val(),
+        matricula: $('#matricula_field').val(),
+        isClient: ($('#client_role_field')[0].checked) ? 1 : 0,
+        isTechnician: ($('#technician_role_field')[0].checked) ? 1 : 0,
+        isAdmin: ($('#admin_role_field')[0].checked) ? 1 : 0
+      };
+      if ($('#id_solicitacao_field').val() != "") {
+        user_data.idSolicitacao = $('#id_solicitacao_field').val();
+      }
+
+      $.post("/gticchla/public/admin/cadastrar_usuarios", {
+        "new_user": user_data
+      })
+      .done(function() {
+        alert("Usuário adicionado");
+      })
+      .fail(function() {
+        //
+      });
+    }
+  });
+</script>
+
+<!-- Requests actions -->
+<script>
+$('button#accept-selection').on('click', function() {
+  var requests = [];
+  $('input[type=checkbox]:checked').each(function() {
+    var dataset = $(this).parents('.x_title')[0].dataset;
+    var dataset_obj = JSON.parse(JSON.stringify(dataset));
+    requests.push(dataset_obj);
+  });
+
+  $.post("/gticchla/public/admin/cadastrar_usuarios", {
+    "requests": requests
+  })
+  .done(function() {
+      document.location.reload(true);
+  })
+  .fail(function() {
+
+  });
+});
+$('div#request-list-wrapper button.btn-accept-request').on('click', function() {
+    var dataset = $(this).parents('.x_title')[0].dataset;
+    var dataset_obj = JSON.parse(JSON.stringify(dataset));
+
+    $.post("/gticchla/public/admin/cadastrar_usuarios", {
+        "new_user": dataset_obj
+    })
+    .done(function() {
+        document.location.reload(true);
+    })
+    .fail(function() {
+
+    });
 });
 </script>
 </body>

@@ -5,10 +5,15 @@ class Usuario extends Table{
   protected $table = "usuarios";
 
   public function save($nome,$email,$login,$setor,$matricula){
+    $query = "Insert into ".$this->table." (nome,email,login,password,setor,matricula) values (?,?,?,?,?,?)";
     $pass = ''.$login.''.$matricula;
-    $query = "Insert into ".$this->table." (nome,email,login,password,setor,matricula) values ('{$nome}','{$email}','{$login}','{$pass}','{$setor}','{$matricula}')";
+    $params = array($nome, $email, $login, $pass, $setor, $matricula);
     $stmt = $this->db->prepare($query);
-    $stmt->execute();
+    if ($stmt->execute($params) && $stmt->rowCount() > 0) {
+        return true;
+    } else {
+        return false;
+    }
   }
 
   public function findByLogin($login){

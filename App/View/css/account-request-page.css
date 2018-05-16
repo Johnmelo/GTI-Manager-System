@@ -1,0 +1,58 @@
+/* PAGE TITLE */
+
+.page-title {
+    margin-bottom: 84px;
+}
+
+
+/* REQUESTS OPTIONS */
+
+#selection-options-wrapper {
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+
+/* REQUESTS LIST */
+
+.x_title > .icheckbox_square-blue {
+    margin-top: -32px;
+    margin-right: 16px;
+}
+
+/* REQUESTS TITLE */
+
+.x_title > label {
+    display: inline;
+}
+
+.x_title > label > h2 {
+    float: none;
+    display: inline-block;
+    line-height: 2.1em;
+    cursor: pointer;
+    max-width: calc(100% - 270px);
+}
+
+.x_title button {
+    height: 32px;
+}
+
+.x_title > ul.panel_toolbox {
+    margin-top: 8px;
+}
+
+/* REQUESTS CONTENT */
+
+.request-info-summary-wrapper {
+    display: flex;
+}
+
+.info-column {
+    margin-right: 42px;
+    font-weight: bold;
+}
+
+.info-column > h4 {
+    font-weight: 600;
+}
