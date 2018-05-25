@@ -117,12 +117,29 @@ ul#botoes-abas li.selected > span {
 }
 
 
-.form-input > input[type="text"], .form-input > input[type="password"], .form-input > input[type="submit"] {
+.form-input > input[type="text"], .form-input > input[type="password"], .form-input > input.submit-btn {
     width: 100%;
 }
 
 
 /* INPUTS NO GERAL */
+
+.form-input span.input-clipper {
+    flex: 1;
+    height: 52px;
+    overflow: hidden;
+    position: relative;
+    display: inline-block;
+}
+.form-input span.input-clipper > input {
+    position: absolute;
+    outline: none;
+    width: 100%;
+}
+
+#lastname-clipper {
+    margin-left: 10px;
+}
 
 .form-input {
     margin-bottom: 10px;
@@ -140,7 +157,7 @@ ul#botoes-abas li.selected > span {
 }
 
 
-.form-input > input[type="submit"] {
+.form-input > input.submit-btn {
     height: 64px;
     color: #FFF;
     font-size: 1.2em;
@@ -150,8 +167,15 @@ ul#botoes-abas li.selected > span {
 }
 
 
-.form-input > input[type="submit"]:focus {
+.form-input > input.submit-btn:focus {
     filter: brightness(1.3);
+}
+
+
+.form-input > input.submit-btn.disabled {
+    color: #666;
+    background-color: #DDD;
+    cursor: not-allowed;
 }
 
 
@@ -242,7 +266,7 @@ ul#botoes-abas li.selected > span {
 }
 
 
-#register-form .form-input > input[type="text"] {
+#register-form .form-input input[type="text"] {
     background: #FFF !important;
     color: #000 !important;
     padding-top: 4px;
@@ -253,11 +277,11 @@ ul#botoes-abas li.selected > span {
 }
 
 /* Separated rules because Firefox fails with "::selection" and drops the rule */
-#register-form .form-input > input[type="text"]::selection {
+#register-form .form-input input[type="text"]::selection {
     background: #006699 !important;
     color: #FFF !important;
 }
-#register-form .form-input > input[type="text"]::-moz-selection {
+#register-form .form-input input[type="text"]::-moz-selection {
     background: #006699 !important;
     color: #FFF !important;
 }
@@ -326,6 +350,17 @@ ul#botoes-abas li.selected > span {
 
 
     /* INPUT */
+
+    .form-input span.input-clipper {
+        height: 42px;
+    }
+
+
+    #lastname-clipper {
+        margin-left: 16px;
+    }
+
+
     #login-form .form-input > input[type="text"], #login-form .form-input > input[type="password"] {
         padding-top: 2px;
         padding-left: 42px;
@@ -334,7 +369,7 @@ ul#botoes-abas li.selected > span {
     }
 
 
-    #register-form .form-input > input[type="text"] {
+    #register-form .form-input input[type="text"] {
         padding-top: 2px;
         padding-left: 16px;
         height: 42px;
@@ -355,7 +390,7 @@ ul#botoes-abas li.selected > span {
     }
 
 
-    #register-form > .form-input > input[type="submit"] {
+    #register-form > .form-input > input.submit-btn {
         margin-top: 20px;
     }
 

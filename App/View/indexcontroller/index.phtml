@@ -98,7 +98,7 @@
 
                     <div class="form-input">
                         <input type="hidden" name="login_accept" value="login_accept"/>
-                        <input type="submit" name="login-submit" id="login-submit" value="Acessar" tabindex="6">
+                        <input type="button" name="login-submit" id="login-submit" class="submit-btn" value="Acessar" tabindex="6">
                     </div>
                     <span class="no-user-select"><a href="#" tabindex="7">Esqueci meus dados de acesso</a></span>
                 </form>
@@ -106,8 +106,13 @@
                 <!-- FORMULÁRIO DE CADASTRO -->
                 <form id="register-form" action="solicitar_acesso" method="post" role="form">
 
-                    <div class="form-input" action="solicitar_acesso" method="post" role="form">
-                        <input type="text" name="nomeCliente" id="nomeCliente" tabindex="3" placeholder="Nome">
+                    <div class="form-input">
+                        <span class="input-clipper">
+                            <input type="text" name="nomeCliente" id="nomeCliente" tabindex="3" placeholder="Nome">
+                        </span>
+                        <span id="lastname-clipper" class="input-clipper">
+                            <input type="text" name="sobrenomeCliente" id="sobrenomeCliente" tabindex="3" placeholder="Sobrenome">
+                        </span>
                     </div>
 
                     <div class="form-input">
@@ -126,7 +131,7 @@
                         <input type="text" name="matriculaCliente" id="matriculaCliente" tabindex="7" placeholder="Matrícula SIAP">
                     </div>
 
-                    <div class="form-input"><input type="submit" name="register-submit" id="register-submit" tabindex="8" value="Solicitar acesso"></div>
+                    <div class="form-input"><input type="button" name="register-submit" id="register-submit" class="submit-btn" tabindex="8" value="Solicitar acesso"></div>
                 </form>
             </div>
         </div>
@@ -157,20 +162,3 @@ $(document).ready(function(){
 <!-- Responsible for the forms -->
 <script src="../App/View/js/login-page-form.js"></script>
 </body>
-<script>
-$('#register-form, #login-form').submit(function(e) {
-    var all_inputs_filled = true;
-    $('#'+e.currentTarget.id+' input[type=text]').each(function() {
-        if ($(this).val().match(/^\s*$/)) {
-            all_inputs_filled = false;
-            return false;
-        }
-    });
-    if (all_inputs_filled) {
-        return true;
-    } else {
-        alert("Preencha todos os campos");
-        return false;
-    }
-});
-</script>
