@@ -104,33 +104,69 @@ class GerenteController extends Action{
           $user_role->save($cliente_role['id'],1,0,0);
         }
       } elseif ($_POST['new_user'] && $_POST['new_user']['idSolicitacao']) {
-          $request = $_POST['new_user'];
+        $request = $_POST['new_user'];
 
-          // client admission
-          $clienteDb = Container::getClass("Usuario");
-          $clienteDb->save($request['nome'],$request['email'],$request['usuario'],$request['setor'],$request['matricula']);
-          $requisicao_acessoDb = Container::getClass("SolicitarAcesso");
-          $requisicao_acessoDb->updateColumnById("status","ATENDIDA",$request['idSolicitacao']);
+        // client admission
+        $clienteDb = Container::getClass("Usuario");
+        $clienteDb->save($request['nome'],$request['email'],$request['usuario'],$request['setor'],$request['matricula']);
+        $requisicao_acessoDb = Container::getClass("SolicitarAcesso");
+        $requisicao_acessoDb->updateColumnById("status","ATENDIDA",$request['idSolicitacao']);
 
-          // role
-          $cliente_role = $clienteDb->findByLogin($request['usuario']);
-          $user_role =  Container::getClass("UsuarioRole");
-          $user_role->save($cliente_role['id'],1,0,0);
+        // role
+        $cliente_role = $clienteDb->findByLogin($request['usuario']);
+        $user_role =  Container::getClass("UsuarioRole");
+        $user_role->save($cliente_role['id'],1,0,0);
       } elseif ($_POST['new_user']) {
-          $request = $_POST['new_user'];
+        $request = $_POST['new_user'];
 
-          // Client insertion
-          $clienteDb = Container::getClass("Usuario");
-          $clienteDb->save($request['nome'],$request['email'],$request['usuario'],$request['setor'],$request['matricula']);
+        // Client insertion
+        $clienteDb = Container::getClass("Usuario");
+        $clienteDb->save($request['nome'],$request['email'],$request['usuario'],$request['setor'],$request['matricula']);
 
-          // role
-          $cliente_role = $clienteDb->findByLogin($request['usuario']);
-          $user_role =  Container::getClass("UsuarioRole");
-          $user_role->save($cliente_role['id'],$request['isClient'],$request['isTechnician'],$request['isAdmin']);
+        // role
+        $cliente_role = $clienteDb->findByLogin($request['usuario']);
+        $user_role =  Container::getClass("UsuarioRole");
+        $user_role->save($cliente_role['id'],$request['isClient'],$request['isTechnician'],$request['isAdmin']);
       }
-  } else {
+    } else {
       $this->forbidenAccess();
+    }
   }
+
+  public function archive_account_request(){
+    session_start();
+    if($_SESSION['user_role'] == "GERENTE"){
+      if (isset($_POST['reason']) && isset($_POST['request_list']) && isset($_POST['send_email'])) {
+        if ($_POST['send_email'] == "true" && (!isset($_POST['email_message']) || preg_match('/^\S*$/', $_POST['email_message']))) {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'insuficient_email_data')));
+        } else {
+          foreach ($_POST['request_list'] as $request) {
+            // Archive request
+
+            // Update request row
+            $date = new \DateTime("now", new \DateTimeZone('America/Fortaleza'));
+            $date = $date->format("Y-m-d H:i:s");
+            $requisicao_acessoDb = Container::getClass("SolicitarAcesso");
+            $requisicao_acessoDb->updateColumnById("status","ARQUIVADA", $request['idSolicitacao']);
+            $requisicao_acessoDb->updateColumnById("data_recusado", $date, $request['idSolicitacao']);
+            $requisicao_acessoDb->updateColumnById("id_recusante", $_SESSION['user_id'], $request['idSolicitacao']);
+            $requisicao_acessoDb->updateColumnById("motivo_recusa", $_POST['reason'], $request['idSolicitacao']);
+
+            // Send email to requester if so chosen
+            if ($_POST['send_email'] == "true") {
+            }
+          }
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'insuficient_data')));
+      }
+    } else {
+      $this->forbidenAccess();
+    }
   }
 
   public function finalize_request(){

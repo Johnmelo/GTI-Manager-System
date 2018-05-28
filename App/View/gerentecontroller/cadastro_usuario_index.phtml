@@ -159,6 +159,7 @@
                         <label for="r_client_role_<?php echo $requisicao['id'];?>"><h2><?php echo $requisicao['nome'];?></h2></label>
                         <ul class="nav navbar-right panel_toolbox">
                             <li><button type="button" class="btn btn-primary btn-edit-request" title="Editar dados" value="<?php echo $requisicao['id'];?>"><i class="fas fa-pencil-alt"></i></button></li>
+                            <li><button type="button" class="btn btn-primary btn-refuse-request" title="Recusar solicitação" value="<?php echo $requisicao['id'];?>"><i class="fas fa-times"></i></button></li>
                             <li><button type="button" class="btn btn-primary btn-accept-request" title="Cadastrar usuário" value="<?php echo $requisicao['id'];?>"><i class="fas fa-check"></i> Cadastrar</button></li>
                         </ul>
                         <div class="clearfix">
@@ -258,9 +259,58 @@
           </form>
         </div>
         <div class="modal-footer">
-          <button id="modal-btn-cancel" type="button" class="btn btn-primary">Cancelar</button>
-          <button id="modal-btn-archive-request" type="button" class="btn btn-primary">Arquivar</button>
-          <button id="modal-btn-confirm" type="button" class="btn btn-primary">Cadastrar</button>
+          <button id="edit-modal-btn-cancel" type="button" class="btn btn-primary">Cancelar</button>
+          <button id="edit-modal-btn-confirm" type="button" class="btn btn-primary">Cadastrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Archive request modal -->
+  <div id="archive-request-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Arquivar solicitação</h4>
+        </div>
+        <div class="modal-body">
+          <form id="archive-request-form" class="form-horizontal">
+            <div class="form-group">
+              <label for="request-refusal-reason-field" class="col-sm-4 control-label">Motivo</label>
+              <div class="col-sm-8">
+                <input type="text" class="form-control" id="request-refusal-reason-field">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="role_field" class="col-sm-4 control-label">Enviar e-mail</label>
+              <div class="col-sm-8" style="padding-top: 8px;">
+                <div class="form-group">
+                  <input type="checkbox" class="form-control" id="notify-requester" checked>
+                  <label for="notify-requester" style="font-weight: 600; margin-left: 10px; cursor: pointer;">notificar solicitante por e-mail</label>
+                </div>
+              </div>
+            </div>
+            <div id="email-composer-form-group" class="form-group">
+              <label for="email-composer-wrapper" class="col-sm-4 control-label">Mensagem do e-mail</label>
+              <div id="email-composer-wrapper" class="col-sm-8">
+                <p>
+                  Prezad@, <span id="archive-modal-requester-name"></span><br>
+                  Infelizmente, sua conta não pôde ser efetivada pelo seguinte motivo:
+                </p>
+                <textarea id="email-request-refusal-reason" rows="3"></textarea>
+                <p>
+                  Se você acredita que houve um engano, sinta-se à vontade para responder esse e-mail!<br>
+                  Atenciosamente,<br>
+                  GTI CCHLA.
+                </p>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="archive-modal-btn-cancel" type="button" class="btn btn-primary">Cancelar</button>
+          <button id="archive-modal-btn-confirm" type="button" class="btn btn-primary">Arquivar</button>
         </div>
       </div>
     </div>
@@ -319,13 +369,6 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
 
 <!-- Edit request/Register new user modal -->
 <script>
-  // Abrir modal de novo ou editar usuário
-  $('#btn-new-user, button.btn-edit-request').on('click', function() {
-    $('#modal-btn-cancel').css("display", "inline-block");
-    $('#modal-btn-archive-request').css("display", "none");
-    $('#modal-btn-confirm').css("display", "inline-block");
-  });
-
   // Configuração do modal de novo usuário
   $('#btn-new-user').on('click', function() {
     $('#edit-request-modal h4.modal-title').text("Criar novo usuário");
@@ -371,12 +414,12 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
   // Botões do modal
 
   // Cancelar
-  $('#modal-btn-cancel').on('click', function() {
+  $('#edit-modal-btn-cancel').on('click', function() {
     $('#edit-request-modal').modal('hide');
   });
 
   // Confirmar
-  $('#modal-btn-confirm').on('click', function() {
+  $('#edit-modal-btn-confirm').on('click', function() {
     // Check if all necessary info was given
     var formIsValid = true;
     $('#edit-request-form input[type=text]').each(function() {
@@ -387,7 +430,6 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
     });
     if ($('#edit-request-form input[type=checkbox]:checked').length == 0) {
       formIsValid = false;
-      alert("Preencha todos os dados");
     }
 
     // If info is complete, send to the server
@@ -415,30 +457,150 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
       .fail(function() {
         //
       });
+    } else {
+      alert("Preencha todos os campos");
+    }
+  });
+</script>
+
+<!-- Archive request modal -->
+<script>
+  var requests = [];
+
+  // Ao abrir o modal
+  $('.btn-refuse-request').on('click', function(e) {
+    // Get request data
+    var request_dataset = $(e.currentTarget).parents('.x_title')[0].dataset;
+    var request_data = JSON.parse(JSON.stringify(request_dataset));
+    requests = [];
+    requests.push(request_data);
+
+    $('#archive-modal-requester-name').text(request_data.requester_name);
+    $('#archive-request-modal').modal('show');
+    $('#archive-request-modal').on('shown.bs.modal', function(){
+      $('#request-refusal-reason-field').get(0).focus();
+      $('#archive-request-modal').off('shown.bs.modal');
+    });
+  });
+
+  // Ao selecionar/deselecionar opção de enviar e-mail notificando
+  $('#notify-requester').on('ifChecked', function(event) {
+    $("#email-composer-form-group").css("display", "block");
+  });
+  $('#notify-requester').on('ifUnchecked', function(event) {
+    $("#email-composer-form-group").css("display", "none");
+  });
+
+  // Ao fechar o modal
+  $('#archive-request-modal').on('hidden.bs.modal', function() {
+    $('#id_solicitacao_field').val("");
+    $('#request-refusal-reason-field').val("");
+    $('#email-request-refusal-reason').val("");
+    $('#notify-requester').iCheck('check');
+  });
+
+  // Botões do modal
+
+  // Cancelar
+  $('#archive-modal-btn-cancel').on('click', function() {
+    $('#archive-request-modal').modal('hide');
+  });
+
+  // Confirmar
+  $('#archive-modal-btn-confirm').on('click', function() {
+    // Check if all necessary info was given
+    var formIsValid = true;
+    var refusal_reason = $('#request-refusal-reason-field').val();
+    var refusal_email_message = $('#email-request-refusal-reason').val();
+    var send_email = $('#notify-requester').get(0).checked;
+
+    if (refusal_reason.match(/^\s*$/)) {
+      formIsValid = false;
+      alert("Insira o motivo da recusa");
+      return false;
+    }
+    if (send_email) {
+      if (refusal_email_message.match(/^\s*$/)) {
+        formIsValid = false;
+        alert("Escreva uma explicação no campo do e-mail");
+        return false;
+      }
+    }
+
+    // If info is complete, send to the server
+    if (formIsValid) {
+      var refusal_info = {
+        "reason": refusal_reason,
+        "send_email": send_email,
+        "email_message": refusal_email_message,
+        "request_list": requests
+      }
+      $.post("/gticchla/public/admin/archive_account_request", refusal_info)
+      .done(function(data){
+        alert("Feito!");
+        window.location.reload(true);
+      })
+      .fail(function(data){
+        // Failure
+        if (data && data.responseJSON) {
+          var response = data.responseJSON;
+          if (response.event == "error") {
+            if (response.type == "insuficient_data") {
+              alert("Não foi possível realizar a ação por falta de dados");
+            } else if(response.type == "insuficient_email_data") {
+              alert("Não foi possível realizar a ação por insuficiência de dados para envio de email");
+            } else {
+              alert("Houve uma falha inesperada.\nNão foi possível completar a ação.");
+            }
+          } else {
+            alert("Houve uma falha inesperada.\nNão foi possível completar a ação.");
+          }
+        }
+      });
     }
   });
 </script>
 
 <!-- Requests actions -->
 <script>
+// Aceitar solicitações de cadastro selecionadas
 $('button#accept-selection').on('click', function() {
-  var requests = [];
-  $('input[type=checkbox]:checked').each(function() {
-    var dataset = $(this).parents('.x_title')[0].dataset;
-    var dataset_obj = JSON.parse(JSON.stringify(dataset));
-    requests.push(dataset_obj);
-  });
-
+  getSelectedRequests();
   $.post("/gticchla/public/admin/cadastrar_usuarios", {
     "requests": requests
   })
   .done(function() {
+      requests = [];
       document.location.reload(true);
   })
   .fail(function() {
-
+      requests = [];
   });
 });
+
+// Arquivar solicitações de cadastro selecionadas
+$('button#archive-selection').on('click', function() {
+  getSelectedRequests();
+
+  $('#archive-modal-requester-name').text("<Nome do Cliente>");
+  $('#archive-request-modal').modal('show');
+  $('#archive-request-modal').on('shown.bs.modal', function(){
+    $('#request-refusal-reason-field').get(0).focus();
+    $('#archive-request-modal').off('shown.bs.modal');
+  });
+});
+
+// Preeche lista de solicitações selecionadas
+function getSelectedRequests() {
+  requests = [];
+  $('#request-list-wrapper input[type=checkbox]:checked').each(function() {
+    var dataset = $(this).parents('.x_title')[0].dataset;
+    var dataset_obj = JSON.parse(JSON.stringify(dataset));
+    requests.push(dataset_obj);
+  });
+}
+
+// Aceitar diretamente sem alterações
 $('div#request-list-wrapper button.btn-accept-request').on('click', function() {
     var dataset = $(this).parents('.x_title')[0].dataset;
     var dataset_obj = JSON.parse(JSON.stringify(dataset));

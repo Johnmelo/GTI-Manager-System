@@ -56,3 +56,15 @@
 .info-column > h4 {
     font-weight: 600;
 }
+
+
+/* ARCHIVE MODAL */
+
+#email-composer-wrapper {
+    margin-top: 8px;
+    font-size: 1.1em;
+}
+
+#email-request-refusal-reason {
+    width: 100%;
+}
