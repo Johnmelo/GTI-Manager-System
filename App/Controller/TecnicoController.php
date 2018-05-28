@@ -211,7 +211,8 @@ class TecnicoController extends Action{
         session_start();
         if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
             if (isset($_POST['request_id']) && isset($_POST['refusal_reason'])) {
-                $date = date("Y-m-d");
+                $date = new \DateTime("now", new \DateTimeZone('America/Fortaleza'));
+                $date = $date->format("Y-m-d H:i:s");
                 $request = Container::getClass("SolicitarChamado");
                 $request->updateColumnById("status", "RECUSADA", $_POST['request_id']);
                 $request->updateColumnById("data_recusado", $date, $_POST['request_id']);
