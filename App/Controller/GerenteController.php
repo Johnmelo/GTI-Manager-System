@@ -2,6 +2,7 @@
 namespace App\Controller;
 use SON\Controller\Action;
 use \SON\Di\Container;
+use \App\Model\Email;
 
 class GerenteController extends Action{
   public function index(){
@@ -102,6 +103,10 @@ class GerenteController extends Action{
           $cliente_role = $clienteDb->findByLogin($request['usuario']);
           $user_role =  Container::getClass("UsuarioRole");
           $user_role->save($cliente_role['id'],1,0,0);
+
+          // Send email
+          $email = new Email();
+          $email->requestGrantedNotification($request['nome'],$request['email']);
         }
       } elseif ($_POST['new_user'] && $_POST['new_user']['idSolicitacao']) {
         $request = $_POST['new_user'];
@@ -116,6 +121,10 @@ class GerenteController extends Action{
         $cliente_role = $clienteDb->findByLogin($request['usuario']);
         $user_role =  Container::getClass("UsuarioRole");
         $user_role->save($cliente_role['id'],1,0,0);
+
+        // Send email
+        $email = new Email();
+        $email->requestGrantedNotification($request['nome'],$request['email']);
       } elseif ($_POST['new_user']) {
         $request = $_POST['new_user'];
 
@@ -127,6 +136,10 @@ class GerenteController extends Action{
         $cliente_role = $clienteDb->findByLogin($request['usuario']);
         $user_role =  Container::getClass("UsuarioRole");
         $user_role->save($cliente_role['id'],$request['isClient'],$request['isTechnician'],$request['isAdmin']);
+
+        // Send email
+        $email = new Email();
+        $email->requestGrantedNotification($request['nome'],$request['email']);
       }
     } else {
       $this->forbidenAccess();
@@ -156,6 +169,8 @@ class GerenteController extends Action{
 
             // Send email to requester if so chosen
             if ($_POST['send_email'] == "true") {
+               $email = new Email();
+               $email->requestRefusedNotification($request['nome'],$request['email'], $_POST['email_message']);
             }
           }
         }

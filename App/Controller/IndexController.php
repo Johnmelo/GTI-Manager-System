@@ -4,6 +4,7 @@ use SON\Controller\Action;
 use \App\Model\Chamado;
 use \App\Model\SolicitarAcesso;
 use \SON\Di\Container;
+use \App\Model\Email;
 
 class IndexController extends Action{
 
@@ -35,6 +36,10 @@ class IndexController extends Action{
     if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
       $acesso = Container::getClass("SolicitarAcesso");
       $acesso->save($nome." ".$sobrenome,$email,$login,$setor,$matricula);
+
+      // Sending email notification
+      $sendEmail = new Email();
+      $sendEmail->accessRequestNotification($nome,$sobrenome,$login,$email,$setor,$matricula);
     } else {
       header('Content-Type: application/json; charset=UTF-8');
       header('HTTP/1.1 400');

@@ -1,7 +1,9 @@
 {
   "name": "son/mvc",
   "require": {
-    "php": ">=5.3"
+    "php": ">=5.3",
+    "phpmailer/phpmailer": "^6.0",
+    "sunra/php-simple-html-dom-parser": "^1.5"
   },
 
   "minimus-stability": "alpha",
