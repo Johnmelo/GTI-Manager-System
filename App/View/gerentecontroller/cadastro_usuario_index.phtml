@@ -475,7 +475,7 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
     requests = [];
     requests.push(request_data);
 
-    $('#archive-modal-requester-name').text(request_data.requester_name);
+    $('#archive-modal-requester-name').text(request_data.nome);
     $('#archive-request-modal').modal('show');
     $('#archive-request-modal').on('shown.bs.modal', function(){
       $('#request-refusal-reason-field').get(0).focus();
