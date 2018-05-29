@@ -454,8 +454,19 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
       .done(function() {
         alert("Usuário adicionado");
       })
-      .fail(function() {
-        //
+      .fail(function(data) {
+        if (data && data.responseJSON) {
+          var response = data.responseJSON;
+          if (response.event == "error") {
+            if (response.type == "invalid_email") {
+              alert("O endereço de e-mail informado é inválido");
+            } else {
+              alert("Houve uma falha inesperada.\nNão foi possível completar a ação.");
+            }
+          } else {
+            alert("Houve uma falha inesperada.\nNão foi possível completar a ação.");
+          }
+        }
       });
     } else {
       alert("Preencha todos os campos");
