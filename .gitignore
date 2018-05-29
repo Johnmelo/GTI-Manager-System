@@ -1,3 +1,6 @@
-autoload.php
-composer.lock
-vendor/composer/*
+.gitignore
+.ftpconfig
+.ftpignore
+composer.phar
+.idea/*
+vendor/*
