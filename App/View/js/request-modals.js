@@ -137,7 +137,13 @@ function fillUpRequestModal(typeRequest, requestId, fieldList) {
     .done(function(data) {
         var request = JSON.parse(data);
         for (field of fieldList) {
-            $('.request-modal-form')[0].elements[field].value = request[field];
+            if (field === "data_abertura_field" || field === "data_solicitacao_field" || field === "data_finalizado_field" || field === "prazo_field") {
+                var date = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("DD/MM/YYYY");
+                var time = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("HH:mm");
+                $('.request-modal-form')[0].elements[field].value = date + " às " + time;
+            } else {
+                $('.request-modal-form')[0].elements[field].value = request[field];
+            }
         }
     })
     .fail(function() {
@@ -167,7 +173,7 @@ function acquireRequest(tableRow) {
     var request_id = tableRow.find('button[name="btnJoin"]').val();
     var data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
     var data_abertura = $('.request-modal-form')[0].elements["data_abertura_field"].value;
-    var prazo_dias = moment(data_prazo, 'DD/MM/YYYY').diff(moment(data_abertura, 'DD/MM/YYYY'), 'days');
+    var prazo_dias = moment(data_prazo, 'DD/MM/YYYY HH:mm:ss').diff(moment(data_abertura, 'DD/MM/YYYY HH:mm:ss'), 'days');
 
     $.post("/gticchla/public/technician_select_request",
     {

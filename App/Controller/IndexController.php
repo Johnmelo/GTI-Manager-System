@@ -113,10 +113,10 @@ class IndexController extends Action{
           "descricao_field" => $requests["descricao"],
           "solicitacao_chamado_status_field" => $requests["solicitacao_chamado_status"],
           "chamado_status_field" => $requests["chamado_status"],
-          "data_solicitacao_field" => (isset($requests["data_solicitacao"])) ? date('d/m/Y',strtotime($requests["data_solicitacao"])) : NULL,
-          "data_abertura_field" => (isset($requests["data_abertura"])) ? date('d/m/Y',strtotime($requests["data_abertura"])) : NULL,
-          "data_finalizado_field" => (isset($requests["data_finalizado"])) ? date('d/m/Y',strtotime($requests["data_finalizado"])) : NULL,
-          "prazo_field" => (isset($requests["data_abertura"]) && isset($requests["prazo"])) ? date('d/m/Y', strtotime("+".$requests["prazo"]." days", strtotime($requests["data_abertura"]))) : NULL,
+          "data_solicitacao_field" => (isset($requests["data_solicitacao"])) ? date('d/m/Y H:i:s',strtotime($requests["data_solicitacao"])) : NULL,
+          "data_abertura_field" => (isset($requests["data_abertura"])) ? date('d/m/Y H:i:s',strtotime($requests["data_abertura"])) : NULL,
+          "data_finalizado_field" => (isset($requests["data_finalizado"])) ? date('d/m/Y H:i:s',strtotime($requests["data_finalizado"])) : NULL,
+          "prazo_field" => (isset($requests["data_abertura"]) && isset($requests["prazo"])) ? date('d/m/Y H:i:s', strtotime("+".$requests["prazo"]." days", strtotime($requests["data_abertura"]))) : NULL,
           "tecnico_abertura_field" => $request_admission_technician['nome'],
           "tecnico_responsavel_field" => $request_responsible_technician['nome'],
           "parecer_tecnico_field" => $requests["parecer_tecnico"]
@@ -137,7 +137,7 @@ class IndexController extends Action{
 
         $arr = array(
           "id_solicitacao_field" => $requests["id_solicitacao"],
-          "data_solicitacao_field" => (isset($requests["data_solicitacao"])) ? date('d/m/Y',strtotime($requests["data_solicitacao"])) : NULL,
+          "data_solicitacao_field" => (isset($requests["data_solicitacao"])) ? date('d/m/Y H:i:s',strtotime($requests["data_solicitacao"])) : NULL,
           "cliente_field" => $request_client["nome"],
           "servico_field" => $request_service["nome"],
           "descricao_field" => $requests["descricao"],
