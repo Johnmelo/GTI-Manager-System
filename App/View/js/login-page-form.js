@@ -93,17 +93,20 @@ function submitLoginForm() {
             window.location.reload(true);
         }).fail(function(data) {
             // Failure
-            var response = data.responseJSON;
-            if (response.event == "error") {
-                if (response.type == "invalid_credentials") {
-                    alert("O usuário não foi encontrado");
-                } else {
-                    alert("Não foi possível no momento");
+            if (data && data.responseJSON) {
+                var response = data.responseJSON;
+                if (response.event == "error") {
+                    if (response.type == "invalid_credentials") {
+                        alert("O usuário não foi encontrado");
+                    } else {
+                        alert("Não foi possível no momento");
+                    }
                 }
-                $("input[id=login-submit]").val("Acessar");
-                $("input[id=login-submit]").removeClass("disabled");
-                $("input[id=login-submit]").prop("disabled", false);
             }
+            alert("Houve um problema");
+            $("input[id=login-submit]").val("Acessar");
+            $("input[id=login-submit]").removeClass("disabled");
+            $("input[id=login-submit]").prop("disabled", false);
         });
     } else {
         $("input[id=login-submit]").val("Acessar");
