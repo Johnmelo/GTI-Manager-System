@@ -4,10 +4,15 @@ use SON\Db\Table;
 class SolicitarChamado extends Table{
   protected $table = "solicitacao_chamado";
 
-  public function save($id_usuario,$id_servico,$descricao,$data){
-    $query = "Insert into ".$this->table." (data_solicitacao,id_cliente,id_servico,descricao) values ('{$data}','{$id_usuario}','{$id_servico}','{$descricao}')";
+  public function save($id_usuario,$id_servico,$descricao){
+    $query = "Insert into ".$this->table." (id_cliente,id_servico,descricao) values (?,?,?)";
+    $params = array($id_usuario, $id_servico, $descricao);
     $stmt = $this->db->prepare($query);
-    $stmt->execute();
+    if ($stmt->execute($params) && $stmt->rowCount() > 0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   public function getChamadosByStatus($status){

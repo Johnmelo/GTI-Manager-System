@@ -20,10 +20,15 @@ class Chamado extends Table{
     return $res;
   }
 
-  public function save($service_id, $request_id, $open_date, $id_open_technician, $id_client, $description){
-    $query = "Insert into ".$this->table." (id_servico,id_solicitacao,data_abertura,id_tecnico_abertura,id_cliente_solicitante,descricao) values ('{$service_id}','{$request_id}','{$open_date}','{$id_open_technician}','{$id_client}','{$description}')";
+  public function save($service_id, $request_id, $id_open_technician, $id_client, $description){
+    $query = "Insert into ".$this->table." (id_servico,id_solicitacao,id_tecnico_abertura,id_cliente_solicitante,descricao) values (?,?,?,?,?)";
+    $params = array($service_id, $request_id, $id_open_technician, $id_client, $description);
     $stmt = $this->db->prepare($query);
-    $stmt->execute();
+    if ($stmt->execute($params) && $stmt->rowCount() > 0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
 }

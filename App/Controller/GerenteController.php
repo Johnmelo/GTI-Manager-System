@@ -223,15 +223,12 @@ class GerenteController extends Action{
     session_start();
     if(($_SESSION['user_role'] == "GERENTE")||($_SESSION['user_role'] == "TECNICO")){
       if(isset($_POST['admin_open_client_call_request']) && isset($_POST['selections_call_request'])){
-        $today = getdate();
-        $date = ''.$today['year'].'-'.$today['mon'].'-'.$today['mday'];
-
         foreach ($_POST['selections_call_request'] as $id_request) {
           $requisicao_acessoDb = Container::getClass("SolicitarChamado");
           $requisicao = $requisicao_acessoDb->findById($id_request);
 
           $chamadoDb = Container::getClass("Chamado");
-          $chamadoDb->save($requisicao['id_servico'],$requisicao['id'],$date,$_SESSION['user_id'],$requisicao['id_cliente'],$requisicao['descricao']);
+          $chamadoDb->save($requisicao['id_servico'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$requisicao['descricao']);
           $request = Container::getClass("SolicitarChamado");
           $request->updateColumnById("status","ATENDIDA",$id_request);
         }

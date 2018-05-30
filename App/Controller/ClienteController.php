@@ -94,11 +94,9 @@ class ClienteController extends Action{
 
     session_start();
     $id_usuario = $_SESSION['user_id'];
-    $today = getdate();
-    $date = ''.$today['year'].'-'.$today['mon'].'-'.$today['mday'];
 
     $requisicao = Container::getClass("SolicitarChamado");
-    $requisicao->save($id_usuario,$id_servico,$descricao,$date);
+    $requisicao->save($id_usuario,$id_servico,$descricao);
     header('Location: ./solicitar_atendimento');
 
   }
