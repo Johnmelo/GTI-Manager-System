@@ -92,7 +92,33 @@ class GerenteController extends Action{
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
       if (isset($_POST['requests'])) {
+
         foreach ($_POST['requests'] as $request) {
+          if (filter_var($request['email'], FILTER_VALIDATE_EMAIL)) {
+            // client admission
+            $clienteDb = Container::getClass("Usuario");
+            $clienteDb->save($request['nome'],$request['email'],$request['usuario'],$request['setor'],$request['matricula']);
+            $requisicao_acessoDb = Container::getClass("SolicitarAcesso");
+            $requisicao_acessoDb->updateColumnById("status","ATENDIDA",$request['idSolicitacao']);
+
+            // role
+            $cliente_role = $clienteDb->findByLogin($request['usuario']);
+            $user_role =  Container::getClass("UsuarioRole");
+            $user_role->save($cliente_role['id'],1,0,0);
+
+            // Send email
+            $email = new Email();
+            $email->requestGrantedNotification($request['nome'],$request['email']);
+          } else {
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 400');
+            die(json_encode(array('event' => 'error', 'type' => 'invalid_email')));
+          }
+        }
+      } elseif ($_POST['new_user'] && $_POST['new_user']['idSolicitacao']) {
+        $request = $_POST['new_user'];
+
+        if (filter_var($request['email'], FILTER_VALIDATE_EMAIL)) {
           // client admission
           $clienteDb = Container::getClass("Usuario");
           $clienteDb->save($request['nome'],$request['email'],$request['usuario'],$request['setor'],$request['matricula']);
@@ -107,28 +133,15 @@ class GerenteController extends Action{
           // Send email
           $email = new Email();
           $email->requestGrantedNotification($request['nome'],$request['email']);
+        } else {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'invalid_email')));
         }
-      } elseif ($_POST['new_user'] && $_POST['new_user']['idSolicitacao']) {
-        $request = $_POST['new_user'];
-
-        // client admission
-        $clienteDb = Container::getClass("Usuario");
-        $clienteDb->save($request['nome'],$request['email'],$request['usuario'],$request['setor'],$request['matricula']);
-        $requisicao_acessoDb = Container::getClass("SolicitarAcesso");
-        $requisicao_acessoDb->updateColumnById("status","ATENDIDA",$request['idSolicitacao']);
-
-        // role
-        $cliente_role = $clienteDb->findByLogin($request['usuario']);
-        $user_role =  Container::getClass("UsuarioRole");
-        $user_role->save($cliente_role['id'],1,0,0);
-
-        // Send email
-        $email = new Email();
-        $email->requestGrantedNotification($request['nome'],$request['email']);
       } elseif ($_POST['new_user']) {
         $request = $_POST['new_user'];
 
-        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (filter_var($request['email'], FILTER_VALIDATE_EMAIL)) {
           // Client insertion
           $clienteDb = Container::getClass("Usuario");
           $clienteDb->save($request['nome'],$request['email'],$request['usuario'],$request['setor'],$request['matricula']);
