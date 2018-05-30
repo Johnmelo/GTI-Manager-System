@@ -38,7 +38,7 @@ $('#botoes-abas').children().each(function() {
 // Validate input values
 function inputsAreValid(form) {
     var all_inputs_filled = true;
-    
+
     // If register form, check if name and last name only contains letters and spaces
     if (form == "register-form") {
         if (!$('#' + form + ' input[id=nomeCliente]').val().match(/^[a-zA-Z]*$/)
@@ -82,6 +82,14 @@ function submitLoginForm() {
         $.post("/gticchla/public/logar", postData)
         .done(function(data) {
             // Success
+
+            // Receive the last login date and store in the sessionStorage
+            sessionStorage.removeItem("lastLogin");
+            if (data) {
+                if (data.hasOwnProperty("lastLogin") && data.lastLogin !== null) {
+                    sessionStorage.setItem("lastLogin", data.lastLogin);
+                }
+            }
             window.location.reload(true);
         }).fail(function(data) {
             // Failure

@@ -68,14 +68,21 @@ class IndexController extends Action{
 
         if($role['cliente'] == 1){
           $_SESSION['user_role'] = "CLIENTE";
-          header('Location: /gticchla/public/cliente');
         }else if($role['tecnico'] == 1){
           $_SESSION['user_role'] = "TECNICO";
-          header('Location: /gticchla/public/tecnico');
         }else if($role['gerente'] == 1){
           $_SESSION['user_role'] = "GERENTE";
-          header('Location: /gticchla/public/admin');
         }
+
+        // Inform last time user logged-in and update DB with the new date
+        ob_start();
+        $last_login = $user['data_ultimo_login'];
+        $date = new \DateTime("now", new \DateTimeZone('America/Fortaleza'));
+        $date = $date->format("Y-m-d H:i:s");
+        $acesso->updateColumnById("data_ultimo_login", $date, $user['id']);
+        ob_end_clean();
+        header('Content-Type: application/json; charset=UTF-8');
+        echo json_encode(array('lastLogin' => $last_login));
       }else{
         header('Content-Type: application/json; charset=UTF-8');
         header('HTTP/1.1 400');

@@ -261,7 +261,7 @@
 <script src="../App/View/js/cliente-tour.js"></script>
 <script>
 $(document).ready(function() {
-  if (window.innerWidth > 980) {
+  if (window.innerWidth > 980 && sessionStorage.getItem("lastLogin") === null) {
     tour.init();
     tour.start();
     if (localStorage.getItem('tour_current_step') == "8") {
