@@ -1,13 +1,18 @@
 <?php
 namespace App\Model;
 use SON\Db\Table;
+use \App\Model\PasswordUtil;
+
 class Usuario extends Table{
   protected $table = "usuarios";
 
   public function save($nome,$email,$login,$setor,$matricula){
-    $query = "Insert into ".$this->table." (nome,email,login,password,setor,matricula) values (?,?,?,?,?,?)";
+    // Hash password derived from the default pattern
     $pass = ''.$login.''.$matricula;
-    $params = array($nome, $email, $login, $pass, $setor, $matricula);
+    $pwhash = PasswordUtil::hash($pass);
+    // Insert the user
+    $query = "Insert into ".$this->table." (nome,email,login,setor,matricula,password_hash) values (?,?,?,?,?,?)";
+    $params = array($nome, $email, $login, $setor, $matricula, $pwhash);
     $stmt = $this->db->prepare($query);
     if ($stmt->execute($params) && $stmt->rowCount() > 0) {
         return true;

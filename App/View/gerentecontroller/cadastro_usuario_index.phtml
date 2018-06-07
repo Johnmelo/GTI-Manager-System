@@ -453,6 +453,7 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
       })
       .done(function() {
         alert("Usuário adicionado");
+        window.location.reload(true);
       })
       .fail(function(data) {
         if (data && data.responseJSON) {
@@ -619,11 +620,23 @@ $('div#request-list-wrapper button.btn-accept-request').on('click', function() {
     $.post("/gticchla/public/admin/cadastrar_usuarios", {
         "new_user": dataset_obj
     })
-    .done(function() {
+    .done(function(data) {
+        alert("O usuário foi cadastrado com sucesso");
         document.location.reload(true);
     })
-    .fail(function() {
-
+    .fail(function(data) {
+      if (data && data.responseJSON) {
+        var response = data.responseJSON;
+        if (response.event === "error") {
+          if (response.type === "invalid_email") {
+            alert("A solicitação não pôde ser aceita pois o endereço de email não é válido.");
+          }
+        } else {
+          alert("Houve um problema desconhecido.");
+        }
+      } else {
+        alert("Houve um problema desconhecido.");
+      }
     });
 });
 </script>

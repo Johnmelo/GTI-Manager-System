@@ -101,6 +101,10 @@ function submitLoginForm() {
                     } else {
                         alert("Não foi possível no momento");
                     }
+                    $("input[id=login-submit]").val("Acessar");
+                    $("input[id=login-submit]").removeClass("disabled");
+                    $("input[id=login-submit]").prop("disabled", false);
+                    return false;
                 }
             }
             alert("Houve um problema");

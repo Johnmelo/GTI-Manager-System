@@ -17,7 +17,7 @@ abstract class Bootstrap{
       if($url == $route['route']){
         $class = "App\\Controller\\".ucfirst($route['controller']);
         $controller = new $class;
-        $controller->$route['action']();
+        $controller->{$route['action']}();
       }
     });
   }

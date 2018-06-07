@@ -1,9 +1,27 @@
 {
   "name": "son/mvc",
   "require": {
-    "php": ">=5.3",
+    "php": ">=7.0",
     "phpmailer/phpmailer": "^6.0",
-    "sunra/php-simple-html-dom-parser": "^1.5"
+    "sunra/php-simple-html-dom-parser": "^1.5",
+
+    "ext-ctype": "*",
+    "ext-date": "*",
+    "ext-filter": "*",
+    "ext-hash": "*",
+    "ext-iconv": "*",
+    "ext-intl": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*",
+    "ext-mysqlnd": "*",
+    "ext-openssl": "*",
+    "ext-pcre": "*",
+    "ext-PDO": "*",
+    "ext-pdo_mysql": "*",
+    "ext-session": "*",
+    "ext-sodium": "*",
+    "ext-SPL": "*",
+    "ext-tokenizer": "*"
   },
 
   "minimus-stability": "alpha",

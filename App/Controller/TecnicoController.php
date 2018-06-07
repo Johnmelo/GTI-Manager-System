@@ -2,6 +2,7 @@
 namespace App\Controller;
 use SON\Controller\Action;
 use \SON\Di\Container;
+use \App\Model\PasswordUtil;
 
 class TecnicoController extends Action{
   public function index(){
@@ -184,9 +185,14 @@ class TecnicoController extends Action{
         $pass = $_POST['current_password'];
         $userDb = Container::getClass("Usuario");
         $user = $userDb->findById($_SESSION['user_id']);
-        if($pass == $user['password']){
+        $isCorrectPw = PasswordUtil::verify($pass, $user['password_hash']);
+        if($isCorrectPw){
           ob_start();
-          $userDb->updateColumnById("password",$_POST['new_password'],$_SESSION['user_id']);
+          // Generate the hash of the new password ...
+          $new_hash = PasswordUtil::hash($_POST['new_password']);
+          // ... and store it
+          $userDb->updateColumnById("password_hash",$new_hash,$_SESSION['user_id']);
+          // Clean the buffer so it doesn't get sent to the Ajax call instead of the JSON below.
           $buffer = ob_get_clean();
           header('Content-Type: application/json; charset=UTF-8');
           if (strpos($buffer, "UPDATED successfully") !== false) {

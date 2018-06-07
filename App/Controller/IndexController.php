@@ -5,6 +5,7 @@ use \App\Model\Chamado;
 use \App\Model\SolicitarAcesso;
 use \SON\Di\Container;
 use \App\Model\Email;
+use \App\Model\PasswordUtil;
 
 class IndexController extends Action{
 
@@ -54,7 +55,8 @@ class IndexController extends Action{
 
       $acesso = Container::getClass("Usuario");
       $user = $acesso->findByLogin($login);
-      if($user['password'] == $pass){
+      $isCorrectPw = PasswordUtil::verify($pass, $user['password_hash']);
+      if($isCorrectPw){
         $user_role = Container::getClass("UsuarioRole");
         $role = $user_role->findByIdUser($user['id']);
 
