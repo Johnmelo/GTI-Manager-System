@@ -252,6 +252,10 @@ ul#botoes-abas li.selected > span {
     bottom: 32px;
     text-align: center;
 }
+#login-form > span:last-child > a {
+    color: #069;
+    text-decoration: none;
+}
 
 
 
