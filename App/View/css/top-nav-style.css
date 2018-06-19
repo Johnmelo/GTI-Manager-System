@@ -322,4 +322,5 @@ header#top-menu.open i#hamburger-icon, header#top-menu.open i#close-menu-icon, h
     .top-menu-right-wrapper > ul > li > a {
         font-size: 1.3em;
         padding: 22px 22px;
+    }
 }
