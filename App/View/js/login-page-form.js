@@ -41,8 +41,8 @@ function inputsAreValid(form) {
 
     // If register form, check if name and last name only contains letters and spaces
     if (form == "register-form") {
-        if (!$('#' + form + ' input[id=nomeCliente]').val().match(/^[a-zA-Z]*$/)
-        || !$('#' + form + ' input[id=sobrenomeCliente]').val().match(/^[a-zA-Z]*$/)) {
+        if (!$('#' + form + ' input[id=nomeCliente]').val().match(/^[A-zÀ-ÿ]*$/)
+        || !$('#' + form + ' input[id=sobrenomeCliente]').val().match(/^[A-zÀ-ÿ]*$/)) {
             alert("Nome e sobrenome só podem conter letras e espaços!");
             return false;
         }
