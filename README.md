@@ -21,11 +21,26 @@
 
 #### Replace the placeholders
 
-Bellow it's listed the files which contains placeholders to be replaced, and which ones. One recommended way to replace them is using a text editor with Find/Replace feature.
+Bellow it's listed the files which contains placeholders to be replaced, and which ones. Some placeholders of img src are supposed to be replaced by full URL addresses, to make users able to view the images when they receive the email (if the URL of the images in the email are relative paths, they won't load).
+One recommended way to replace them is using a text editor with Find/Replace feature.
 
 | File | Placeholders |
 | ---  |     ---      |
-| App/View/emailcontroller/email_footer.phtml | PLACEHOLDER_ENTITY_NAME; PLACEHOLDER_TELEPHONE_NUMBER; PLACEHOLDER_TELEPHONE_EXTENSION; PLACEHOLDER_EMAIL |
+| App/View/emailcontroller/email_footer.phtml | PLACEHOLDER_ENTITY_NAME; PLACEHOLDER_TELEPHONE_NUMBER; PLACEHOLDER_TELEPHONE_EXTENSION; PLACEHOLDER_EMAIL; PLACEHOLDER_LOGO_ALT; PLACEHOLDER_LOGO |
 | App/View/emailcontroller/request_granted_notification_email.phtml | PLACEHOLDER_ENTITY_LOGO; PLACEHOLDER_ENTITY_LOGO_ALT; PLACEHOLDER_BANNER_REQUEST_GRANTED_IMG; PLACEHOLDER_PLATFORM_URL |
 | App/View/emailcontroller/request_notification_email.phtml | PLACEHOLDER_ENTITY_LOGO; PLACEHOLDER_ENTITY_LOGO_ALT; PLACEHOLDER_PLATFORM_NAME |
 | App/View/emailcontroller/request_refused_notification_email.phtml | PLACEHOLDER_ENTITY_LOGO; PLACEHOLDER_ENTITY_LOGO_ALT |
+
+Some placeholders are meant to be replaced by the full URL addresses of files already included in the project. Check below.
+
+| Placeholder | File from where the address come |
+|     ---     |                ---               |
+| PLACEHOLDER_BANNER_REQUEST_GRANTED_IMG | App/View/img/email/banner-account-granted.png |
+| PLACEHOLDER_SHADOW_IMG_EAST_URL | App/View/img/email/shadow_east.png |
+| PLACEHOLDER_SHADOW_IMG_SOUTHWEST_URL | App/View/img/email/shadow_southwest.png |
+| PLACEHOLDER_SHADOW_IMG_SOUTH_URL | App/View/img/email/shadow_south.png |
+| PLACEHOLDER_SHADOW_IMG_SOUTHEAST_URL | App/View/img/email/shadow_southeast.png |
+| PLACEHOLDER_SHADOW_IMG_NORTHWEST_URL | App/View/img/email/shadow_northwest.png |
+| PLACEHOLDER_SHADOW_IMG_NORTH_URL | App/View/img/email/shadow_north.png |
+| PLACEHOLDER_SHADOW_IMG_NORTHEAST_URL | App/View/img/email/shadow_northeast.png |
+| PLACEHOLDER_SHADOW_IMG_WEST_URL | App/View/img/email/shadow_west.png |
