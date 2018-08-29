@@ -25,4 +25,7 @@ Bellow it's listed the files which contains placeholders to be replaced, and whi
 
 | File | Placeholders |
 | ---  |     ---      |
-| App/View/emailcontroller/email_footer.phtml | PLACEHOLDER_ENTITY_NAME |
+| App/View/emailcontroller/email_footer.phtml | PLACEHOLDER_ENTITY_NAME; PLACEHOLDER_TELEPHONE_NUMBER; PLACEHOLDER_TELEPHONE_EXTENSION; PLACEHOLDER_EMAIL |
+| App/View/emailcontroller/request_granted_notification_email.phtml | PLACEHOLDER_ENTITY_LOGO; PLACEHOLDER_ENTITY_LOGO_ALT; PLACEHOLDER_BANNER_REQUEST_GRANTED_IMG; PLACEHOLDER_PLATFORM_URL |
+| App/View/emailcontroller/request_notification_email.phtml | PLACEHOLDER_ENTITY_LOGO; PLACEHOLDER_ENTITY_LOGO_ALT; PLACEHOLDER_PLATFORM_NAME |
+| App/View/emailcontroller/request_refused_notification_email.phtml | PLACEHOLDER_ENTITY_LOGO; PLACEHOLDER_ENTITY_LOGO_ALT |
