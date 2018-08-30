@@ -128,7 +128,7 @@ class GerenteController extends Action{
           // role
           $cliente_role = $clienteDb->findByLogin($request['usuario']);
           $user_role =  Container::getClass("UsuarioRole");
-          $user_role->save($cliente_role['id'],1,0,0);
+          $user_role->save($cliente_role['id'],$request['isClient'],$request['isTechnician'],$request['isAdmin']);
 
           // Send email
           $email = new Email();
