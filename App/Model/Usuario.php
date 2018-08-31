@@ -28,5 +28,21 @@ class Usuario extends Table{
     $res = $stmt->fetch();
     return $res;
   }
+
+  public function findByEmail($email){
+    $stmt = $this->db->prepare("Select * from {$this->table} where email=:email");
+    $stmt->bindParam(":email",$email);
+    $stmt->execute();
+    $res = $stmt->fetch();
+    return $res;
+  }
+
+  public function findByRegistrationNumber($matricula){
+    $stmt = $this->db->prepare("Select * from {$this->table} where matricula=:matricula");
+    $stmt->bindParam(":matricula",$matricula);
+    $stmt->execute();
+    $res = $stmt->fetch();
+    return $res;
+  }
 }
 ?>

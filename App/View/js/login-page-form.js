@@ -160,13 +160,26 @@ function submitRequestAccessForm() {
             window.location.reload(true);
         }).fail(function(data) {
             // Failure
-            var response = data.responseJSON;
-            if (response.event == "error") {
-                if (response.type == "invalid_email") {
-                    alert("O endereço de email inserido é inválido");
-                } else {
-                    alert("Não foi possível no momento");
+            if (data.hasOwnProperty("responseJSON")) {
+                var response = data.responseJSON;
+                if (response.event == "error") {
+                    if (response.type == "invalid_email") {
+                        alert("O endereço de email inserido é inválido");
+                    } else if (response.type == "email_already_in_use") {
+                        alert("O email inserido já está registrado no sistema");
+                    } else if (response.type == "login_already_in_use") {
+                        alert("O login inserido já está em uso por um usuário");
+                    } else if (response.type == "registration_number_already_in_use") {
+                        alert("A matrícula inserida já faz parte de um usuário cadastrado");
+                    } else {
+                        alert("Não foi possível no momento");
+                    }
+                    $("input[id=register-submit]").val("Solicitar acesso");
+                    $("input[id=register-submit]").removeClass("disabled");
+                    $("input[id=register-submit]").prop("disabled", false);
                 }
+            } else {
+                alert("Não foi possível no momento");
                 $("input[id=register-submit]").val("Solicitar acesso");
                 $("input[id=register-submit]").removeClass("disabled");
                 $("input[id=register-submit]").prop("disabled", false);

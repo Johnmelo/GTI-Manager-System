@@ -33,18 +33,43 @@ class IndexController extends Action{
     $setor = $_POST['setorCliente'];
     $matricula = $_POST['matriculaCliente'];
 
-    // Validate email address
-    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-      $acesso = Container::getClass("SolicitarAcesso");
-      $acesso->save($nome." ".$sobrenome,$email,$login,$setor,$matricula);
+    // Check if there's already a registered user with the
+    // submitted login, email or registration number
+    if($this->isLoginInUse($email) == false) {
+      if ($this->isEmailInUse($email) == false) {
+        if ($this->isRegistrationNumberInUse($matricula) == false) {
 
-      // Sending email notification
-      $sendEmail = new Email();
-      $sendEmail->accessRequestNotification($nome,$sobrenome,$login,$email,$setor,$matricula);
+          // Validate email address
+          if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+              $acesso = Container::getClass("SolicitarAcesso");
+              $acesso->save($nome." ".$sobrenome,$email,$login,$setor,$matricula);
+
+              // Sending email notification
+              $sendEmail = new Email();
+              $sendEmail->accessRequestNotification($nome,$sobrenome,$login,$email,$setor,$matricula);
+          } else {
+              header('Content-Type: application/json; charset=UTF-8');
+              header('HTTP/1.1 400');
+              echo json_encode(array('event' => 'error', 'type' => 'invalid_email'));
+          }
+
+        } else {
+          // Error: the submitted registration number is already in use
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          echo json_encode(array('event' => 'error', 'type' => 'registration_number_already_in_use'));
+        }
+      } else {
+        // Error: the submitted email is already in use
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        echo json_encode(array('event' => 'error', 'type' => 'email_already_in_use'));
+      }
     } else {
+      // Error: the submitted login is already in use
       header('Content-Type: application/json; charset=UTF-8');
       header('HTTP/1.1 400');
-      echo json_encode(array('event' => 'error', 'type' => 'invalid_email'));
+      echo json_encode(array('event' => 'error', 'type' => 'login_already_in_use'));
     }
   }
 
@@ -162,6 +187,36 @@ class IndexController extends Action{
     $_SESSION = array();
     session_destroy();
     header('Location: /gticchla/public/');
+  }
+
+  private function isLoginInUse($login) {
+      $usuarios = Container::getClass("Usuario");
+      $usuario = $usuarios->findByLogin($login);
+      if ($usuario == false) {
+          return false;
+      } else {
+          return true;
+      }
+  }
+
+  private function isEmailInUse($email) {
+      $usuarios = Container::getClass("Usuario");
+      $usuario = $usuarios->findByEmail($email);
+      if ($usuario == false) {
+        return false;
+      } else {
+        return true;
+      }
+  }
+
+  private function isRegistrationNumberInUse($matricula) {
+      $usuarios = Container::getClass("Usuario");
+      $usuario = $usuarios->findByRegistrationNumber($matricula);
+      if ($usuario == false) {
+        return false;
+      } else {
+        return true;
+      }
   }
 
 }
