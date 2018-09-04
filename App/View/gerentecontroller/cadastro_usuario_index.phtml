@@ -461,6 +461,12 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
           if (response.event == "error") {
             if (response.type == "invalid_email") {
               alert("O endereço de e-mail informado é inválido");
+            } else if (response.type == "login_already_in_use") {
+              alert("O username submetido já está em uso por outro usuário");
+            } else if (response.type == "email_already_in_use") {
+              alert("O endereço de e-mail está registrado com outro usuário");
+            } else if (response.type == "registration_number_already_in_use") {
+              alert("A matrícula informada está registrada com outro usuário");
             } else {
               alert("Houve uma falha inesperada.\nNão foi possível completar a ação.");
             }
@@ -581,12 +587,54 @@ $('button#accept-selection').on('click', function() {
   $.post("/gticchla/public/admin/cadastrar_usuarios", {
     "requests": requests
   })
-  .done(function() {
+  .done(function(data) {
       requests = [];
       document.location.reload(true);
   })
-  .fail(function() {
-      requests = [];
+  .fail(function(data) {
+    if (data.hasOwnProperty('responseJSON')) {
+      if (data.responseJSON.event == "error") {
+        if (data.responseJSON.type == "prevented_registrations") {
+          var text = "";
+          var data = data.responseJSON.data;
+          if (data.hasOwnProperty('invalid_emails') && data.invalid_emails.length > 0) {
+            text += "Email(s) inválido(s):\n";
+            for (var email in data.invalid_emails) {
+              text += "•  " + email + ";\n";
+            }
+            text += "\n\n";
+          }
+          if (data.hasOwnProperty('used_emails') && data.used_emails.length > 0) {
+            text += "Emails(s) já registrado(s):\n";
+            for (var email of data.used_emails) {
+              text += "•  " + email + ";\n";
+            }
+            text += "\n\n";
+          }
+          if (data.hasOwnProperty('used_logins') && data.used_logins.length > 0) {
+            text += "Username(s) já em uso:\n";
+            for (var login of data.used_logins) {
+              text += "•  " + login + ";\n";
+            }
+            text += "\n\n";
+          }
+          if (data.hasOwnProperty('used_registration_numbers') && data.used_registration_numbers.length > 0) {
+            text += "Matrícula(s) já registrada(s):\n";
+            for (var registrationNumber of data.used_registration_numbers) {
+              text += "•  " + registrationNumber + ";\n";
+            }
+            text += "\n\n";
+          }
+          alert(text);
+        } else {
+          alert("Houve algum problema");
+        }
+      } else {
+        alert("Houve algum problema");
+      }
+    } else {
+      alert("Houve algum problema");
+    }
   });
 });
 
