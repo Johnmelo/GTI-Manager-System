@@ -678,6 +678,14 @@ $('div#request-list-wrapper button.btn-accept-request').on('click', function() {
         if (response.event === "error") {
           if (response.type === "invalid_email") {
             alert("A solicitação não pôde ser aceita pois o endereço de email não é válido.");
+          } else if (response.type == "login_already_in_use") {
+            alert("O username submetido já está em uso por outro usuário");
+          } else if (response.type == "email_already_in_use") {
+            alert("O endereço de e-mail está registrado com outro usuário");
+          } else if (response.type == "registration_number_already_in_use") {
+            alert("A matrícula informada está registrada com outro usuário");
+          } else {
+            alert("Houve uma falha inesperada.\nNão foi possível completar a ação.");
           }
         } else {
           alert("Houve um problema desconhecido.");
