@@ -301,7 +301,7 @@ class GerenteController extends Action{
           $requisicao = $requisicao_acessoDb->findById($id_request);
 
           $chamadoDb = Container::getClass("Chamado");
-          $chamadoDb->save($requisicao['id_servico'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$requisicao['descricao']);
+          $chamadoDb->save($requisicao['id_servico'],$requisicao['id_local'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$requisicao['descricao']);
           $request = Container::getClass("SolicitarChamado");
           $request->updateColumnById("status","ATENDIDA",$id_request);
         }

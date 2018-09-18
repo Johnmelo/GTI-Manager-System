@@ -22,6 +22,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `chamados` (
   `id` int(10) NOT NULL,
   `id_servico` int(10) NOT NULL,
+  `id_local` int(10) NOT NULL,
   `id_solicitacao` int(10) NOT NULL,
   `data_abertura` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `data_finalizado` datetime DEFAULT NULL,
@@ -32,6 +33,19 @@ CREATE TABLE `chamados` (
   `descricao` text COLLATE utf8mb4_unicode_ci,
   `parecer_tecnico` text COLLATE utf8mb4_unicode_ci,
   `status` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'AGUARDANDO'
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `locais`
+--
+
+CREATE TABLE `locais` (
+  `id` int(11) NOT NULL,
+  `nome` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipo` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ativo` bit(1) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -115,6 +129,7 @@ CREATE TABLE `solicitacao_chamado` (
   `data_solicitacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `id_cliente` int(10) NOT NULL,
   `id_servico` int(10) NOT NULL,
+  `id_local` int(10) NOT NULL,
   `descricao` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'AGUARDANDO',
   `data_recusado` datetime DEFAULT NULL,
@@ -184,6 +199,12 @@ ALTER TABLE `chamados`
   ADD KEY `id_cliente_solicitante` (`id_cliente_solicitante`);
 
 --
+-- Indexes for table `locais`
+--
+ALTER TABLE `locais`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `servicos`
 --
 ALTER TABLE `servicos`
@@ -231,6 +252,12 @@ ALTER TABLE `usuarios_roles`
 -- AUTO_INCREMENT for table `chamados`
 --
 ALTER TABLE `chamados`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `locais`
+--
+ALTER TABLE `locais`
   MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
 
 --

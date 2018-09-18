@@ -6,6 +6,7 @@ use \App\Model\SolicitarAcesso;
 use \SON\Di\Container;
 use \App\Model\Email;
 use \App\Model\PasswordUtil;
+use \App\Model\Local;
 
 class IndexController extends Action{
 
@@ -180,6 +181,53 @@ class IndexController extends Action{
         echo json_encode($arr);
     }
     }
+  }
+
+  public function get_services_suggestions(){
+    $suggestions = [];
+
+    // get the data
+    $Servico = Container::getClass("Servico");
+    $servicos_db = $Servico->fetchAll();
+
+    foreach ($servicos_db as $servico_db) {
+      $servico = [
+        "value" => $servico_db["nome"],
+        "data"  => []
+      ];
+      $servico["data"]["id_servico"] = $servico_db["id"];
+      switch ($servico_db["tipo"]) {
+        case "Instalação": $servico["data"]["category"] = "Instalação"; break;
+        case "Problema"  : $servico["data"]["category"] = "Problema"; break;
+        case "Reserva"   : $servico["data"]["category"] = "Reserva"; break;
+        case "Sites"     : $servico["data"]["category"] = "Sites"; break;
+        default          : $servico["data"]["category"] = "Outros"; break;
+      }
+      array_push($suggestions, $servico);
+    }
+    header("Content-type:application/json");
+    echo(json_encode($suggestions));
+  }
+
+  public function get_locales_suggestions() {
+    $suggestions = [];
+
+    // Get the data
+    $Local = Container::getClass("Local");
+    $db_locales = $Local->getCurrentPlaces();
+
+    // Arrange the data to be used by the component
+    foreach ($db_locales as $db_locale) {
+      $locale = [
+        "value" => $db_locale["nome"],
+        "data"  => []
+      ];
+      $locale["data"]["id_local"] = $db_locale["id"];
+      $locale["data"]["category"] = $db_locale["tipo"];
+      array_push($suggestions, $locale);
+    }
+    header("Content-type:application/json");
+    echo(json_encode($suggestions));
   }
 
   public function logout(){

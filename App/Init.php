@@ -12,6 +12,8 @@ class Init extends Bootstrap{
     $ar['index_logar'] = array('route' => '/gticchla/public/logar' , 'controller' => 'indexController', 'action' => 'logar');
     $ar['index_logout'] = array('route' => '/gticchla/public/logout' , 'controller' => 'indexController', 'action' => 'logout');
     $ar['get_request_info'] = array('route' => '/gticchla/public/get_request_info', 'controller' => 'indexController', 'action' => 'get_request_info');
+    $ar['get_services_suggestions'] = array('route' => '/gticchla/public/get_services_suggestions' , 'controller' => 'indexController', 'action' => 'get_services_suggestions');
+    $ar['get_locales_suggestions'] = array('route' => '/gticchla/public/get_locales_suggestions' , 'controller' => 'indexController', 'action' => 'get_locales_suggestions');
     //--------------------------------------------------------------------------------------------------------------------------
 
     //ADMIN ROUTES--------------------------------------------------------------------------------------------------------------

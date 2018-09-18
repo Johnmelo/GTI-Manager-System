@@ -89,14 +89,15 @@ class ClienteController extends Action{
   }
 
   public function client_register_call_request(){
-    $id_servico = $_POST['servico'];
+    $id_servico = $_POST['id_servico'];
+    $id_local = $_POST['id_local'];
     $descricao = $_POST['descricao'];
 
     session_start();
     $id_usuario = $_SESSION['user_id'];
 
     $requisicao = Container::getClass("SolicitarChamado");
-    $requisicao->save($id_usuario,$id_servico,$descricao);
+    $requisicao->save($id_usuario,$id_servico,$id_local,$descricao);
     header('Location: ./solicitar_atendimento');
 
   }
