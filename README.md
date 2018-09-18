@@ -19,6 +19,10 @@
 1. Edit the file App/Init.php to edit the database host, name, user and password, in the getDb function;
 2. Edit the file App/Model/Email.php and set the values of the consts SMTP_HOST, FROM_EMAIL, FROM_NAME and PASSWORD (make sure port 465 is allowed to send emails, or if [SELinux could be preventing the PHP to send emails](https://github.com/PHPMailer/PHPMailer/wiki/Troubleshooting#selinux-blocking));
 
+#### Add places in the database
+
+When registered clients make service requests, they need to specify the responsible place for the request. Those places are registered in the "locais" table in the DB. You must "INSERT INTO" the values "nome" and "tipo" for each location. In the form for requesting a service, the places will appear in a autocomplete textbox comparing what's typed with the data from "nome" column, and (for the sake of visual orgnization) those places are grouped by the "tipo" column. The column "ativo" determines which locations will be searchable and choosable in the service request form.
+
 #### Replace the placeholders
 
 Bellow it's listed the files which contains placeholders to be replaced, and which ones. Some placeholders of img src are supposed to be replaced by full URL addresses, to make users able to view the images when they receive the email (if the URL of the images in the email are relative paths, they won't load).
