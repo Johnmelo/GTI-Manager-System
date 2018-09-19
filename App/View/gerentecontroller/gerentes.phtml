@@ -162,8 +162,8 @@
                     <tr>
                       <th>ID</th>
                       <th>Cliente</th>
+                      <th>Local</th>
                       <th>Serviço</th>
-                      <th>Setor</th>
                       <th>Técnico Responsável</th>
                     </tr>
                   </thead>
@@ -172,8 +172,8 @@
                       <tr data-request-id="<?php echo $atendimento['id'];?>">
                         <td><?php echo $atendimento['id'];?></td>
                         <td><?php echo $this->view->clients_names[$atendimento['id_cliente_solicitante']]['nome'];?></td>
+                        <td><?php echo $this->view->locais[$atendimento['id_local']]['nome'] ?></td>
                         <td><?php echo $this->view->service_names[$atendimento['id_servico']];?></td>
-                        <td><?php echo $this->view->clients_names[$atendimento['id_cliente_solicitante']]['setor'];?></td>
                         <td><?php echo $this->view->clients_names[$atendimento['id_tecnico_responsavel']]['nome'];?></td>
                       </tr>
                     <?php endforeach;?>
@@ -205,9 +205,8 @@
                         <th></th>
                         <th>ID</th>
                         <th>Cliente</th>
+                        <th>Local</th>
                         <th>Serviço</th>
-                        <th>Setor</th>
-                        <th>Descrição</th>
                         <th>Ação</th>
                       </tr>
                     </thead>
@@ -217,9 +216,8 @@
                             <td><input type="checkbox" value="<?php echo $call_request['id'];?>" name="selections_call_request[]"></td>
                             <td><?php echo $call_request['id']; ?></td>
                             <td><?php echo $this->view->clients_names[$call_request['id_cliente']]['nome'];?></td>
+                            <td><?php echo $this->view->locais[$call_request['id_local']]['nome'] ?></td>
                             <td><?php echo $this->view->service_names[$call_request['id_servico']];?></td>
-                            <td><?php echo $this->view->clients_names[$call_request['id_cliente']]['setor'];?></td>
-                            <td><?php echo $call_request['descricao'];?></td>
                             <td><button class="btn btn-primary" type="button" value="<?php echo $call_request['id'];?>" name="request-refusal">Recusar</button></td>
                         </tr>
                       <?php endforeach; ?>
@@ -253,8 +251,8 @@
                     <tr>
                       <th>ID</th>
                       <th>Cliente</th>
+                      <th>Local</th>
                       <th>Serviço</th>
-                      <th>Setor</th>
                       <th>Técnico Abertura</th>
                     </tr>
                   </thead>
@@ -263,8 +261,8 @@
                         <tr data-request-id="<?php echo $abertos['id'];?>">
                           <td><?php echo $abertos['id'];?></td>
                           <td><?php echo $this->view->clients_names[$abertos['id_cliente_solicitante']]['nome'];?></td>
+                          <td><?php echo $this->view->locais[$abertos['id_local']]['nome'] ?></td>
                           <td><?php echo $this->view->service_names[$abertos['id_servico']];?></td>
-                          <td><?php echo $this->view->clients_names[$abertos['id_cliente_solicitante']]['setor'];?></td>
                           <td><?php echo $this->view->clients_names[$abertos['id_tecnico_abertura']]['nome'];?></td>
                         </tr>
                       <?php endforeach;?>
@@ -361,6 +359,7 @@
             id_chamado_field: true,
             chamado_status_field: true,
             cliente_field: true,
+            local_field: true,
             servico_field: true,
             data_abertura_field: true,
             tecnico_abertura_field: true,
@@ -382,6 +381,7 @@
             visible_fields: {
                 id_solicitacao_field: true,
                 cliente_field: true,
+                local_field: true,
                 solicitacao_chamado_status_field: true,
                 servico_field: true,
                 data_solicitacao_field: true,
@@ -402,6 +402,7 @@
             id_chamado_field: true,
             chamado_status_field: true,
             cliente_field: true,
+            local_field: true,
             servico_field: true,
             data_abertura_field: true,
             tecnico_abertura_field: true,
@@ -422,6 +423,7 @@
           visible_fields: {
             id_solicitacao_field: true,
             cliente_field: true,
+            local_field: true,
             servico_field: true,
             data_solicitacao_field: true,
             descricao_field: true,

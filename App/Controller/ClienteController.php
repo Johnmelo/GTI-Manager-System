@@ -41,11 +41,23 @@ class ClienteController extends Action{
       $array_users_names['NULL']['nome'] = "-";
       //--------------------------------------------------------
 
+      // LOAD AND PREPARE PLACES INFORMATION
+      $local = Container::getClass("Local");
+      $locais = $local->fetchAll();
+      $array_locais = [];
+      foreach ($locais as $local) {
+          $array_locais[$local['id']]['nome'] = $local['nome'];
+          $array_locais[$local['id']]['tipo'] = $local['tipo'];
+          $array_locais[$local['id']]['ativo'] = $local['ativo'];
+      }
+      //--------------------------------------------------------
+
       //ATRIBUING VALUES TO THE VIEW CLIENT
       $this->view->chamados_abertos = $chamados_abertos;
       $this->view->chamados_atendimento = $chamados_atendimento;
       $this->view->services_names = $array_servicos_names;
       $this->view->users_names = $array_users_names;
+      $this->view->locais = $array_locais;
       $this->render('clientes');
       //--------------------------------------------------------
 
@@ -130,11 +142,23 @@ class ClienteController extends Action{
         foreach ($servicos as $service) {
           $array_servicos_names[$service['id']] = $service['nome'];
         }
-        //-------------------------------------------------------
+        //--------------------------------------------------------
+
+        // LOAD AND PREPARE PLACES INFORMATION
+        $local = Container::getClass("Local");
+        $locais = $local->fetchAll();
+        $array_locais = [];
+        foreach ($locais as $local) {
+            $array_locais[$local['id']]['nome'] = $local['nome'];
+            $array_locais[$local['id']]['tipo'] = $local['tipo'];
+            $array_locais[$local['id']]['ativo'] = $local['ativo'];
+        }
+        //--------------------------------------------------------
 
         $this->view->requests = $myRequests;
         $this->view->user_info = $user_info;
         $this->view->service_names = $array_servicos_names;
+        $this->view->locais = $array_locais;
         $this->render('cliente_historico');
       } else {
           $this->forbidenAccess();

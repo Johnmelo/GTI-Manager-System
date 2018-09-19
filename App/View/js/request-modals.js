@@ -163,6 +163,9 @@ function finalizeRequest(tableRow) {
     .done(function() {
         tableRow.remove();
         $('.request-modal').modal('toggle');
+        setTimeout(function() {
+            document.location.reload(true);
+        }, 500);
     })
     .fail(function() {
         alert("Não foi possível realizar a ação");
@@ -240,6 +243,12 @@ $(document).ready(function() {
               <label for="cliente_field" class="col-sm-4 control-label">Cliente</label>\
               <div class="col-sm-8">\
                 <input type="text" class="form-control" id="cliente_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="local_field" class="col-sm-4 control-label">Local</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="local_field" readonly>\
               </div>\
             </div>\
             <div class="form-group" style="display: none;">\

@@ -143,6 +143,7 @@
                     <thead>
                       <tr>
                         <th>ID</th>
+                        <th>Local</th>
                         <th>Serviço</th>
                         <th>Status</th>
                         <th>Técnico Responsável</th>
@@ -154,6 +155,7 @@
                         <tr data-request-id="<?php echo $callrequest['id'];?>">
                           <a href="view_request">
                             <td><?php echo $callrequest['id']; ?></td>
+                            <td><?php echo $this->view->locais[$callrequest['id_local']]['nome'] ?></td>
                             <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
                             <td><?php echo $callrequest['status']; ?></td>
                             <td><?php echo $this->view->user_info[$callrequest['id_tecnico_responsavel']]['nome'];?></td>
@@ -210,6 +212,7 @@
             id_chamado_field: true,
             chamado_status_field: true,
             cliente_field: true,
+            local_field: true,
             servico_field: true,
             data_abertura_field: true,
             tecnico_abertura_field: true,

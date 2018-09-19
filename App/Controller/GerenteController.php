@@ -49,6 +49,15 @@ class GerenteController extends Action{
         $array_clients_names[$client['id']]['setor'] = $client['setor'];
       }
 
+      $local = Container::getClass("Local");
+      $locais = $local->fetchAll();
+      $array_locais = [];
+      foreach ($locais as $local) {
+          $array_locais[$local['id']]['nome'] = $local['nome'];
+          $array_locais[$local['id']]['tipo'] = $local['tipo'];
+          $array_locais[$local['id']]['ativo'] = $local['ativo'];
+      }
+
       //atribuindo para a view
       $this->view->clients_names = $array_clients_names;
       $this->view->service_names = $array_servicos_names;
@@ -58,6 +67,7 @@ class GerenteController extends Action{
       $this->view->chamados_abertos = $chamados_abertos;
       $this->view->chamados_atendimentos = $chamados_atendimentos;
       $this->view->chamados_finalizados = $chamados_finalizados;
+      $this->view->locais = $array_locais;
       $this->view->count = $count - 1;
       $this->render('gerentes');
     }else{

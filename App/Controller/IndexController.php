@@ -140,10 +140,15 @@ class IndexController extends Action{
         $servico = Container::getClass("Servico");
         $request_service = $servico->findById($requests["id_servico"]);
 
+        // Get local data
+        $local = Container::getClass("Local");
+        $request_local = $local->findById($requests["id_local"]);
+
         $arr = array(
           "id_solicitacao_field" => $requests["id_solicitacao"],
           "id_chamado_field" => $requests["id_chamado"],
           "cliente_field" => $request_client['nome'],
+          "local_field" => $request_local["nome"],
           "servico_field" => $request_service["nome"],
           "descricao_field" => $requests["descricao"],
           "solicitacao_chamado_status_field" => $requests["solicitacao_chamado_status"],
@@ -170,10 +175,15 @@ class IndexController extends Action{
         $servico = Container::getClass("Servico");
         $request_service = $servico->findById($requests["id_servico"]);
 
+        // Get local data
+        $local = Container::getClass("Local");
+        $request_local = $local->findById($requests["id_local"]);
+
         $arr = array(
           "id_solicitacao_field" => $requests["id_solicitacao"],
           "data_solicitacao_field" => (isset($requests["data_solicitacao"])) ? date('d/m/Y H:i:s',strtotime($requests["data_solicitacao"])) : NULL,
           "cliente_field" => $request_client["nome"],
+          "local_field" => $request_local["nome"],
           "servico_field" => $request_service["nome"],
           "descricao_field" => $requests["descricao"],
           "solicitacao_chamado_status_field" => $requests["solicitacao_chamado_status"]

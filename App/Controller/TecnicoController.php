@@ -60,6 +60,16 @@ class TecnicoController extends Action{
       }
      //---------------------------------------------------
 
+     $local = Container::getClass("Local");
+     $locais = $local->fetchAll();
+     $array_locais = [];
+     foreach ($locais as $local) {
+         $array_locais[$local['id']]['nome'] = $local['nome'];
+         $array_locais[$local['id']]['tipo'] = $local['tipo'];
+         $array_locais[$local['id']]['ativo'] = $local['ativo'];
+     }
+    //---------------------------------------------------
+
       //SENDING VALUES TO TECHNICIAN VIEW PAGE
       $this->view->myRequests = $myRequests;
       $this->view->myRequestsFinished = $myRequestsFinished;
@@ -68,6 +78,7 @@ class TecnicoController extends Action{
       $this->view->users_names = $array_users_names;
       $this->view->service_names = $array_servicos_names;
       $this->view->requests_attendance = $chamados_atendimentos;
+      $this->view->locais = $array_locais;
       //------------------------------------------------------------------------
 
       //RENDERING PAGE
@@ -160,9 +171,21 @@ class TecnicoController extends Action{
         }
         //-------------------------------------------------------
 
+        // LOAD AND PREPARE PLACES INFORMATION
+        $local = Container::getClass("Local");
+        $locais = $local->fetchAll();
+        $array_locais = [];
+        foreach ($locais as $local) {
+            $array_locais[$local['id']]['nome'] = $local['nome'];
+            $array_locais[$local['id']]['tipo'] = $local['tipo'];
+            $array_locais[$local['id']]['ativo'] = $local['ativo'];
+        }
+        //---------------------------------------------------
+
         $this->view->requests = $requestsFinished;
         $this->view->user_info = $user_info;
         $this->view->service_names = $array_servicos_names;
+        $this->view->locais = $array_locais;
         $this->render('technician_request_history');
       } else {
           $this->forbidenAccess();
