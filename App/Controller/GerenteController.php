@@ -3,6 +3,8 @@ namespace App\Controller;
 use SON\Controller\Action;
 use \SON\Di\Container;
 use \App\Model\Email;
+use \DateTime;
+use \DateTimeZone;
 
 class GerenteController extends Action{
   public function index(){
@@ -293,8 +295,9 @@ class GerenteController extends Action{
         $id = $_POST['request_id'];
         $parecer = $_POST['technical_opinion'];
         $status = "FINALIZADO";
-        $today = getdate();
-        $data_finalizado = ''.$today['year'].'-'.$today['mon'].'-'.$today['mday'];
+        $date = new DateTime("now", new DateTimeZone("America/Recife"));
+        $date->setTimestamp(time());
+        $data_finalizado = $date->format("Y-m-d H:i:s");
         $chamadoDb = Container::getClass("Chamado");
         $chamadoDb->updateColumnById("status",$status,$id);
         $chamadoDb->updateColumnById("parecer_tecnico",$parecer,$id);
