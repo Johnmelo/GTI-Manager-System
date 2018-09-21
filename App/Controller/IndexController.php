@@ -36,7 +36,7 @@ class IndexController extends Action{
 
     // Check if there's already a registered user with the
     // submitted login, email or registration number
-    if($this->isLoginInUse($email) == false) {
+    if($this->isLoginInUse($login) == false) {
       if ($this->isEmailInUse($email) == false) {
         if ($this->isRegistrationNumberInUse($matricula) == false) {
 
@@ -250,31 +250,19 @@ class IndexController extends Action{
   private function isLoginInUse($login) {
       $usuarios = Container::getClass("Usuario");
       $usuario = $usuarios->findByLogin($login);
-      if ($usuario == false) {
-          return false;
-      } else {
-          return true;
-      }
+      return ($usuario === false) ? false : true;
   }
 
   private function isEmailInUse($email) {
       $usuarios = Container::getClass("Usuario");
       $usuario = $usuarios->findByEmail($email);
-      if ($usuario == false) {
-        return false;
-      } else {
-        return true;
-      }
+      return ($usuario === false) ? false : true;
   }
 
   private function isRegistrationNumberInUse($matricula) {
       $usuarios = Container::getClass("Usuario");
       $usuario = $usuarios->findByRegistrationNumber($matricula);
-      if ($usuario == false) {
-        return false;
-      } else {
-        return true;
-      }
+      return ($usuario === false) ? false : true;
   }
 
 }

@@ -171,7 +171,7 @@ class GerenteController extends Action{
                 // role
                 $cliente_role = $clienteDb->findByLogin($request['usuario']);
                 $user_role =  Container::getClass("UsuarioRole");
-                $user_role->save($cliente_role['id'],1,0,0);
+                $user_role->save($cliente_role['id'],$request['isClient'],$request['isTechnician'],$request['isAdmin']);
 
                 // Send email
                 $email = new Email();
@@ -341,31 +341,19 @@ class GerenteController extends Action{
   private function isLoginInUse($login) {
       $usuarios = Container::getClass("Usuario");
       $usuario = $usuarios->findByLogin($login);
-      if ($usuario == false) {
-          return false;
-      } else {
-          return true;
-      }
+      return ($usuario === false) ? false : true;
   }
 
   private function isEmailInUse($email) {
       $usuarios = Container::getClass("Usuario");
       $usuario = $usuarios->findByEmail($email);
-      if ($usuario == false) {
-        return false;
-      } else {
-        return true;
-      }
+      return ($usuario === false) ? false : true;
   }
 
   private function isRegistrationNumberInUse($matricula) {
       $usuarios = Container::getClass("Usuario");
       $usuario = $usuarios->findByRegistrationNumber($matricula);
-      if ($usuario == false) {
-        return false;
-      } else {
-        return true;
-      }
+      return ($usuario === false) ? false : true;
   }
 }
 ?>
