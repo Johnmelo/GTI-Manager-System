@@ -53,13 +53,13 @@ var tour = new Tour({
     },
     {
       title: 'Fazendo um chamado',
-      content: 'É nesse formulário que você solicita<br>um chamado.<br>Você seleciona uma das opções de<br>motivo e descreve melhor a situação<br>no campo de texto seguinte.<br>Depois, é só clicar em "Solicitar".',
+      content: 'É nesse formulário que você solicita<br>um chamado.<br>Você seleciona uma das opções de<br>motivo, o local para o qual o serviço se<br>destina e descreve a situação/problema<br>no campo de texto "Descrição".<br>Depois, é só clicar em "Solicitar".<br><br>Atenção: no campo de "Motivo" e "Local",<br>é necessário selecionar uma opção da<br>lista que aparece quando se clica nos<br>campos. Você pode digitar algo, mas<br>apenas para pesquisar uma opção. O<br>formulário não irá aceitar qualquer texto<br>digitado, apenas os items selecionados.',
       element: '#nova-solicitacao-panel',
       backdrop: true
     },
     {
       title: 'Chamados pendentes',
-      content: '<small>Quando você solicita um chamado no formulário ao<br>lado, ele não é imediatamente aberto.<br>As suas solicitações de chamado feitas no formulário<br>ao lado ficam nessa tabela de "Solicitações pendentes"<br>na espera de serem aceitas pelo suporte.<br><br>Após a solicitação ser aceita, o chamado é aberto e<br>você passa a acompanha-lo na tabela de "Chamados<br>abertos" na página inicial.<br><br>Vamos voltar para a página inicial para ver as tabelas<br>dos chamados depois de serem abertos...</small>',
+      content: '<small>Quando você solicita um chamado no formulário<br>anterior, o chamado não é imediatamente aberto.<br>As suas solicitações de chamado feitas no formulário<br>anterior ficam nessa tabela aguardando aprovação, <br>na espera de serem aceitas pelo suporte.<br><br>Após a solicitação ser aceita, o chamado é aberto e<br>você passa a acompanha-lo na tabela da "Fila de<br>Atendimento" na página inicial.<br><br>Vamos voltar para a página inicial para ver as tabelas<br>dos chamados depois de serem abertos...</small>',
       element: '#solicitacoes-nao-abertas-panel',
       placement: 'left',
       backdrop: true
@@ -69,23 +69,30 @@ var tour = new Tour({
     },
     {
       title: 'Seus chamados abertos',
-      content: 'De volta à pagina inicial. Quando a sua solicitação<br>de chamado sai da tabela "Solicitações pendentes"<br>lá da página "Solicitar atendimento", ele vem para<br>essa tabela.<br><br>Ou seja, os chamados nessa tabela são solicitações<br>que foram aceitas pelo suporte e estão em espera<br>para serem atendidas.',
+      content: 'De volta à pagina inicial. Quando a sua solicitação<br>de chamado sai da tabela de "Aguardando aprovação"<br>lá da página "Solicitar atendimento", ele vem para essa tabela.<br><br>Ou seja, os chamados nessa tabela são solicitações<br>que foram aceitas pelo suporte e estão em espera<br>para serem atendidas.',
       element: '#chamados-abertos-panel',
       placement: 'bottom',
       backdrop: true
     },
     {
       title: 'Seus chamados em atendimento',
-      content: 'Quando chegar a vez do seu chamado ser atendido,<br>ele sairá da tabela de "Chamados abertos" e ficará<br>nessa tabela de "Chamados em atendimento".',
+      content: 'Quando chegar a vez do seu chamado ser atendido,<br>ele sairá da tabela de "Fila de atendimento" ao lado e ficará<br>nessa tabela de "Chamados em atendimento".',
       element: '#chamados-em-atendimento-panel',
       placement: 'bottom',
       backdrop: true
     },
     {
       title: 'Detalhes dos chamados',
-      content: 'Em qualquer tabela do sistema você pode clicar<br>numa linha para ver as informações completas<br>de um chamado!',
+      content: 'Em qualquer tabela do sistema você pode<br>clicar numa linha para ver as informações<br>completas de um chamado!',
       element: 'form[name=chamados_abertos_clientes] tbody tr:nth-child(1)',
       placement: 'bottom',
+      backdrop: true
+    },
+    {
+      title: 'Histórico dos seus chamados',
+      content: 'Por fim, aqui nesse link você acessa a<br>página com o histórico de todos os seus<br>chamados que já foram concluídos.',
+      element: '#sidebar-menu ul li:nth-child(3)',
+      placement: 'right',
       backdrop: true
     },
     {
