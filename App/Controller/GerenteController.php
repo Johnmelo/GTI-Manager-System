@@ -3,8 +3,6 @@ namespace App\Controller;
 use SON\Controller\Action;
 use \SON\Di\Container;
 use \App\Model\Email;
-use \DateTime;
-use \DateTimeZone;
 
 class GerenteController extends Action{
   public function index(){
@@ -295,7 +293,7 @@ class GerenteController extends Action{
         $id = $_POST['request_id'];
         $parecer = $_POST['technical_opinion'];
         $status = "FINALIZADO";
-        $date = new DateTime("now", new DateTimeZone("America/Recife"));
+        $date = new \DateTime("now", new \DateTimeZone("America/Recife"));
         $date->setTimestamp(time());
         $data_finalizado = $date->format("Y-m-d H:i:s");
         $chamadoDb = Container::getClass("Chamado");
@@ -305,24 +303,35 @@ class GerenteController extends Action{
       }
     }
   }
+
   public function open_call_request(){
     session_start();
     if(($_SESSION['user_role'] == "GERENTE")||($_SESSION['user_role'] == "TECNICO")){
-      if(isset($_POST['admin_open_client_call_request']) && isset($_POST['selections_call_request'])){
-        foreach ($_POST['selections_call_request'] as $id_request) {
+      // Check if the necessary data was sent
+      if(isset($_POST['call_request_id']) && isset($_POST['deadline_value'])){
+        // Check if the data was sent in the expected format
+        if(preg_match("/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/", $_POST['deadline_value']) === 1) {
+          // Update the service request status and get its info
+          // to store in the accepted requests table
           $requisicao_acessoDb = Container::getClass("SolicitarChamado");
-          $requisicao = $requisicao_acessoDb->findById($id_request);
+          $requisicao_acessoDb->updateColumnById("status","ATENDIDA",$_POST['call_request_id']);
+          $requisicao = $requisicao_acessoDb->findById($_POST['call_request_id']);
 
+          // Save the service request as accepted by saving its data
+          // in the accepted requests table
+          $date = new \DateTime($_POST['deadline_value'], new \DateTimeZone("America/Recife"));
+          $prazo = $date->format("Y-m-d H:i:s");
           $chamadoDb = Container::getClass("Chamado");
-          $chamadoDb->save($requisicao['id_servico'],$requisicao['id_local'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$requisicao['descricao']);
-          $request = Container::getClass("SolicitarChamado");
-          $request->updateColumnById("status","ATENDIDA",$id_request);
+          $chamadoDb->save($requisicao['id_servico'],$requisicao['id_local'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$prazo,$requisicao['descricao']);
+        } else {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'deadline_wrong_format')));
         }
-        echo "<script>alert('Dados cadastrados!');</script>";
-        header('Location: /gticchla/public/');
-
-      }else{
-        echo "<script>alert('Não existe requisição aguardando ou não foi selecionada alguma para atender!'); history.back();</script>";
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
       }
     }else{
       $this->forbidenAccess();

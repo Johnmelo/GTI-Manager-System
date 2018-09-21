@@ -137,7 +137,17 @@ function fillUpRequestModal(typeRequest, requestId, fieldList) {
     .done(function(data) {
         var request = JSON.parse(data);
         for (field of fieldList) {
-            if (field === "data_abertura_field" || field === "data_solicitacao_field" || field === "data_finalizado_field" || field === "prazo_field") {
+            if (field === "prazo_field") {
+                if (request.hasOwnProperty("prazo_field")) {
+                    var date = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("DD/MM/YYYY");
+                    var time = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("HH:mm");
+                    $('.request-modal-form')[0].elements[field].value = date + " às " + time;
+                } else {
+                    var date = moment().add(2, 'days').format("DD/MM/YYYY");
+                    var time = moment().format("HH:mm");
+                    $('.request-modal-form')[0].elements[field].value = date + " às " + time;
+                }
+            } else if (field === "data_abertura_field" || field === "data_solicitacao_field" || field === "data_finalizado_field") {
                 var date = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("DD/MM/YYYY");
                 var time = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("HH:mm");
                 $('.request-modal-form')[0].elements[field].value = date + " às " + time;
@@ -149,6 +159,52 @@ function fillUpRequestModal(typeRequest, requestId, fieldList) {
     .fail(function() {
         alert("Não foi possível realizar a ação");
     });
+}
+
+function acceptRequest(tableRow) {
+    var request_id = tableRow.find('button[name="request-acceptance"]').val();
+    var data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
+
+    // Check if inserted deadline is in valid format
+    if (data_prazo.match(/\d{2}\/\d{2}\/\d{4} [aà]s \d{2}:\d{2}/)) {
+        // Convert the deadline info into the format accepted by the DB
+        data_prazo = data_prazo.replace(/[aà]s /g, "");
+        data_prazo += ":00";
+        var datetime = data_prazo.split(" ");
+        var date = datetime[0].split("/");
+        var time = datetime[1];
+        datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
+        $.post("/gticchla/public/admin/open_call_request",
+        {
+            "call_request_id": request_id,
+            "deadline_value": datetime
+        })
+        .done(function() {
+            tableRow.remove();
+            $('.request-modal').modal('toggle');
+            setTimeout(function() {
+                document.location.reload(true);
+            }, 500);
+        })
+        .fail(function(data) {
+            if (data.hasOwnProperty("responseJSON")) {
+                response = data.responseJSON;
+                if (response.hasOwnProperty("event") && response.event === "error") {
+                    if (response.hasOwnProperty("type") && response.type === "deadline_wrong_format") {
+                        alert("O prazo foi informado em um formato não reconhecido");
+                    } else {
+                        alert("Houve um problema não previsto");
+                    }
+                } else {
+                    alert("Houve um problema não previsto");
+                }
+            } else {
+                alert("Houve um problema não previsto");
+            }
+        });
+    } else {
+        alert("O prazo foi informado em um formato não reconhecido");
+    }
 }
 
 function finalizeRequest(tableRow) {
@@ -175,24 +231,47 @@ function finalizeRequest(tableRow) {
 function acquireRequest(tableRow) {
     var request_id = tableRow.find('button[name="btnJoin"]').val();
     var data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
-    var data_abertura = $('.request-modal-form')[0].elements["data_abertura_field"].value;
-    var prazo_dias = moment(data_prazo, 'DD/MM/YYYY HH:mm:ss').diff(moment(data_abertura, 'DD/MM/YYYY HH:mm:ss'), 'days');
 
-    $.post("/gticchla/public/technician_select_request",
-    {
-        "btnJoin": request_id,
-        "prazo": prazo_dias
-    })
-    .done(function() {
-        tableRow.remove();
-        $('.request-modal').modal('toggle');
-        setTimeout(function() {
-            document.location.reload(true);
-        }, 500);
-    })
-    .fail(function() {
-        alert("Não foi possível realizar a ação");
-    });
+    // Check if inserted deadline is in valid format
+    if (data_prazo.match(/\d{2}\/\d{2}\/\d{4} [aà]s \d{2}:\d{2}/)) {
+        // Convert the deadline info into the format accepted by the DB
+        data_prazo = data_prazo.replace(/[aà]s /g, "");
+        data_prazo += ":00";
+        var datetime = data_prazo.split(" ");
+        var date = datetime[0].split("/");
+        var time = datetime[1];
+        datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
+        $.post("/gticchla/public/technician_select_request",
+        {
+            "call_request_id": request_id,
+            "deadline_value": datetime
+        })
+        .done(function() {
+            tableRow.remove();
+            $('.request-modal').modal('toggle');
+            setTimeout(function() {
+                document.location.reload(true);
+            }, 500);
+        })
+        .fail(function(data) {
+            if (data.hasOwnProperty("responseJSON")) {
+                response = data.responseJSON;
+                if (response.hasOwnProperty("event") && response.event === "error") {
+                    if (response.hasOwnProperty("type") && response.type === "deadline_wrong_format") {
+                        alert("O prazo foi informado em um formato não reconhecido");
+                    } else {
+                        alert("Houve um problema não previsto");
+                    }
+                } else {
+                    alert("Houve um problema não previsto");
+                }
+            } else {
+                alert("Houve um problema não previsto");
+            }
+        });
+    } else {
+        alert("O prazo foi informado em um formato não reconhecido");
+    }
 }
 
 function refuseRequest(tableRow) {

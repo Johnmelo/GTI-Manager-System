@@ -93,12 +93,26 @@ class TecnicoController extends Action{
   public function technician_select_request(){
     session_start();
     if($_SESSION['user_role'] === "TECNICO"){
-      if(isset($_POST['btnJoin'])){
-        $requestDb = Container::getClass("Chamado");
-        $requestDb->updateColumnById("id_tecnico_responsavel",$_SESSION['user_id'],$_POST['btnJoin']);
-        $requestDb->updateColumnById("status","ATENDIMENTO",$_POST['btnJoin']);
-        $requestDb->updateColumnById("prazo",$_POST['prazo'],$_POST['btnJoin']);
-        header('Location: /gticchla/public/tecnico');
+      // Check if the necessary data was sent
+      if(isset($_POST['call_request_id']) && isset($_POST['deadline_value'])){
+        // Check if the data was sent in the expected format
+        if(preg_match("/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/", $_POST['deadline_value']) === 1) {
+          // Update the service request status and details
+          $date = new \DateTime($_POST['deadline_value'], new \DateTimeZone("America/Recife"));
+          $prazo = $date->format("Y-m-d H:i:s");
+          $requestDb = Container::getClass("Chamado");
+          $requestDb->updateColumnById("id_tecnico_responsavel",$_SESSION['user_id'],$_POST['call_request_id']);
+          $requestDb->updateColumnById("status","ATENDIMENTO",$_POST['call_request_id']);
+          $requestDb->updateColumnById("prazo",$prazo,$_POST['call_request_id']);
+        } else {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'deadline_wrong_format')));
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
       }
     }else{
       $this->forbidenAccess();

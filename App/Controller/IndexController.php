@@ -156,7 +156,7 @@ class IndexController extends Action{
           "data_solicitacao_field" => (isset($requests["data_solicitacao"])) ? date('d/m/Y H:i:s',strtotime($requests["data_solicitacao"])) : NULL,
           "data_abertura_field" => (isset($requests["data_abertura"])) ? date('d/m/Y H:i:s',strtotime($requests["data_abertura"])) : NULL,
           "data_finalizado_field" => (isset($requests["data_finalizado"])) ? date('d/m/Y H:i:s',strtotime($requests["data_finalizado"])) : NULL,
-          "prazo_field" => (isset($requests["data_abertura"]) && isset($requests["prazo"])) ? date('d/m/Y H:i:s', strtotime("+".$requests["prazo"]." days", strtotime($requests["data_abertura"]))) : NULL,
+          "prazo_field" => (isset($requests["prazo"])) ? date('d/m/Y H:i:s',strtotime($requests["prazo"])) : NULL,
           "tecnico_abertura_field" => $request_admission_technician['nome'],
           "tecnico_responsavel_field" => $request_responsible_technician['nome'],
           "parecer_tecnico_field" => $requests["parecer_tecnico"]
