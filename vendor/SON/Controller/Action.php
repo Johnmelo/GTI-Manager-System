@@ -26,7 +26,7 @@ class Action{
   }
 
   public function forbidenAccess(){
-    header('Location: /gticchla/public/');
+    header('Location: /gtic/public/');
   }
 }
 ?>

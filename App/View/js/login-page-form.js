@@ -79,7 +79,7 @@ function submitLoginForm() {
             "password": form['password'].value
         }
         // Submit
-        $.post("/gticchla/public/logar", postData)
+        $.post("/gtic/public/logar", postData)
         .done(function(data) {
             // Success
 
@@ -153,7 +153,7 @@ function submitRequestAccessForm() {
         }
 
         // Submit
-        $.post("/gticchla/public/solicitar_acesso", postData)
+        $.post("/gtic/public/solicitar_acesso", postData)
         .done(function(data) {
             // Success
             alert("Solicitação recebida!\nCheque o e-mail fornecido para verificar os dados.");

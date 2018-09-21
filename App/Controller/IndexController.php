@@ -16,11 +16,11 @@ class IndexController extends Action{
         $this->render('index');
     }else{
       if($_SESSION['user_role'] == "CLIENTE"){
-        header('Location: /gticchla/public/cliente');
+        header('Location: /gtic/public/cliente');
       }else if($_SESSION['user_role'] == "TECNICO"){
-        header('Location: /gticchla/public/tecnico');
+        header('Location: /gtic/public/tecnico');
       }else if($_SESSION['user_role'] == "GERENTE"){
-        header('Location: /gticchla/public/admin');
+        header('Location: /gtic/public/admin');
       }
     }
 
@@ -244,7 +244,7 @@ class IndexController extends Action{
     session_start();
     $_SESSION = array();
     session_destroy();
-    header('Location: /gticchla/public/');
+    header('Location: /gtic/public/');
   }
 
   private function isLoginInUse($login) {

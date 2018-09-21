@@ -354,7 +354,7 @@ $(document).ready(function(){
           return suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1$2<\/strong>');
   };
 
-  $.post("/gticchla/public/get_services_suggestions")
+  $.post("/gtic/public/get_services_suggestions")
   .done(function(data) {
     servicos = data;
     $('form[name=solicitar_chamado] input[name=servico]').prop("readonly", false);
@@ -376,7 +376,7 @@ $(document).ready(function(){
     alert("Houve um problema enquanto carregava os serviços");
   });
 
-  $.post("/gticchla/public/get_locales_suggestions")
+  $.post("/gtic/public/get_locales_suggestions")
   .done(function(data) {
     locais = data;
     $('form[name=solicitar_chamado] input[name=local]').prop("readonly", false);
@@ -463,7 +463,7 @@ function setSimpleModalContent(title, body, primaryButtonAction, primaryButtonTe
 $('#call-request-list button[name=btnCancelarSolicitacao]').on('click', function(e) {
   var request_id = [e.target.value];
   var confirm_action = function () {
-    $.post("/gticchla/public/cliente/client_cancel_call_request", {
+    $.post("/gtic/public/cliente/client_cancel_call_request", {
       "request_id_list": request_id,
       "requestType": "pending_acceptance"
     })
@@ -486,7 +486,7 @@ $('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]').on(
     }
   });
   var confirm_action = function () {
-    $.post("/gticchla/public/cliente/client_cancel_call_request", {
+    $.post("/gtic/public/cliente/client_cancel_call_request", {
       "request_id_list": id_array,
       "requestType": "pending_acceptance"
     })

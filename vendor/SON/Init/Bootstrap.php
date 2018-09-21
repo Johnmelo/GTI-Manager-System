@@ -9,7 +9,7 @@ abstract class Bootstrap{
     $this->run($this->getUrl());
   }
 
-  #Root url = /gticchla/public/
+  #Root url = /gtic/public/
   abstract protected function initRoutes();
 
   protected function run($url){

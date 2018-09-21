@@ -372,7 +372,7 @@ function setSimpleModalContent(title, body, primaryButtonAction, primaryButtonTe
 $('#not-processing-requests button[name=btnCancelarSolicitacao]').on('click', function(e) {
   var request_id = [e.target.value];
   var confirm_action = function () {
-    $.post("/gticchla/public/cliente/client_cancel_call_request", {
+    $.post("/gtic/public/cliente/client_cancel_call_request", {
       "request_id_list": request_id,
       "requestType": "open_request"
     })
@@ -395,7 +395,7 @@ $('form[name=chamados_abertos_clientes] > button[name=cancel-selected-requests]'
     }
   });
   var confirm_action = function () {
-    $.post("/gticchla/public/cliente/client_cancel_call_request", {
+    $.post("/gtic/public/cliente/client_cancel_call_request", {
       "request_id_list": id_array,
       "requestType": "open_request"
     })

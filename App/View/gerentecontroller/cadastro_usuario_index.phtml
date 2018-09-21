@@ -448,7 +448,7 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
         user_data.idSolicitacao = $('#id_solicitacao_field').val();
       }
 
-      $.post("/gticchla/public/admin/cadastrar_usuarios", {
+      $.post("/gtic/public/admin/cadastrar_usuarios", {
         "new_user": user_data
       })
       .done(function() {
@@ -553,7 +553,7 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
         "email_message": refusal_email_message,
         "request_list": requests
       }
-      $.post("/gticchla/public/admin/archive_account_request", refusal_info)
+      $.post("/gtic/public/admin/archive_account_request", refusal_info)
       .done(function(data){
         alert("Feito!");
         window.location.reload(true);
@@ -584,7 +584,7 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
 // Aceitar solicitações de cadastro selecionadas
 $('button#accept-selection').on('click', function() {
   getSelectedRequests();
-  $.post("/gticchla/public/admin/cadastrar_usuarios", {
+  $.post("/gtic/public/admin/cadastrar_usuarios", {
     "requests": requests
   })
   .done(function(data) {
@@ -665,7 +665,7 @@ $('div#request-list-wrapper button.btn-accept-request').on('click', function() {
     var dataset = $(this).parents('.x_title')[0].dataset;
     var dataset_obj = JSON.parse(JSON.stringify(dataset));
 
-    $.post("/gticchla/public/admin/cadastrar_usuarios", {
+    $.post("/gtic/public/admin/cadastrar_usuarios", {
         "new_user": dataset_obj
     })
     .done(function(data) {

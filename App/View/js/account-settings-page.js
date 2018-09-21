@@ -29,7 +29,7 @@ $('#btn-submit-password-form').on('click', function() {
     $('#btn-submit-password-form').prop('disabled', true);
     $('div.alert').remove();
 
-    $.post("/gticchla/public/change_password", {"current_password":current_password, "new_password":new_password})
+    $.post("/gtic/public/change_password", {"current_password":current_password, "new_password":new_password})
     .done(function(data) {
         var response = data;
         if (response) {

@@ -133,7 +133,7 @@ function fillUpRequestModal(typeRequest, requestId, fieldList) {
         id = {"request_id": requestId};
     }
 
-    $.post("/gticchla/public/get_request_info", id)
+    $.post("/gtic/public/get_request_info", id)
     .done(function(data) {
         var request = JSON.parse(data);
         for (field of fieldList) {
@@ -174,7 +174,7 @@ function acceptRequest(tableRow) {
         var date = datetime[0].split("/");
         var time = datetime[1];
         datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
-        $.post("/gticchla/public/admin/open_call_request",
+        $.post("/gtic/public/admin/open_call_request",
         {
             "call_request_id": request_id,
             "deadline_value": datetime
@@ -211,7 +211,7 @@ function finalizeRequest(tableRow) {
     var request_id = $('.request-modal-form')[0].elements["id_chamado_field"].value;
     var parecer_tecnico = $('.request-modal-form')[0].elements["parecer_tecnico_field"].value;
 
-    $.post("/gticchla/public/admin/finalize_request",
+    $.post("/gtic/public/admin/finalize_request",
     {
         "request_id": request_id,
         "technical_opinion": parecer_tecnico
@@ -241,7 +241,7 @@ function acquireRequest(tableRow) {
         var date = datetime[0].split("/");
         var time = datetime[1];
         datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
-        $.post("/gticchla/public/technician_select_request",
+        $.post("/gtic/public/technician_select_request",
         {
             "call_request_id": request_id,
             "deadline_value": datetime
@@ -278,7 +278,7 @@ function refuseRequest(tableRow) {
     var request_id = tableRow.get(0).dataset.requestId;
     var refusal_reason = $('.request-modal-form')[0].elements["motivo_recusa_field"].value;
 
-    $.post("/gticchla/public/tecnico/refuse_support_request",
+    $.post("/gtic/public/tecnico/refuse_support_request",
     {
         "request_id": request_id,
         "refusal_reason": refusal_reason

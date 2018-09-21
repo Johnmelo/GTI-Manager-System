@@ -49,7 +49,7 @@ var tour = new Tour({
       backdrop: true
     },
     {
-      path: '/gticchla/public/cliente/solicitar_atendimento'
+      path: '/gtic/public/cliente/solicitar_atendimento'
     },
     {
       title: 'Fazendo um chamado',
@@ -65,7 +65,7 @@ var tour = new Tour({
       backdrop: true
     },
     {
-      path: '/gticchla/public/cliente'
+      path: '/gtic/public/cliente'
     },
     {
       title: 'Seus chamados abertos',
