@@ -1,0 +1,214 @@
+<!-- Layout Dashboard-->
+<!-- Bootstrap -->
+<link href="../../App/View/css/bootstrap.min.css" rel="stylesheet">
+<!-- Font Awesome -->
+<link href="../../App/View/css/fontawesome-all.min.css" rel="stylesheet">
+<script defer src="../../App/View/js/fontawesome-all.min.js"></script>
+<!-- Custom Theme Style -->
+<link href="../../App/View/css/custom.min.css" rel="stylesheet">
+<link href="../../App/View/css/base-style.css" rel="stylesheet">
+<link href="../../App/View/css/custom-style-override.css" rel="stylesheet">
+<link href="../../App/View/css/custom-modal.css" rel="stylesheet">
+</head>
+
+<body class="nav-md">
+  <div class="container body">
+    <div class="main_container">
+
+      <div class="col-md-3 left_col">
+        <div class="left_col scroll-view">
+          <div class="navbar nav_title" style="border: 0;">
+            <a href="../cliente" class="site_title"><img src="../../App/View/img/logo.svg" id="sidebar-logo" alt="Logo"><span id="sidebar-logo-text"><span>TI</span> <span>CCHLA</span></span></a>
+          </div>
+
+          <div class="clearfix"></div>
+
+          <!-- menu profile quick info -->
+          <div class="profile clearfix">
+            <div class="profile_pic">
+              <img src="" alt="..." class="img-circle profile_img">
+            </div>
+            <div class="profile_info">
+              <span>Bem-vindo,</span>
+              <h2><?php echo $_SESSION['user_name'];?></h2>
+            </div>
+          </div>
+          <!-- /menu profile quick info -->
+
+          <br />
+
+          <!-- sidebar menu -->
+          <div id="sidebar-menu" class="main_menu_side hidden-print main_menu">
+              <div class="menu_section">
+                <h3></h3>
+                <ul class="nav side-menu">
+                  <li><a href="../admin"><i class="fas fa-home"></i> Início</a>
+                  </li>
+
+                  <li><a>
+                    <span class="fa-layers fa-fw">
+                      <i class="fas fa-user"></i>
+                      <i class="fas fa-wrench" data-fa-transform="shrink-2 down-4.2 right-7" style="color:#2DA7F9;"></i>
+                    </span> Equipe</a>
+                  </li>
+
+                  <li><a>
+                    <span class="fa-layers fa-fw">
+                      <i class="fas fa-users"></i>
+                      <i class="fas fa-bullhorn" data-fa-transform="shrink-2 right-8 down-8" style="color:#2DA7F9;"></i>
+                    </span> Clientes</a>
+                  </li>
+
+                  <li><a>
+                      <span class="fa-layers fa-fw">
+                        <i class="fas fa-list"></i>
+                        <i class="fas fa-bullhorn" data-fa-transform="shrink-2 right-8 down-6" style="color:#2DA7F9;"></i>
+                      </span> Chamados</a>
+                  </li>
+
+                  <li><a href="./cadastro_usuarios">
+                    <span class="fa-layers fa-fw">
+                      <i class="fas fa-user"></i>
+                      <i class="fas fa-plus" data-fa-transform="shrink-7 right-12" style="color:#2DA7F9;"></i>
+                    </span> Cadastro de Usuario</a>
+                  </li>
+
+                </ul>
+                </div>
+
+          </div>
+          <!-- /sidebar menu -->
+
+          <!-- /menu footer buttons -->
+          <!--<div class="sidebar-footer hidden-small">
+            <a data-toggle="tooltip" data-placement="top" title="Settings">
+              <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="FullScreen">
+              <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="Lock">
+              <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
+            </a>
+            <a data-toggle="tooltip" data-placement="top" title="Logout" href="logout">
+              <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
+            </a>
+          </div>-->
+          <!-- /menu footer buttons -->
+        </div>
+      </div>
+
+      <!-- top navigation -->
+      <div class="top_nav">
+        <div class="nav_menu">
+          <nav>
+            <div class="nav toggle">
+              <a id="menu_toggle"><i class="fas fa-bars"></i></a>
+            </div>
+
+            <ul class="nav navbar-nav navbar-right">
+              <li>
+                <a href="" class="user-profile dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                  <i class="fas fa-user"></i> <?php echo $_SESSION['user_name'];?>
+                  <span class="fas fa-angle-down"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-usermenu pull-right">
+                  <li>
+                    <a href="./configuracoes" data-original-title="Configurações da conta">
+                      <i class="fas fa-wrench pull-right"></i> Configurações da conta
+                    </a>
+                  </li>
+                  <li>
+                    <a href="../logout" data-original-title="Sair">
+                      <i class="fas fa-sign-out-alt pull-right"></i> Sair
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+      <!-- /top navigation -->
+
+      <!-- page content -->
+
+      <div class="right_col" role="main">
+        <div class="">
+          <div class="page-title">
+            <div class="title_left" style="margin-bottom:20px;">
+              <h3>Configurações do meu perfil</h3>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+
+          <div class="row">
+            <div class="col-md-6 col-sm-8 col-xs-12">
+              <div class="x_panel">
+                <div class="x_title">
+                  <h2>Alterar a senha</h2>
+                  <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                  <form class="form-horizontal">
+                    <div class="form-group">
+                      <label for="current-password" class="col-sm-4 control-label">Senha atual: </label>
+                      <div class="col-sm-8">
+                        <input type="password" class="form-control" id="current-password">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="new-password-1" class="col-sm-4 control-label">Nova senha: </label>
+                      <div class="col-sm-8">
+                        <input type="password" class="form-control" id="new-password-1">
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="new-password-2" class="col-sm-4 control-label">Repita a nova senha: </label>
+                      <div class="col-sm-8">
+                        <input type="password" class="form-control" id="new-password-2">
+                      </div>
+                    </div>
+                    <div class="form-group" style="display:none;">
+                      <div class="col-sm-4"></div>
+                      <span id="helpText" class="help-block col-sm-8" style="color:red;">Senhas inseridas não batem</span>
+                    </div>
+                    <div class="ln_solid"></div>
+                    <div class="action-bar" style="text-align: right;">
+                      <div class="form-group">
+                        <button type="button" id="btn-submit-password-form" class="btn btn-default" disabled>Salvar</button>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class="clearfix"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /page content -->
+
+    <!-- footer content -->
+    <!--<footer>
+
+    </footer>-->
+    <!-- /footer content -->
+    <!-- SCRIPTS DASHBOARD THEME-->
+
+  </div>
+
+  <!-- REQUEST MODAL -->
+  <div class="modal fade request-modal" tabindex="-1" role="dialog"></div>
+
+  <!-- jQuery -->
+  <script src="../../App/View/js/jquery.min.js"></script>
+  <!-- Bootstrap -->
+  <script src="../../App/View/js/bootstrap.min.js"></script>
+
+  <!-- Custom Theme Scripts -->
+  <script src="../../App/View/js/custom.min.js"></script>
+  <script src="../../App/View/js/request-modals.js"></script>
+  <script src="../../App/View/js/account-settings-page.js"></script>
+</body>

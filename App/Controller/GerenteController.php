@@ -98,6 +98,15 @@ class GerenteController extends Action{
 
   }
 
+  public function admin_account_settings () {
+      session_start();
+      if($_SESSION['user_role'] === "GERENTE") {
+          $this->render('admin_account_settings');
+      } else {
+          $this->forbidenAccess();
+      }
+  }
+
   public function cadastrar_usuarios(){
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
