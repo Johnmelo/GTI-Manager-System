@@ -322,6 +322,15 @@ $(document).ready(function(){
 <script src="../../App/View/js/parsley.min.js"></script>
 <!-- Autosize -->
 <script src="../../App/View/js/autosize.min.js"></script>
+
+<!-- Get the last place to which the request was done -->
+<script>
+  var lastLocation = localStorage.getItem("lastLocation");
+  if (lastLocation != null) {
+    $("input[name=local]").val(lastLocation);
+  }
+</script>
+
 <!-- jQuery autocomplete -->
 <script src="../../App/View/js/jquery.autocomplete.min.js"></script>
 <script>
@@ -565,6 +574,9 @@ $('form[name=solicitar_chamado]').submit(function() {
     alert("É preciso selecionar uma opção da lista de locais");
     return false;
   }
+
+  // Remember the location in the browser
+  localStorage.setItem("lastLocation", local);
 
   $("html").css("cursor", "wait");
   $("body").css("pointer-events", "none");
