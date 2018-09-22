@@ -367,12 +367,29 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
 });
 </script>
 
+<!-- Allow only one role selected -->
+<script>
+  $('#client_role_field').on('ifChecked', function(event) {
+    $('#technician_role_field').iCheck("uncheck");
+    $('#admin_role_field').iCheck("uncheck");
+  });
+  $('#technician_role_field').on('ifChecked', function(event) {
+    $('#client_role_field').iCheck("uncheck");
+    $('#admin_role_field').iCheck("uncheck");
+  });
+  $('#admin_role_field').on('ifChecked', function(event) {
+    $('#client_role_field').iCheck("uncheck");
+    $('#technician_role_field').iCheck("uncheck");
+  });
+</script>
+
 <!-- Edit request/Register new user modal -->
 <script>
   // Configuração do modal de novo usuário
   $('#btn-new-user').on('click', function() {
     $('#edit-request-modal h4.modal-title').text("Criar novo usuário");
     $('#edit-request-modal').modal('show');
+    $('#client_role_field').iCheck("check");
     $('#edit-request-modal').on('shown.bs.modal', function(){
       $('#nome_field').get(0).focus();
       $('#edit-request-modal').off('shown.bs.modal');
