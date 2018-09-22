@@ -21,6 +21,8 @@ $('#new-password-1, #new-password-2').on('keyup', function() {
 });
 
 $('#btn-submit-password-form').on('click', function() {
+    $("html").css("cursor", "wait");
+    $("body").css("pointer-events", "none");
 
     var current_password = $('#current-password').val();
     var new_password = $('#new-password-2').val();
@@ -36,6 +38,8 @@ $('#btn-submit-password-form').on('click', function() {
             showAlert("Sucesso!", "Sua senha foi alterada", "alert-success");
             console.log(response.message);
         }
+        $("html").css("cursor", "auto");
+        $("body").css("pointer-events", "auto");
     })
     .fail(function(data) {
         var response = data.responseJSON;
@@ -49,5 +53,7 @@ $('#btn-submit-password-form').on('click', function() {
         } else {
             showAlert("Ops!", "Ocorreu um erro e a senha não foi alterada.", "alert-error");
         }
+        $("html").css("cursor", "auto");
+        $("body").css("pointer-events", "auto");
     });
 });

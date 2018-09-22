@@ -451,6 +451,8 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
 
     // If info is complete, send to the server
     if (formIsValid) {
+      $("html").css("cursor", "wait");
+      $("body").css("pointer-events", "none");
       var user_data = {
         nome: $('#nome_field').val(),
         email: $('#email_field').val(),
@@ -469,10 +471,14 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
         "new_user": user_data
       })
       .done(function() {
+        $("html").css("cursor", "auto");
+        $("body").css("pointer-events", "auto");
         alert("Usuário adicionado");
         window.location.reload(true);
       })
       .fail(function(data) {
+        $("html").css("cursor", "auto");
+        $("body").css("pointer-events", "auto");
         if (data && data.responseJSON) {
           var response = data.responseJSON;
           if (response.event == "error") {
@@ -564,6 +570,8 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
 
     // If info is complete, send to the server
     if (formIsValid) {
+      $("html").css("cursor", "wait");
+      $("body").css("pointer-events", "none");
       var refusal_info = {
         "reason": refusal_reason,
         "send_email": send_email,
@@ -572,10 +580,14 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
       }
       $.post("/gtic/public/admin/archive_account_request", refusal_info)
       .done(function(data){
+        $("html").css("cursor", "auto");
+        $("body").css("pointer-events", "auto");
         alert("Feito!");
         window.location.reload(true);
       })
       .fail(function(data){
+        $("html").css("cursor", "auto");
+        $("body").css("pointer-events", "auto");
         // Failure
         if (data && data.responseJSON) {
           var response = data.responseJSON;
@@ -600,15 +612,21 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
 <script>
 // Aceitar solicitações de cadastro selecionadas
 $('button#accept-selection').on('click', function() {
+  $("html").css("cursor", "wait");
+  $("body").css("pointer-events", "none");
   getSelectedRequests();
   $.post("/gtic/public/admin/cadastrar_usuarios", {
     "requests": requests
   })
   .done(function(data) {
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
       requests = [];
       document.location.reload(true);
   })
   .fail(function(data) {
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
     if (data.hasOwnProperty('responseJSON')) {
       if (data.responseJSON.event == "error") {
         if (data.responseJSON.type == "prevented_registrations") {
@@ -679,6 +697,8 @@ function getSelectedRequests() {
 
 // Aceitar diretamente sem alterações
 $('div#request-list-wrapper button.btn-accept-request').on('click', function() {
+    $("html").css("cursor", "wait");
+    $("body").css("pointer-events", "none");
     var dataset = $(this).parents('.x_title')[0].dataset;
     var dataset_obj = JSON.parse(JSON.stringify(dataset));
 
@@ -686,10 +706,14 @@ $('div#request-list-wrapper button.btn-accept-request').on('click', function() {
         "new_user": dataset_obj
     })
     .done(function(data) {
+        $("html").css("cursor", "auto");
+        $("body").css("pointer-events", "auto");
         alert("O usuário foi cadastrado com sucesso");
         document.location.reload(true);
     })
     .fail(function(data) {
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
       if (data && data.responseJSON) {
         var response = data.responseJSON;
         if (response.event === "error") {

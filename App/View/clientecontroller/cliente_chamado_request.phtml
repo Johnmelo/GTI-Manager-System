@@ -566,6 +566,8 @@ $('form[name=solicitar_chamado]').submit(function() {
     return false;
   }
 
+  $("html").css("cursor", "wait");
+  $("body").css("pointer-events", "none");
   return true;
 });
 </script>
