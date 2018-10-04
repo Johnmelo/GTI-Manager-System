@@ -229,7 +229,6 @@
                     <thead>
                       <tr>
                         <th></th>
-                        <th>ID</th>
                         <th>Data</th>
                         <th>Serviço</th>
                         <th>Status</th>
@@ -241,7 +240,6 @@
                           <?php if ($requisicao['status'] === "AGUARDANDO"): ?>
                             <tr data-request-id="<?php echo $requisicao['id'];?>">
                                 <td> <input type="checkbox" value=<?php echo $requisicao['id'];?> name="selections[]"/></td>
-                                <td><?php echo $requisicao['id']; ?></td>
                                 <td><?php $data = strtotime($requisicao['data_solicitacao']); $data = date('d/m/Y',$data); echo $data;?></td>
                                 <td><?php echo $this->view->requests_services_names[$requisicao['id_servico']];?></td>
                                 <td><?php echo $requisicao['status'];?></td>

@@ -217,7 +217,6 @@
                     <thead>
                       <tr>
                         <th></th>
-                        <th>ID</th>
                         <th>Cliente</th>
                         <th>Local</th>
                         <th>Serviço</th>
@@ -228,7 +227,6 @@
                       <?php foreach ($this->view->requisicoes_atendimento as $call_request): ?>
                         <tr data-request-id="<?php echo $call_request['id'];?>">
                             <td><input type="checkbox" value="<?php echo $call_request['id'];?>" name="selections_call_request[]"></td>
-                            <td><?php echo $call_request['id']; ?></td>
                             <td><?php echo $this->view->clients_names[$call_request['id_cliente']]['nome'];?></td>
                             <td><?php echo $this->view->locais[$call_request['id_local']]['nome'] ?></td>
                             <td><?php echo $this->view->service_names[$call_request['id_servico']];?></td>

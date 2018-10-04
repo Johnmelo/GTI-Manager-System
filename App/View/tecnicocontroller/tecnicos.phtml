@@ -310,7 +310,6 @@
                             <table id="call-requests" class="table table-hover clickable-rows">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
                                         <th>Cliente</th>
                                         <th>Local</th>
                                         <th>Serviço</th>
@@ -320,7 +319,6 @@
                                 <tbody>
                                   <?php foreach ($this->view->requisicoes_atendimento as $call_request): ?>
                                     <tr data-request-id="<?php echo $call_request['id'];?>">
-                                        <td><?php echo $call_request['id']; ?></td>
                                         <td><?php echo $this->view->users_names[$call_request['id_cliente']]['nome'];?></td>
                                         <td><?php echo $this->view->locais[$call_request['id_local']]['nome'];?></td>
                                         <td><?php echo $this->view->service_names[$call_request['id_servico']];?></td>
