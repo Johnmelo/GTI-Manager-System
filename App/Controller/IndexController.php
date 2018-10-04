@@ -240,6 +240,27 @@ class IndexController extends Action{
     echo(json_encode($suggestions));
   }
 
+  public function get_users_suggestions() {
+    $suggestions = [];
+
+    // Get the data
+    $Usuario = Container::getClass("Usuario");
+    $usuarios_db = $Usuario->fetchAll();
+
+    // Arrange the data to be used by the component
+    foreach ($usuarios_db as $usuario_db) {
+        $usuario = [
+            "value" => $usuario_db["nome"] . " (" . $usuario_db["login"] . ")",
+            "data"  => []
+        ];
+        $usuario["data"]["usuario_id"] = $usuario_db["id"];
+        $usuario["data"]["username"] = $usuario_db["login"];
+        array_push($suggestions, $usuario);
+    }
+    header("Content-type:application/json");
+    echo(json_encode($suggestions));
+  }
+
   public function logout(){
     session_start();
     $_SESSION = array();

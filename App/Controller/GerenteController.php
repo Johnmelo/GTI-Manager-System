@@ -347,6 +347,15 @@ class GerenteController extends Action{
     }
   }
 
+  public function solicitar_atendimento() {
+      session_start();
+      if($_SESSION['user_role'] == "GERENTE") {
+        $this->render('solicitar_atendimento');
+      } else {
+        $this->forbidenAccess();
+      }
+  }
+
   private function isLoginInUse($login) {
       $usuarios = Container::getClass("Usuario");
       $usuario = $usuarios->findByLogin($login);

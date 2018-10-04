@@ -9,7 +9,7 @@ class SolicitarChamado extends Table{
     $params = array($id_usuario, $id_servico, $id_local, $descricao);
     $stmt = $this->db->prepare($query);
     if ($stmt->execute($params) && $stmt->rowCount() > 0) {
-      return true;
+      return $this->db->lastInsertId();
     } else {
       return false;
     }

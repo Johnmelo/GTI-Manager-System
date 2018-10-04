@@ -171,6 +171,55 @@ class TecnicoController extends Action{
       }
   }
 
+  public function solicitar_atendimento() {
+      session_start();
+      if($_SESSION['user_role'] == "TECNICO") {
+        $this->render('solicitar_atendimento');
+      } else {
+        $this->forbidenAccess();
+      }
+  }
+
+  public function register_call_request() {
+      session_start();
+      if(($_SESSION['user_role'] == "GERENTE")||($_SESSION['user_role'] == "TECNICO")) {
+        // Check if the necessary data was sent
+        $service_id  = $_POST['id_servico'];
+        $place_id    = $_POST['id_local'];
+        $client_id   = $_POST['id_usuario'];
+        $deadline    = $_POST['prazo'];
+        $description = $_POST['descricao'];
+        if ($service_id !== null && $place_id !== null && $client_id !== null && $deadline !== null && $description !== null) {
+          // Check if the deadline date was sent in the expected format
+          if(preg_match("/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/", $deadline) === 1)  {
+            // Adjust the date to the DB format
+            $date = new \DateTime($deadline, new \DateTimeZone("America/Recife"));
+            $deadline_db = $date->format("Y-m-d H:i:s");
+            // Store the request in the pending requests table
+            $Request = Container::getClass("SolicitarChamado");
+            $open_request_id = $Request->save($client_id,$service_id,$place_id,$description);
+            // Immediately alter the status on the pending table
+            $open_request = $Request->getSolicitacoesById($open_request_id)[0];
+            $Request->updateColumnById("status", "ATENDIDA", $open_request_id);
+            // Save the service request as accepted by saving its data
+            // in the accepted requests table
+            $Chamado = Container::getClass("Chamado");
+            $Chamado->save($service_id, $place_id, $open_request_id, $_SESSION['user_id'], $client_id, $deadline_db, $description);
+          } else {
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 400');
+            die(json_encode(array('event' => 'error', 'type' => 'deadline_wrong_format')));
+          }
+        } else {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
+        }
+      } else {
+        $this->forbidenAccess();
+      }
+  }
+
   public function technician_account_settings () {
       session_start();
       if($_SESSION['user_role'] === "TECNICO") {
