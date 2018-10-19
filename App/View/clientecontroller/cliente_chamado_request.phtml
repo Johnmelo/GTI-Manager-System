@@ -268,15 +268,6 @@
 <!-- Bootstrap Tour -->
 <script src="../../App/View/js/bootstrap-tour.min.js"></script>
 <script src="../../App/View/js/cliente-tour.js"></script>
-<script>
-$(document).ready(function() {
-  if (localStorage.getItem('tour_current_step') == "5") {
-    tour.init();
-    tour.start();
-    tour.next();
-  }
-});
-</script>
 <!-- FastClick -->
 <script src="../../App/View/js/fastclick.js"></script>
 <!-- NProgress -->
@@ -400,21 +391,22 @@ autosize($('textarea[name=descricao]'));
   $('#call-request-list tr').on('click', selectRequestRow);
   function selectRequestRow(e) {
     if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
-      var request_id = getRowId(e);
-      if (request_id) {
+      let requestId = getRowId(e);
+      if (requestId) {
         modal_config = {
           title: "Detalhes da solicitação",
           visible_fields: {
             id_solicitacao_field: true,
             cliente_field: true,
             local_field: true,
-            solicitacao_chamado_status_field: true,
+            status_field: true,
             servico_field: true,
             data_solicitacao_field: true,
             descricao_field: true
           }
         };
-        defineSimpleModal(modal_config, "call-request-type", request_id);
+        let requestData = unopenRequests.find(r => r.id_solicitacao == requestId);
+        defineSimpleModalNew(modal_config, requestData);
       }
     }
   }
@@ -584,22 +576,17 @@ $('form[name=solicitacoes_chamado] input').on('ifChecked', requestChecked);
 $('form[name=solicitacoes_chamado] input').on('ifUnchecked', requestUnchecked);
 </script>
 
-<!-- Load the requests -->
+<!-- Tables handling -->
 <script>
-  // Fill up unopen requests table
-  let unopenRequests = <?php echo json_encode($this->view->unopenedRequests) ?>;
-  let unopenRequestsTable = $('#call-request-list');
-  for (request of unopenRequests) {
-    insertInUnopenRequestTable(request);
-  }
-
   function insertInUnopenRequestTable(request) {
+    let unopenRequestsTable = $('#call-request-list');
+
     // Row structure
-    let newRow = $("<tr>").attr("data-request-id", request.id);
+    let newRow = $("<tr>").attr("data-request-id", request.id_solicitacao);
 
     // Request row checkbox
     let chkbox = $(
-      `<input type='checkbox' value='${request.id}' name='selections[]' />`);
+      `<input type='checkbox' value='${request.id_solicitacao}' name='selections[]' />`);
     newRow.append($("<td>").append(chkbox));
 
     // Request row info
@@ -618,7 +605,7 @@ $('form[name=solicitacoes_chamado] input').on('ifUnchecked', requestUnchecked);
       `<button type="button"\
       class="btn btn-primary"\
       name="btnCancelarSolicitacao"\
-      value="${request.id}">Cancelar</button>`);
+      value="${request.id_solicitacao}">Cancelar</button>`);
     newRow.append($("<td>").append(btnCancelRequest));
 
     // Add the row to the table
@@ -631,5 +618,25 @@ $('form[name=solicitacoes_chamado] input').on('ifUnchecked', requestUnchecked);
     $(chkbox).on('ifUnchecked', requestUnchecked);
     $(btnCancelRequest).on('click', btnCancelarSolicitacao);
   }
+</script>
+
+<!-- Ready -->
+<script>
+  $(document).ready(function() {
+    // If user is on tour
+    if (localStorage.getItem('tour_current_step') == "5") {
+      tour.init();
+      tour.start();
+      tour.next();
+    }
+
+    // Load the requests for the page
+    window.unopenRequests = <?php echo json_encode($this->view->unopenedRequests) ?>;
+
+    // Fill up unopen requests table
+    for (request of unopenRequests) {
+      insertInUnopenRequestTable(request);
+    }
+  });
 </script>
 </body>

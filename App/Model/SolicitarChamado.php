@@ -43,7 +43,7 @@ class SolicitarChamado extends Table{
 
     public function getUserUnopenedServiceRequests($userId) {
         $stmt = $this->db->prepare(
-            "SELECT sc.id, u.nome AS cliente, l.nome AS local, sc.status, s.nome AS servico, sc.data_solicitacao, sc.descricao"
+            "SELECT sc.id AS id_solicitacao, u.nome AS cliente, l.nome AS local, sc.status, s.nome AS servico, sc.data_solicitacao, sc.descricao"
             ." FROM `{$this->table}` AS sc"
             ." LEFT JOIN `servicos` AS s ON s.`id` = sc.`id_servico`"
             ." LEFT JOIN `usuarios` AS u ON u.`id` = sc.`id_cliente`"

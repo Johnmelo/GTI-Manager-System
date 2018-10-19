@@ -110,12 +110,12 @@ function defineModal(modalConfig) {
 }
 
 function defineSimpleModal(modalConfig, typeRequest, requestId) {
-    var visibleFields = [];
+    let visibleFields = [];
     for (key in modalConfig.visible_fields) {
         visibleFields.push(key)
     }
     defineModal(modalConfig);
-    fillUpRequestModal(typeRequest, requestId, visibleFields);
+    fillUpRequestModalNew(requestData, visibleFields);
     showRequestModal();
 }
 
@@ -124,41 +124,47 @@ function showRequestModal() {
     $('.request-modal').modal('toggle');
 }
 
-function fillUpRequestModal(typeRequest, requestId, fieldList) {
+function fillUpRequestModal(requestData, visibleFields) {
+    // Get the desired modal input fields
+    let modalFields = Array.from(
+        $('.request-modal-form')[0].elements
+    ).filter(i => visibleFields.indexOf(i.id) != -1);
 
-    var id;
-    if (typeRequest == "call-request-type") {
-        id = {"call_request_id": requestId};
-    } else if (typeRequest == "open-request-type") {
-        id = {"request_id": requestId};
-    }
+    // Fill up the modal fields
+    for (field of modalFields) {
+        let fieldTitle = field.id.replace("_field", "");
 
-    $.post("/gtic/public/get_request_info", id)
-    .done(function(data) {
-        var request = JSON.parse(data);
-        for (field of fieldList) {
-            if (field === "prazo_field") {
-                if (request.hasOwnProperty("prazo_field")) {
-                    var date = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("DD/MM/YYYY");
-                    var time = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("HH:mm");
-                    $('.request-modal-form')[0].elements[field].value = date + " às " + time;
-                } else {
-                    var date = moment().add(2, 'days').format("DD/MM/YYYY");
-                    var time = moment().format("HH:mm");
-                    $('.request-modal-form')[0].elements[field].value = date + " às " + time;
-                }
-            } else if (field === "data_abertura_field" || field === "data_solicitacao_field" || field === "data_finalizado_field") {
-                var date = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("DD/MM/YYYY");
-                var time = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("HH:mm");
-                $('.request-modal-form')[0].elements[field].value = date + " às " + time;
+        // When datetime field, put it in the proper format
+        if (field.id === "prazo_field") {
+            // If deadline info is included, just format the value
+            if (request.hasOwnProperty("prazo_field")) {
+                let datetime = moment(
+                    requestData[fieldTitle],
+                    'YYYY-MM-DD HH:mm:ss'
+                ).format("DD/MM/YYYY [às] HH:mm");
+                field.value = datetime;
             } else {
-                $('.request-modal-form')[0].elements[field].value = request[field];
+                // Otherwise, create the deadline with the 2 days default
+                let datetime = moment()
+                .add(2, 'days')
+                .format("DD/MM/YYYY [às] HH:mm");
+                field.value = datetime;
             }
+        } else if (
+            field.id === "data_abertura_field" ||
+            field.id === "data_solicitacao_field" ||
+            field.id === "data_finalizado_field") {
+                // If datetime, just format it
+                let datetime = moment(
+                    requestData[fieldTitle],
+                    'YYYY-MM-DD HH:mm:ss'
+                ).format("DD/MM/YYYY [às] HH:mm");
+                field.value = datetime;
+        } else {
+            // Other values except dates, just put it in the input field
+            field.value = requestData[fieldTitle];
         }
-    })
-    .fail(function() {
-        alert("Não foi possível realizar a ação");
-    });
+    }
 }
 
 function acceptRequest(tableRow) {
@@ -331,15 +337,9 @@ $(document).ready(function() {
               </div>\
             </div>\
             <div class="form-group" style="display: none;">\
-              <label for="solicitacao_chamado_status_field" class="col-sm-4 control-label">Status</label>\
+              <label for="status_field" class="col-sm-4 control-label">Status</label>\
               <div class="col-sm-8">\
-                <input type="text" class="form-control" id="solicitacao_chamado_status_field" readonly>\
-              </div>\
-            </div>\
-            <div class="form-group" style="display: none;">\
-              <label for="chamado_status_field" class="col-sm-4 control-label">Status</label>\
-              <div class="col-sm-8">\
-                <input type="text" class="form-control" id="chamado_status_field" readonly>\
+                <input type="text" class="form-control" id="status_field" readonly>\
               </div>\
             </div>\
             <div class="form-group" style="display: none;">\
