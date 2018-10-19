@@ -11,16 +11,6 @@
 <link href="../../App/View/css/nprogress.css" rel="stylesheet">
 <!-- iCheck -->
 <link href="../../App/View/icheck/skins/square/blue.css" rel="stylesheet">
-<!-- code prettifier -->
-<link href="../../App/View/css/prettify.min.css" rel="stylesheet">
-<!-- Select2 -->
-<link href="../../App/View/css/select2.min.css" rel="stylesheet">
-<!-- Switchery -->
-<link href="../../App/View/css/switchery.min.css" rel="stylesheet">
-<!-- starrr -->
-<link href="../../App/View/css/starrr.css" rel="stylesheet">
-<!-- bootstrap-daterangepicker -->
-<link href="../../App/View/css/daterangepicker.css" rel="stylesheet">
 
 <!-- Custom Theme Style -->
 <link href="../../App/View/css/custom.min.css" rel="stylesheet">
@@ -88,24 +78,6 @@
           </div>
 
         </div>
-        <!-- /sidebar menu -->
-
-        <!-- /menu footer buttons -->
-        <!--<div class="sidebar-footer hidden-small">
-          <a data-toggle="tooltip" data-placement="top" title="Settings">
-            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-          </a>
-          <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-            <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-          </a>
-          <a data-toggle="tooltip" data-placement="top" title="Lock">
-            <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-          </a>
-          <a data-toggle="tooltip" data-placement="top" title="Logout" href="../logout">
-            <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-          </a>
-        </div>-->
-        <!-- /menu footer buttons -->
       </div>
     </div>
 
@@ -158,17 +130,6 @@
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
                     </li>
-                    <!--<li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
-                      <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">Settings 1</a>
-                        </li>
-                        <li><a href="#">Settings 2</a>
-                        </li>
-                      </ul>
-                    </li>-->
-                    <!-- <li><a class="close-link"><i class="fas fa-times"></i></a>
-                    </li> -->
                   </ul>
                   <div class="clearfix"></div>
                 </div>
@@ -214,11 +175,6 @@
                   <h2>AGUARDANDO<small>aprovação</small></h2>
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
-                    </li>
-                    <!--<li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
-                    </li>-->
-                    <!-- <li><a class="close-link"><i class="fas fa-times"></i></a> -->
                     </li>
                   </ul>
                   <div class="clearfix"></div>
@@ -268,39 +224,16 @@
 <!-- Bootstrap Tour -->
 <script src="../../App/View/js/bootstrap-tour.min.js"></script>
 <script src="../../App/View/js/cliente-tour.js"></script>
-<!-- FastClick -->
-<script src="../../App/View/js/fastclick.js"></script>
 <!-- NProgress -->
 <script src="../../App/View/js/nprogress.js"></script>
 <!-- iCheck -->
 <script src="../../App/View/js/icheck.min.js"></script>
-<!-- bootstrap-daterangepicker -->
+<!-- moment.js -->
 <script src="../../App/View/js/moment.min.js"></script>
-<script src="../../App/View/js/daterangepicker.js"></script>
-<!-- bootstrap-wysiwyg -->
-<script src="../../App/View/js/bootstrap-wysiwyg.min.js"></script>
-<script src="../../App/View/js/jquery.hotkeys.js"></script>
-<script src="../../App/View/js/prettify.js"></script>
-<!-- jQuery Tags Input -->
-<script src="../../App/View/js/jquery.tagsinput.js"></script>
-<!-- Switchery -->
-<script src="../../App/View/js/switchery.min.js"></script>
-<!-- Select2 -->
-<script src="../../App/View/js/select2.full.min.js"></script>
-<!-- Parsley -->
-<script src="../../App/View/js/parsley.min.js"></script>
 <!-- Autosize -->
 <script src="../../App/View/js/autosize.min.js"></script>
 <script>
-autosize($('textarea[name=descricao]'));
-</script>
-
-<!-- Get the last place to which the request was done -->
-<script>
-  var lastLocation = localStorage.getItem("lastLocation");
-  if (lastLocation != null) {
-    $("input[name=local]").val(lastLocation);
-  }
+  autosize($('textarea[name=descricao]'));
 </script>
 
 <!-- jQuery autocomplete -->
@@ -380,8 +313,6 @@ autosize($('textarea[name=descricao]'));
   });
 </script>
 
-<!-- starrr -->
-<script src="../../App/View/js/starrr.js"></script>
 <!-- Custom Theme Scripts -->
 <script src="../../App/View/js/custom.min.js"></script>
 
@@ -431,14 +362,14 @@ autosize($('textarea[name=descricao]'));
   </div>
 </div>
 <script>
-function setSimpleModalContent(title, body, primaryButtonAction, primaryButtonText = "Confirmar", secondaryButtonText = "Cancelar") {
-  $('#simple-modal-title')[0].innerHTML = title;
-  $('#simple-modal-body')[0].innerHTML = body;
-  $('#simple-modal-primary-button')[0].innerHTML = primaryButtonText;
-  $('#simple-modal-primary-button').off('click');
-  $('#simple-modal-primary-button').on('click', primaryButtonAction);
-  $('#simple-modal-secondary-button')[0].innerHTML = secondaryButtonText;
-}
+  function setSimpleModalContent(title, body, primaryButtonAction, primaryButtonText = "Confirmar", secondaryButtonText = "Cancelar") {
+    $('#simple-modal-title')[0].innerHTML = title;
+    $('#simple-modal-body')[0].innerHTML = body;
+    $('#simple-modal-primary-button')[0].innerHTML = primaryButtonText;
+    $('#simple-modal-primary-button').off('click');
+    $('#simple-modal-primary-button').on('click', primaryButtonAction);
+    $('#simple-modal-secondary-button')[0].innerHTML = secondaryButtonText;
+  }
 </script>
 
 <!-- Archive request confirmation -->
@@ -476,47 +407,46 @@ function setSimpleModalContent(title, body, primaryButtonAction, primaryButtonTe
 
 <!-- Check if request form can be submitted or reset -->
 <script>
-function checkFormValidity() {
-    var servico = $('form[name=solicitar_chamado] input[name=servico]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
-    var local = $('form[name=solicitar_chamado] input[name=local]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
-    var descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+  function checkFormValidity() {
+      var servico = $('form[name=solicitar_chamado] input[name=servico]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+      var local = $('form[name=solicitar_chamado] input[name=local]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+      var descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
 
-    // If at least one is not empty, enable reset button
-    if (!servico.match(/^\s*$/) || !local.match(/^\s*$/) || !descricao.match(/^\s*$/)) {
-      enableButton($('form[name=solicitar_chamado] button[type=reset]'));
-    } else {
-      disableButton($('form[name=solicitar_chamado] button[type=reset]'));
-    }
+      // If at least one is not empty, enable reset button
+      if (!servico.match(/^\s*$/) || !local.match(/^\s*$/) || !descricao.match(/^\s*$/)) {
+        enableButton($('form[name=solicitar_chamado] button[type=reset]'));
+      } else {
+        disableButton($('form[name=solicitar_chamado] button[type=reset]'));
+      }
 
-    // If all inputs are filled, enable submit button
-    if (!servico.match(/^\s*$/) && !local.match(/^\s*$/) && !descricao.match(/^\s*$/)) {
-      enableButton($('form[name=solicitar_chamado] button[type=submit]'));
-    } else {
-      disableButton($('form[name=solicitar_chamado] button[type=submit]'));
-    }
-}
+      // If all inputs are filled, enable submit button
+      if (!servico.match(/^\s*$/) && !local.match(/^\s*$/) && !descricao.match(/^\s*$/)) {
+        enableButton($('form[name=solicitar_chamado] button[type=submit]'));
+      } else {
+        disableButton($('form[name=solicitar_chamado] button[type=submit]'));
+      }
+  }
 
-$("input[name=servico], textarea[name=descricao], input[name=local]").on("input", function() {
-    checkFormValidity();
-});
-$('form button[type=reset]').on('click', function() {
-  disableButton($('form[name=solicitar_chamado] button[type=reset]'));
-  disableButton($('form[name=solicitar_chamado] button[type=submit]'));
-});
+  $("input[name=servico], textarea[name=descricao], input[name=local]").on("input", function() {
+      checkFormValidity();
+  });
+  $('form button[type=reset]').on('click', function() {
+    disableButton($('form[name=solicitar_chamado] button[type=reset]'));
+    disableButton($('form[name=solicitar_chamado] button[type=submit]'));
+  });
 
-function enableButton(button) {
-  button.removeClass("btn-default");
-  button.addClass("btn-primary");
-  button.prop("disabled", false);
-}
+  function enableButton(button) {
+    button.removeClass("btn-default");
+    button.addClass("btn-primary");
+    button.prop("disabled", false);
+  }
+  function disableButton(button) {
+    button.addClass("btn-default");
+    button.removeClass("btn-primary");
+    button.prop("disabled", true);
+  }
 
-function disableButton(button) {
-  button.addClass("btn-default");
-  button.removeClass("btn-primary");
-  button.prop("disabled", true);
-}
-
-$('form[name=solicitar_chamado]').submit(function() {
+  $('form[name=solicitar_chamado]').submit(function() {
   // Remove white space excess if any
   var descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
   $('form[name=solicitar_chamado] textarea[name=descricao]').val(descricao);
@@ -548,32 +478,32 @@ $('form[name=solicitar_chamado]').submit(function() {
 
 <!-- Check if there's request checked -->
 <script>
-const requestChecked = (e) => {
-  let btn_del_request = $('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]');
-  if (btn_del_request.hasClass('btn-default')) {
-    btn_del_request.toggleClass('btn-default btn-primary');
-    btn_del_request.prop('disabled', function(i, v) { return !v; });
-  }
-}
-const requestUnchecked = (e) => {
-  let btn_del_request = $('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]');
-  var all_unchecked = true;
-  var form_inputs = $('form[name=solicitacoes_chamado] input[type=checkbox]');
-
-  form_inputs.each(function() {
-    if (this.checked) {
-      all_unchecked = false;
+  const requestChecked = (e) => {
+    let btn_del_request = $('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]');
+    if (btn_del_request.hasClass('btn-default')) {
+      btn_del_request.toggleClass('btn-default btn-primary');
+      btn_del_request.prop('disabled', function(i, v) { return !v; });
     }
-  });
-
-  if (all_unchecked) {
-    btn_del_request.toggleClass('btn-default btn-primary');
-    btn_del_request.prop('disabled', function(i, v) { return !v; });
   }
-}
+  const requestUnchecked = (e) => {
+    let btn_del_request = $('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]');
+    var all_unchecked = true;
+    var form_inputs = $('form[name=solicitacoes_chamado] input[type=checkbox]');
 
-$('form[name=solicitacoes_chamado] input').on('ifChecked', requestChecked);
-$('form[name=solicitacoes_chamado] input').on('ifUnchecked', requestUnchecked);
+    form_inputs.each(function() {
+      if (this.checked) {
+        all_unchecked = false;
+      }
+    });
+
+    if (all_unchecked) {
+      btn_del_request.toggleClass('btn-default btn-primary');
+      btn_del_request.prop('disabled', function(i, v) { return !v; });
+    }
+  }
+
+  $('form[name=solicitacoes_chamado] input').on('ifChecked', requestChecked);
+  $('form[name=solicitacoes_chamado] input').on('ifUnchecked', requestUnchecked);
 </script>
 
 <!-- Tables handling -->
@@ -622,21 +552,38 @@ $('form[name=solicitacoes_chamado] input').on('ifUnchecked', requestUnchecked);
 
 <!-- Ready -->
 <script>
+  const resumeUserTour = () => {
+      if (localStorage.getItem('tour_current_step') == "5") {
+        tour.init();
+        tour.start();
+        tour.next();
+      }
+  };
+  const recallLastPlace = () => {
+    let lastLocation = localStorage.getItem("lastLocation");
+    if (lastLocation != null) {
+      $("input[name=local]").val(lastLocation);
+    }
+  };
+  const populateUnopenedReqTable = () => {
+    for (request of unopenRequests) {
+      insertInUnopenRequestTable(request);
+    }
+  };
+
   $(document).ready(function() {
     // If user is on tour
-    if (localStorage.getItem('tour_current_step') == "5") {
-      tour.init();
-      tour.start();
-      tour.next();
-    }
+    resumeUserTour();
+
+    // Get the last place to which the request was done
+    // and set it in the form field
+    recallLastPlace();
 
     // Load the requests for the page
     window.unopenRequests = <?php echo json_encode($this->view->unopenedRequests) ?>;
 
     // Fill up unopen requests table
-    for (request of unopenRequests) {
-      insertInUnopenRequestTable(request);
-    }
+    populateUnopenedReqTable();
   });
 </script>
 </body>
