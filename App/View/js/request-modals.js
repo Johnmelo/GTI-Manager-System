@@ -109,13 +109,13 @@ function defineModal(modalConfig) {
     }
 }
 
-function defineSimpleModal(modalConfig, typeRequest, requestId) {
+function defineSimpleModal(modalConfig, requestData) {
     let visibleFields = [];
     for (key in modalConfig.visible_fields) {
         visibleFields.push(key)
     }
     defineModal(modalConfig);
-    fillUpRequestModalNew(requestData, visibleFields);
+    fillUpRequestModal(requestData, visibleFields);
     showRequestModal();
 }
 
