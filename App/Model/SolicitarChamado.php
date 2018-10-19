@@ -41,6 +41,21 @@ class SolicitarChamado extends Table{
       return $res;
   }
 
+    public function getUserUnopenedServiceRequests($userId) {
+        $stmt = $this->db->prepare(
+            "SELECT sc.id, u.nome AS cliente, l.nome AS local, sc.status, s.nome AS servico, sc.data_solicitacao, sc.descricao"
+            ." FROM `{$this->table}` AS sc"
+            ." LEFT JOIN `servicos` AS s ON s.`id` = sc.`id_servico`"
+            ." LEFT JOIN `usuarios` AS u ON u.`id` = sc.`id_cliente`"
+            ." LEFT JOIN `locais` AS l ON l.`id` = sc.`id_local`"
+            ." WHERE sc.status = 'AGUARDANDO' AND sc.id_cliente =:userId"
+            ." ORDER BY sc.data_solicitacao ASC");
+        $stmt->bindParam(":userId", $userId);
+        $stmt->execute();
+        $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        return $res;
+    }
+
 
 }
 ?>

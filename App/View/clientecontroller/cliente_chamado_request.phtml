@@ -235,19 +235,7 @@
                         <th>Ação</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <?php foreach ($this->view->requisicoes as $requisicao):?>
-                          <?php if ($requisicao['status'] === "AGUARDANDO"): ?>
-                            <tr data-request-id="<?php echo $requisicao['id'];?>">
-                                <td> <input type="checkbox" value=<?php echo $requisicao['id'];?> name="selections[]"/></td>
-                                <td><?php $data = strtotime($requisicao['data_solicitacao']); $data = date('d/m/Y',$data); echo $data;?></td>
-                                <td><?php echo $this->view->requests_services_names[$requisicao['id_servico']];?></td>
-                                <td><?php echo $requisicao['status'];?></td>
-                                <td><button type="button" class="btn btn-primary" name="btnCancelarSolicitacao" value=<?php echo $requisicao['id'];?>>Cancelar</button></td>
-                            </tr>
-                          <?php endif; ?>
-                      <?php endforeach;?>
-                    </tbody>
+                    <tbody></tbody>
                   </table>
                   <button name="cancel-selected-requests" type="button" class="btn btn-default" disabled>Cancelar os selecionados</button>
                 </form>
@@ -295,14 +283,6 @@ $(document).ready(function() {
 <script src="../../App/View/js/nprogress.js"></script>
 <!-- iCheck -->
 <script src="../../App/View/js/icheck.min.js"></script>
-<script>
-$(document).ready(function(){
-  $('input').iCheck({
-    checkboxClass: 'icheckbox_square-blue',
-    radioClass: 'iradio_square'
-  });
-});
-</script>
 <!-- bootstrap-daterangepicker -->
 <script src="../../App/View/js/moment.min.js"></script>
 <script src="../../App/View/js/daterangepicker.js"></script>
@@ -417,26 +397,27 @@ autosize($('textarea[name=descricao]'));
 <!-- Request modal settings -->
 <script src="../../App/View/js/request-modals.js"></script>
 <script>
-$('#call-request-list tr').on('click', function(e) {
-  if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
-    var request_id = getRowId(e);
-    if (request_id) {
-      modal_config = {
-        title: "Detalhes da solicitação",
-        visible_fields: {
-          id_solicitacao_field: true,
-          cliente_field: true,
-          local_field: true,
-          solicitacao_chamado_status_field: true,
-          servico_field: true,
-          data_solicitacao_field: true,
-          descricao_field: true
-        }
-      };
-      defineSimpleModal(modal_config, "call-request-type", request_id);
+  $('#call-request-list tr').on('click', selectRequestRow);
+  function selectRequestRow(e) {
+    if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
+      var request_id = getRowId(e);
+      if (request_id) {
+        modal_config = {
+          title: "Detalhes da solicitação",
+          visible_fields: {
+            id_solicitacao_field: true,
+            cliente_field: true,
+            local_field: true,
+            solicitacao_chamado_status_field: true,
+            servico_field: true,
+            data_solicitacao_field: true,
+            descricao_field: true
+          }
+        };
+        defineSimpleModal(modal_config, "call-request-type", request_id);
+      }
     }
   }
-});
 </script>
 
 <!-- Simple message modal -->
@@ -470,47 +451,35 @@ function setSimpleModalContent(title, body, primaryButtonAction, primaryButtonTe
 
 <!-- Archive request confirmation -->
 <script>
-$('#call-request-list button[name=btnCancelarSolicitacao]').on('click', function(e) {
-  var request_id = [e.target.value];
-  var confirm_action = function () {
+  const cancelRequest = (requestArray) => {
     $.post("/gtic/public/cliente/client_cancel_call_request", {
-      "request_id_list": request_id,
+      "request_id_list": requestArray,
       "requestType": "pending_acceptance"
     })
     .done(function() {
       $('#simple-modal').modal('hide');
-      document.location.reload(true);
     })
     .fail(function() {
       alert("Não foi possível realizar a operação");
     });
+  }
+  const btnCancelarSolicitacao = (e) => {
+    let request_id = [e.target.value];
+    setSimpleModalContent("Cancelar solicitação?", "<h4>Tem certeza que deseja cancelar a solicitação de chamado?</h4>", cancelRequest.bind(null, request_id), "Cancelar solicitação", "Voltar");
+    $('#simple-modal').modal('show');
   };
-  setSimpleModalContent("Cancelar solicitação?", "<h4>Tem certeza que deseja cancelar a solicitação de chamado?</h4>", confirm_action, "Cancelar solicitação", "Voltar");
-  $('#simple-modal').modal('show');
-});
-$('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]').on('click', function(e) {
-  var id_array = [];
-  $('form[name=solicitacoes_chamado]').find('input[type=checkbox]').each(function(){
-    if (this.checked) {
-      id_array.push(this.value);
-    }
-  });
-  var confirm_action = function () {
-    $.post("/gtic/public/cliente/client_cancel_call_request", {
-      "request_id_list": id_array,
-      "requestType": "pending_acceptance"
-    })
-    .done(function() {
-      $('#simple-modal').modal('hide');
-      document.location.reload(true);
-    })
-    .fail(function() {
-      alert("Não foi possível realizar a operação");
+  const btnCancelarSelecionados = (e) => {
+    let id_array = [];
+    $('form[name=solicitacoes_chamado]').find('input[type=checkbox]').each(function(){
+      if (this.checked) {
+        id_array.push(this.value);
+      }
     });
-  };
-  setSimpleModalContent("Cancelar solicitações selecionadas?", "<h4>Tem certeza que deseja cancelar as solicitações de chamado selecionadas?</h4>", confirm_action, "Cancelar solicitações selecionadas", "Voltar");
-  $('#simple-modal').modal('show');
-});
+    setSimpleModalContent("Cancelar solicitações selecionadas?", "<h4>Tem certeza que deseja cancelar as solicitações de chamado selecionadas?</h4>", cancelRequest.bind(null, id_array), "Cancelar solicitações selecionadas", "Voltar");
+    $('#simple-modal').modal('show');
+  }
+  $('form[name=solicitacoes_chamado]\
+  > button[name=cancel-selected-requests]').on('click', btnCancelarSelecionados);
 </script>
 
 <!-- Check if request form can be submitted or reset -->
@@ -587,17 +556,15 @@ $('form[name=solicitar_chamado]').submit(function() {
 
 <!-- Check if there's request checked -->
 <script>
-
-var btn_del_request = $('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]');
-
-$('form[name=solicitacoes_chamado] input').on('ifChecked', function(event) {
+const requestChecked = (e) => {
+  let btn_del_request = $('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]');
   if (btn_del_request.hasClass('btn-default')) {
     btn_del_request.toggleClass('btn-default btn-primary');
     btn_del_request.prop('disabled', function(i, v) { return !v; });
   }
-});
-
-$('form[name=solicitacoes_chamado] input').on('ifUnchecked', function(event) {
+}
+const requestUnchecked = (e) => {
+  let btn_del_request = $('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]');
   var all_unchecked = true;
   var form_inputs = $('form[name=solicitacoes_chamado] input[type=checkbox]');
 
@@ -611,6 +578,58 @@ $('form[name=solicitacoes_chamado] input').on('ifUnchecked', function(event) {
     btn_del_request.toggleClass('btn-default btn-primary');
     btn_del_request.prop('disabled', function(i, v) { return !v; });
   }
-});
+}
+
+$('form[name=solicitacoes_chamado] input').on('ifChecked', requestChecked);
+$('form[name=solicitacoes_chamado] input').on('ifUnchecked', requestUnchecked);
+</script>
+
+<!-- Load the requests -->
+<script>
+  // Fill up unopen requests table
+  let unopenRequests = <?php echo json_encode($this->view->unopenedRequests) ?>;
+  let unopenRequestsTable = $('#call-request-list');
+  for (request of unopenRequests) {
+    insertInUnopenRequestTable(request);
+  }
+
+  function insertInUnopenRequestTable(request) {
+    // Row structure
+    let newRow = $("<tr>").attr("data-request-id", request.id);
+
+    // Request row checkbox
+    let chkbox = $(
+      `<input type='checkbox' value='${request.id}' name='selections[]' />`);
+    newRow.append($("<td>").append(chkbox));
+
+    // Request row info
+    let cols = "";
+    let date = moment(
+      request.data_solicitacao,
+      'YYYY-MM-DD HH:mm:ss')
+      .format("DD/MM/YYYY");
+    cols += `<td>${date}</td>`;
+    cols += `<td>${request.servico}</td>`;
+    cols += `<td>${request.status}</td>`;
+    newRow.append(cols);
+
+    // Cancel request button
+    let btnCancelRequest = $(
+      `<button type="button"\
+      class="btn btn-primary"\
+      name="btnCancelarSolicitacao"\
+      value="${request.id}">Cancelar</button>`);
+    newRow.append($("<td>").append(btnCancelRequest));
+
+    // Add the row to the table
+    unopenRequestsTable.prepend(newRow);
+
+    // Events
+    $(chkbox).iCheck({ checkboxClass: 'icheckbox_square-blue', radioClass: 'iradio_square' });
+    $(newRow).on('click', selectRequestRow);
+    $(chkbox).on('ifChecked', requestChecked);
+    $(chkbox).on('ifUnchecked', requestUnchecked);
+    $(btnCancelRequest).on('click', btnCancelarSolicitacao);
+  }
 </script>
 </body>

@@ -70,34 +70,14 @@ class ClienteController extends Action{
   public function solicitar_atendimento(){
     session_start();
     if($_SESSION['user_role'] == "CLIENTE"){
-
-      $servico = Container::getClass("Servico");
-      $requisicao = Container::getClass("SolicitarChamado");
-      $servicos = $servico->fetchAll();
-      $requisicoes = $requisicao->fetchAll();
-
-      $array_servicos_names = [];
-      $myRequests =[];
-      foreach ($servicos as $service) {
-        $array_servicos_names[$service['id']] = $service['nome'];
-      }
-
-      foreach ($requisicoes as $request) {
-        if($request['id_cliente'] == $_SESSION['user_id']){
-          $myRequests[] = $request;
-        }
-      }
-
-      $servicos = $servico->fetchAll();
-      $this->view->requisicoes = $myRequests;
-      $this->view->servicos = $servicos;
-      $this->view->requests_services_names = $array_servicos_names;
-
+      $userId = $_SESSION['user_id'];
+      $SolicitarChamado = Container::getClass("SolicitarChamado");
+      $unopenedRequests = $SolicitarChamado->getUserUnopenedServiceRequests($userId);
+      $this->view->unopenedRequests = $unopenedRequests;
       $this->render('cliente_chamado_request');
     }else{
       $this->forbidenAccess();
     }
-
   }
 
   public function client_register_call_request(){
