@@ -336,7 +336,7 @@
             descricao_field: true
           }
         };
-        let requestData = unopenRequests.find(r => r.id_solicitacao == requestId);
+        let requestData = serviceRequests.find(r => r.id_solicitacao === requestId);
         defineSimpleModal(modal_config, requestData);
       }
     }
@@ -508,8 +508,8 @@
 
 <!-- Tables handling -->
 <script>
-  function insertInUnopenRequestTable(request) {
-    let unopenRequestsTable = $('#call-request-list');
+  function insertInServiceRequestsTable(request) {
+    let serviceRequestsTable = $('#call-request-list');
 
     // Row structure
     let newRow = $("<tr>").attr("data-request-id", request.id_solicitacao);
@@ -539,7 +539,7 @@
     newRow.append($("<td>").append(btnCancelRequest));
 
     // Add the row to the table
-    unopenRequestsTable.prepend(newRow);
+    serviceRequestsTable.prepend(newRow);
 
     // Events
     $(chkbox).iCheck({ checkboxClass: 'icheckbox_square-blue', radioClass: 'iradio_square' });
@@ -565,9 +565,11 @@
       $("input[name=local]").val(lastLocation);
     }
   };
-  const populateUnopenedReqTable = () => {
-    for (request of unopenRequests) {
-      insertInUnopenRequestTable(request);
+  const populateServiceRequestsTable = () => {
+    // Take only the requests still unopened (status "AGUARDANDO")
+    let pending_acceptance = serviceRequests.filter(r => r.status === "AGUARDANDO");
+    for (request of pending_acceptance) {
+      insertInServiceRequestsTable(request);
     }
   };
 
@@ -580,10 +582,10 @@
     recallLastPlace();
 
     // Load the requests for the page
-    window.unopenRequests = <?php echo json_encode($this->view->unopenedRequests) ?>;
+    window.serviceRequests = <?php echo json_encode($this->view->serviceRequests) ?>;
 
     // Fill up unopen requests table
-    populateUnopenedReqTable();
+    populateServiceRequestsTable();
   });
 </script>
 </body>

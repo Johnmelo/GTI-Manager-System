@@ -72,8 +72,8 @@ class ClienteController extends Action{
     if($_SESSION['user_role'] == "CLIENTE"){
       $userId = $_SESSION['user_id'];
       $SolicitarChamado = Container::getClass("SolicitarChamado");
-      $unopenedRequests = $SolicitarChamado->getUserUnopenedServiceRequests($userId);
-      $this->view->unopenedRequests = $unopenedRequests;
+      $serviceRequests = $SolicitarChamado->getUserServiceRequests($userId);
+      $this->view->serviceRequests = $serviceRequests;
       $this->render('cliente_chamado_request');
     }else{
       $this->forbidenAccess();
@@ -185,7 +185,5 @@ class ClienteController extends Action{
           $this->forbidenAccess();
       }
   }
-
-
 }
 ?>
