@@ -137,7 +137,7 @@ function fillUpRequestModal(requestData, visibleFields) {
         // When datetime field, put it in the proper format
         if (field.id === "prazo_field") {
             // If deadline info is included, just format the value
-            if (request.hasOwnProperty("prazo_field")) {
+            if (request.hasOwnProperty("prazo")) {
                 let datetime = moment(
                     requestData[fieldTitle],
                     'YYYY-MM-DD HH:mm:ss'

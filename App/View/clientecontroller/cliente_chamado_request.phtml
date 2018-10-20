@@ -319,8 +319,7 @@
 <!-- Request modal settings -->
 <script src="../../App/View/js/request-modals.js"></script>
 <script>
-  $('#call-request-list tr').on('click', selectRequestRow);
-  function selectRequestRow(e) {
+  function clickRequestRow(e) {
     if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
       let requestId = getRowId(e);
       if (requestId) {
@@ -538,15 +537,15 @@
       value="${request.id_solicitacao}">Cancelar</button>`);
     newRow.append($("<td>").append(btnCancelRequest));
 
-    // Add the row to the table
-    serviceRequestsTable.prepend(newRow);
-
     // Events
     $(chkbox).iCheck({ checkboxClass: 'icheckbox_square-blue', radioClass: 'iradio_square' });
-    $(newRow).on('click', selectRequestRow);
+    $(newRow).on('click', clickRequestRow);
     $(chkbox).on('ifChecked', requestChecked);
     $(chkbox).on('ifUnchecked', requestUnchecked);
     $(btnCancelRequest).on('click', btnCancelarSolicitacao);
+
+    // Add the row to the table
+    serviceRequestsTable.prepend(newRow);
   }
 </script>
 
