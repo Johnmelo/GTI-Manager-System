@@ -4,6 +4,7 @@ use SON\Controller\Action;
 use \SON\Di\Container;
 
 class ClienteController extends Action{
+
   public function index(){
     session_start();
     if($_SESSION['user_role'] === "CLIENTE"){
@@ -59,20 +60,16 @@ class ClienteController extends Action{
       $this->view->users_names = $array_users_names;
       $this->view->locais = $array_locais;
       $this->render('clientes');
-      //--------------------------------------------------------
-
     }else{
       $this->forbidenAccess();
     }
-
   }
 
   public function solicitar_atendimento(){
     session_start();
     if($_SESSION['user_role'] == "CLIENTE"){
-      $userId = $_SESSION['user_id'];
       $SolicitarChamado = Container::getClass("SolicitarChamado");
-      $serviceRequests = $SolicitarChamado->getUserServiceRequests($userId);
+      $serviceRequests = $SolicitarChamado->getUserServiceRequests($_SESSION['user_id']);
       $this->view->serviceRequests = $serviceRequests;
       $this->render('cliente_chamado_request');
     }else{
