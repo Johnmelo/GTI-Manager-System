@@ -200,31 +200,7 @@
                         <th>Ação</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <?php foreach ($this->view->chamados_abertos as $callrequest):?>
-                        <tr data-request-id="<?php echo $callrequest['id'];?>">
-                          <td><input type="checkbox" value=<?php echo $callrequest['id'];?> name="selections[]"/></td>
-                            <td><?php echo $callrequest['id']; ?></td>
-                            <td><?php echo $this->view->services_names[$callrequest['id_servico']];?></td>
-                            <td>
-                              <?php
-                              $current_date = new \DateTime("now", new \DateTimeZone('America/Fortaleza'));
-                              $deadline = new \DateTime($callrequest['prazo'], new \DateTimeZone('America/Fortaleza'));
-                              $diff = (array)$current_date->diff($deadline);
-                              if (isset($diff['d']) && $diff['d'] >= 1) {
-                                echo ($diff['d'] === 1) ? $diff['d']." dia" : $diff['d']." dias";
-                              } elseif (isset($diff['h']) && $diff['h'] >= 1) {
-                                echo ($diff['h'] === 1) ? $diff['h']." hora" : $diff['h']." horas";
-                              } elseif (isset($diff['i']) && $diff['i'] >= 1) {
-                                echo ($diff['i'] === 1) ? $diff['i']." minuto" : $diff['i']." minutos";
-                              }
-                              ?>
-                            </td>
-                            <td><?php echo $this->view->users_names[$callrequest['id_tecnico_abertura']]['nome'];?></td>
-                            <td><button type="button" class="btn btn-primary" name="btnCancelarSolicitacao" value=<?php echo $callrequest['id'];?>>Cancelar</button></td>
-                        </tr>
-                      <?php endforeach;?>
-                    </tbody>
+                    <tbody></tbody>
                   </table>
                   <button name="cancel-selected-requests" type="button" class="btn btn-default" disabled>Cancelar os selecionados</button>
                 </form>
@@ -257,31 +233,10 @@
 <!-- Bootstrap Tour -->
 <script src="../App/View/js/bootstrap-tour.min.js"></script>
 <script src="../App/View/js/cliente-tour.js"></script>
-<script>
-$(document).ready(function() {
-  if (window.innerWidth > 980 && sessionStorage.getItem("lastLogin") === null) {
-    tour.init();
-    tour.start();
-    if (localStorage.getItem('tour_current_step') == "8") {
-      tour.next();
-    }
-  }
-});
-</script>
-<!-- FastClick -->
-<script src="../App/View/js/fastclick.js"></script>
 <!-- NProgress -->
 <script src="../App/View/js/nprogress.js"></script>
 <!-- iCheck -->
 <script src="../App/View/js/icheck.min.js"></script>
-<script>
-$(document).ready(function(){
-  $('input').iCheck({
-    checkboxClass: 'icheckbox_square-blue',
-    radioClass: 'iradio_square'
-  });
-});
-</script>
 <!-- Moment.js -->
 <script src="../App/View/js/moment.min.js"></script>
 
@@ -291,49 +246,51 @@ $(document).ready(function(){
 <!-- Request modal settings -->
 <script src="../App/View/js/request-modals.js"></script>
 <script>
-$('#processing-requests tr').on('click', function(e) {
-  if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
-    var request_id = getRowId(e);
-    if (request_id) {
-      modal_config = {
-        title: "Detalhes do chamado",
-        visible_fields: {
-          id_chamado_field: true,
-          local_field: true,
-          chamado_status_field: true,
-          servico_field: true,
-          data_abertura_field: true,
-          tecnico_abertura_field: true,
-          descricao_field: true,
-          prazo_field: true,
-          tecnico_responsavel_field: true
-        }
-      };
-      defineSimpleModal(modal_config, "open-request-type", request_id);
+  function clickInProcessRequestTableRow(e) {
+    if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
+      let requestId = getRowId(e);
+      if (requestId) {
+        modalConfig = {
+          title: "Detalhes do chamado",
+          visible_fields: {
+            id_chamado_field: true,
+            local_field: true,
+            status_field: true,
+            servico_field: true,
+            data_abertura_field: true,
+            tecnico_abertura_field: true,
+            descricao_field: true,
+            prazo_field: true,
+            tecnico_responsavel_field: true
+          }
+        };
+        let requestData = openedServiceRequests.find(r => r.id_chamado === requestId);
+        defineSimpleModal(modalConfig, requestData);
+      }
     }
   }
-});
-$('#not-processing-requests tr').on('click', function(e) {
-  if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
-    var request_id = getRowId(e);
-    if (request_id) {
-      modal_config = {
-        title: "Detalhes do chamado",
-        visible_fields: {
-          id_chamado_field: true,
-          local_field: true,
-          chamado_status_field: true,
-          servico_field: true,
-          data_abertura_field: true,
-          tecnico_abertura_field: true,
-          descricao_field: true,
-          prazo_field: true
-        }
-      };
-      defineSimpleModal(modal_config, "open-request-type", request_id);
+  function clickOpenedRequestTableRow(e) {
+    if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
+      var requestId = getRowId(e);
+      if (requestId) {
+        modalConfig = {
+          title: "Detalhes do chamado",
+          visible_fields: {
+            id_chamado_field: true,
+            local_field: true,
+            status_field: true,
+            servico_field: true,
+            data_abertura_field: true,
+            tecnico_abertura_field: true,
+            descricao_field: true,
+            prazo_field: true
+          }
+        };
+        let requestData = openedServiceRequests.find(r => r.id_chamado === requestId);
+        defineSimpleModal(modalConfig, requestData);
+      }
     }
   }
-});
 </script>
 
 <!-- Simple message modal -->
@@ -367,75 +324,190 @@ $('#not-processing-requests tr').on('click', function(e) {
 
 <!-- Archive request confirmation -->
 <script>
-$('#not-processing-requests button[name=btnCancelarSolicitacao]').on('click', function(e) {
-  var request_id = [e.target.value];
-  var confirm_action = function () {
+  const cancelRequest = (requestArray) => {
     $.post("/gtic/public/cliente/client_cancel_call_request", {
-      "request_id_list": request_id,
+      "request_id_list": requestArray,
       "requestType": "open_request"
     })
     .done(function() {
       $('#simple-modal').modal('hide');
-      document.location.reload(true);
     })
     .fail(function() {
       alert("Não foi possível realizar a operação");
     });
+  }
+  const btnCancelarSolicitacao = (e) => {
+    let requestId = [e.target.value];
+    setSimpleModalContent("Cancelar solicitação?", "<h4>Tem certeza que deseja cancelar a solicitação de chamado?</h4>", cancelRequest.bind(null, requestId), "Cancelar solicitação", "Voltar");
+    $('#simple-modal').modal('show');
   };
-  setSimpleModalContent("Cancelar solicitação?", "<h4>Tem certeza que deseja cancelar a solicitação de chamado?</h4>", confirm_action, "Cancelar solicitação", "Voltar");
-  $('#simple-modal').modal('show');
-});
-$('form[name=chamados_abertos_clientes] > button[name=cancel-selected-requests]').on('click', function(e) {
-  var id_array = [];
-  $('form[name=chamados_abertos_clientes]').find('input[type=checkbox]').each(function(){
-    if (this.checked) {
-      id_array.push(this.value);
-    }
-  });
-  var confirm_action = function () {
-    $.post("/gtic/public/cliente/client_cancel_call_request", {
-      "request_id_list": id_array,
-      "requestType": "open_request"
-    })
-    .done(function() {
-      $('#simple-modal').modal('hide');
-      document.location.reload(true);
-    })
-    .fail(function() {
-      alert("Não foi possível realizar a operação");
+  const btnCancelarSelecionados = () => {
+    let idArray = [];
+    $('form[name=chamados_abertos_clientes]').find('input[type=checkbox]').each(function(){
+      if (this.checked) {
+        idArray.push(this.value);
+      }
     });
-  };
-  setSimpleModalContent("Cancelar solicitações selecionadas?", "<h4>Tem certeza que deseja cancelar as solicitações de chamado selecionadas?</h4>", confirm_action, "Cancelar solicitações selecionadas", "Voltar");
-  $('#simple-modal').modal('show');
-});
+    setSimpleModalContent("Cancelar solicitações selecionadas?", "<h4>Tem certeza que deseja cancelar as solicitações de chamado selecionadas?</h4>", cancelRequest.bind(null, idArray), "Cancelar solicitações selecionadas", "Voltar");
+    $('#simple-modal').modal('show');
+  }
+
+  $('form[name=chamados_abertos_clientes]\
+  > button[name=cancel-selected-requests]').on('click', btnCancelarSelecionados);
 </script>
 
 <!-- Check if there's request checked -->
 <script>
-
-var btn_del_request = $('form[name=chamados_abertos_clientes] > button[name=cancel-selected-requests]');
-
-$('form[name=chamados_abertos_clientes] input').on('ifChecked', function(event) {
-  if (btn_del_request.hasClass('btn-default')) {
-    btn_del_request.toggleClass('btn-default btn-primary');
-    btn_del_request.prop('disabled', function(i, v) { return !v; });
-  }
-});
-
-$('form[name=chamados_abertos_clientes] input').on('ifUnchecked', function(event) {
-  var all_unchecked = true;
-  var form_inputs = $('form[name=chamados_abertos_clientes] input[type=checkbox]');
-
-  form_inputs.each(function() {
-    if (this.checked) {
-      all_unchecked = false;
+  const requestChecked = () => {
+    let btnDelRequest = $('form[name=chamados_abertos_clientes] > button[name=cancel-selected-requests]');
+    if (btnDelRequest.hasClass('btn-default')) {
+      btnDelRequest.toggleClass('btn-default btn-primary');
+      btnDelRequest.prop('disabled', function(i, v) { return !v; });
     }
-  });
-
-  if (all_unchecked) {
-    btn_del_request.toggleClass('btn-default btn-primary');
-    btn_del_request.prop('disabled', function(i, v) { return !v; });
   }
-});
+  const requestUnchecked = () => {
+    let btnDelRequest = $('form[name=chamados_abertos_clientes] > button[name=cancel-selected-requests]');
+    let isAllUnchecked = true;
+    let formInputs = $('form[name=chamados_abertos_clientes] input[type=checkbox]');
+
+    formInputs.each(function() {
+      if (this.checked) {
+        isAllUnchecked = false;
+      }
+    });
+
+    if (isAllUnchecked) {
+      btnDelRequest.toggleClass('btn-default btn-primary');
+      btnDelRequest.prop('disabled', function(i, v) { return !v; });
+    }
+  }
+</script>
+
+<!-- Tables handling -->
+<script>
+  const calculateDeadlineMsg = (deadlineDatetime) => {
+    let a = moment();
+    let b = moment(deadlineDatetime, "YYYY-MM-DD HH:mm:ss");
+    let interval = b.diff(a, 'months');
+    let deadlineMsg = "";
+    if (interval >= 2 || interval <= -2) {
+      // Months of difference
+      deadlineMsg = (interval > 0) ? `Daqui a ${interval} meses` : `${Math.abs(interval)} meses atrasado`;
+    } else {
+      interval = b.diff(a, 'weeks');
+      if (interval >= 2 || interval <= -2) {
+        // Weeks of difference
+        deadlineMsg = (interval > 0) ? `Daqui a ${interval} semanas` : `${Math.abs(interval)} semanas atrasado`;
+      } else {
+        interval = b.diff(a, 'days');
+        if (interval >= 2 || interval <= -2) {
+          // Days of difference
+          deadlineMsg = (interval > 0) ? `Daqui a ${interval} dias` : `${Math.abs(interval)} dias atrasado`;
+        } else {
+          interval = b.diff(a, 'hours');
+          if (interval >= 24 || interval <= -24) {
+            deadlineMsg = (interval > 0) ? `Daqui a 2 dias` : `2 dias atrasado`;
+          } else if (a.format("YYYY-MM-DD") === b.format("YYYY-MM-DD")) {
+            deadlineMsg = "Hoje";
+          } else {
+            deadlineMsg = (interval > 0) ? `Daqui a 1 dia` : `1 dia atrasado`;
+          }
+        }
+      }
+    }
+    return deadlineMsg;
+  };
+
+  function insertInProcessingRequestsTable(request) {
+    let inProcessRequestsTable = $('#processing-requests');
+
+    // Row structure
+    let newRow = $("<tr>").attr("data-request-id", request.id_chamado);
+    let cols = "";
+    cols += `<td>${request.id_chamado}</td>`;
+    cols += `<td>${request.servico}</td>`;
+    cols += `<td>${calculateDeadlineMsg(request.prazo)}</td>`
+    cols += `<td>${request.tecnico_responsavel}</td>`;
+    cols += `<td>${request.tecnico_abertura}</td>`;
+    newRow.append(cols);
+
+    // Events
+    $(newRow).on('click', clickInProcessRequestTableRow);
+
+    // Add the row to the table
+    inProcessRequestsTable.prepend(newRow);
+  }
+  function insertInOpenedRequestsTable(request) {
+    let openedRequestsTable = $('#not-processing-requests');
+
+    // Row structure
+    let newRow = $("<tr>").attr("data-request-id", request.id_chamado);
+
+    // Request row checkbox
+    let chkbox = $(
+      `<input type="checkbox" value="${request.id_chamado}" name="selections[]" />`);
+    newRow.append($("<td>").append(chkbox));
+
+    let cols = "";
+    cols += `<td>${request.id_chamado}</td>`;
+    cols += `<td>${request.servico}</td>`;
+    cols += `<td>${calculateDeadlineMsg(request.prazo)}</td>`;
+    cols += `<td>${request.tecnico_abertura}</td>`;
+    newRow.append(cols);
+
+    // Cancel request button
+    let btnCancelRequest = $(
+      `<button type="button"\
+      class="btn btn-primary"\
+      name="btnCancelarSolicitacao"\
+      value="${request.id_chamado}">Cancelar</button>`);
+    newRow.append($("<td>").append(btnCancelRequest));cols += `<td><button type="button" class="btn btn-primary" name="btnCancelarSolicitacao" value="${request.id_chamado}">Cancelar</button></td>`;
+
+    // Events
+    $(newRow).on('click', clickOpenedRequestTableRow);
+    $(chkbox).iCheck({ checkboxClass: 'icheckbox_square-blue', radioClass: 'iradio_square' });
+    $(chkbox).on('ifChecked', requestChecked);
+    $(chkbox).on('ifUnchecked', requestUnchecked);
+    $(btnCancelRequest).on('click', btnCancelarSolicitacao);
+
+    // Add the row to the table
+    openedRequestsTable.prepend(newRow);
+  }
+</script>
+
+<!-- Ready -->
+<script>
+  const populateInProcessRequestsTable = () => {
+    // Take only the requests being processed (status "AGUARDANDO")
+    let inProcessRequests = openedServiceRequests.filter(r => r.status === "ATENDIMENTO");
+    for (request of inProcessRequests) {
+      insertInProcessingRequestsTable(request);
+    }
+  };
+  const populateOpenRequestsTable = () => {
+    // Take only the accepted requests (status "AGUARDANDO")
+    let openedRequests = openedServiceRequests.filter(r => r.status === "AGUARDANDO");
+    for (request of openedRequests) {
+      insertInOpenedRequestsTable(request);
+    }
+  };
+
+  $(document).ready(function() {
+    //  If user is on tour
+    if (window.innerWidth > 980 && sessionStorage.getItem("lastLogin") === null) {
+      tour.init();
+      tour.start();
+      if (localStorage.getItem('tour_current_step') == "8") {
+        tour.next();
+      }
+    }
+
+    // Load the requests for the page
+    window.openedServiceRequests = <?php echo json_encode($this->view->openedServiceRequests) ?>;
+
+    // Populate the tables
+    populateInProcessRequestsTable();
+    populateOpenRequestsTable();
+  });
 </script>
 </body>

@@ -8,57 +8,9 @@ class ClienteController extends Action{
   public function index(){
     session_start();
     if($_SESSION['user_role'] === "CLIENTE"){
-
-      //LOADING AND PREPARE INFORMATIONS ABOUT CLIENT REQUESTS
-      $chamado = Container::getClass("Chamado");
-      $chamados = $chamado->getChamadosByColumn("id_cliente_solicitante", $_SESSION['user_id']);
-      $chamados_abertos = [];
-      $chamados_atendimento = [];
-      foreach ($chamados as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $chamados_abertos[] = $request;
-        }elseif ($request['status'] == "ATENDIMENTO") {
-          $chamados_atendimento[] = $request;
-        }
-      }
-      //-------------------------------------------------------
-
-      //LOADING AND PREPARE INFORMATIONS ABOUT CLIENT SERVICES
-      $servico = Container::getClass("Servico");
-      $servicos = $servico->fetchAll();
-      $array_servicos_names = [];
-      foreach ($servicos as $service) {
-        $array_servicos_names[$service['id']] = $service['nome'];
-      }
-      //-------------------------------------------------------
-
-      //LOADING AND PREPARE INFORMATIONS ABOUT USERS TO IDENTIFY TECHNICIAN NAMES
-      $user = Container::getClass("Usuario");
-      $users = $user->fetchAll();
-      $array_users_names = [];
-      foreach ($users as $client) {
-        $array_users_names[$client['id']]['nome'] = $client['nome'];
-      }
-      $array_users_names['NULL']['nome'] = "-";
-      //--------------------------------------------------------
-
-      // LOAD AND PREPARE PLACES INFORMATION
-      $local = Container::getClass("Local");
-      $locais = $local->fetchAll();
-      $array_locais = [];
-      foreach ($locais as $local) {
-          $array_locais[$local['id']]['nome'] = $local['nome'];
-          $array_locais[$local['id']]['tipo'] = $local['tipo'];
-          $array_locais[$local['id']]['ativo'] = $local['ativo'];
-      }
-      //--------------------------------------------------------
-
-      //ATRIBUING VALUES TO THE VIEW CLIENT
-      $this->view->chamados_abertos = $chamados_abertos;
-      $this->view->chamados_atendimento = $chamados_atendimento;
-      $this->view->services_names = $array_servicos_names;
-      $this->view->users_names = $array_users_names;
-      $this->view->locais = $array_locais;
+      $Chamado = Container::getClass("Chamado");
+      $openedServiceRequests = $Chamado->getUserOpenedRequests($_SESSION['user_id']);
+      $this->view->openedServiceRequests = $openedServiceRequests;
       $this->render('clientes');
     }else{
       $this->forbidenAccess();
@@ -94,48 +46,9 @@ class ClienteController extends Action{
   public function client_request_history() {
       session_start();
       if($_SESSION['user_role'] === "CLIENTE") {
-        $requestDb = Container::getClass("Chamado");
-        $requests = $requestDb->fetchAll();
-        $myRequests = [];
-
-        foreach ($requests as $request) {
-          if($request['id_cliente_solicitante'] == $_SESSION['user_id']){
-            $myRequests[] = $request;
-          }
-        }
-
-        $userDb = Container::getClass("Usuario");
-        $users = $userDb->fetchAll();
-        $user_info=[];
-        foreach ($users as $user) {
-          $user_info[$user['id']]['nome'] = $user['nome'];
-          // $user_info[$user['id']]['setor'] = $user['setor'];
-        }
-
-        //LOADING AND PREPARE INFORMATIONS ABOUT SERVICES
-        $servico = Container::getClass("Servico");
-        $servicos = $servico->fetchAll();
-        $array_servicos_names = [];
-        foreach ($servicos as $service) {
-          $array_servicos_names[$service['id']] = $service['nome'];
-        }
-        //--------------------------------------------------------
-
-        // LOAD AND PREPARE PLACES INFORMATION
-        $local = Container::getClass("Local");
-        $locais = $local->fetchAll();
-        $array_locais = [];
-        foreach ($locais as $local) {
-            $array_locais[$local['id']]['nome'] = $local['nome'];
-            $array_locais[$local['id']]['tipo'] = $local['tipo'];
-            $array_locais[$local['id']]['ativo'] = $local['ativo'];
-        }
-        //--------------------------------------------------------
-
-        $this->view->requests = $myRequests;
-        $this->view->user_info = $user_info;
-        $this->view->service_names = $array_servicos_names;
-        $this->view->locais = $array_locais;
+        $Chamado = Container::getClass("Chamado");
+        $openedServiceRequests = $Chamado->getUserOpenedRequests($_SESSION['user_id']);
+        $this->view->openedServiceRequests = $openedServiceRequests;
         $this->render('cliente_historico');
       } else {
           $this->forbidenAccess();
