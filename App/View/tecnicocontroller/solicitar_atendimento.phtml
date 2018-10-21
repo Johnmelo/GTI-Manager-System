@@ -200,7 +200,7 @@
 <!-- Autosize -->
 <script src="../../App/View/js/autosize.min.js"></script>
 <script>
-autosize($('textarea[name=descricao]'));
+  autosize($('textarea[name=descricao]'));
 </script>
 
 <!-- moment.js -->
@@ -208,9 +208,9 @@ autosize($('textarea[name=descricao]'));
 
 <!-- Prazo -->
 <script>
-var date = moment().add(2, 'days').format("DD/MM/YYYY");
-var time = moment().format("HH:mm");
-$('input[id=prazo_field]')[0].value = date + " às " + time;
+  let date = moment().add(2, 'days').format("DD/MM/YYYY");
+  let time = moment().format("HH:mm");
+  $('input[id=prazo_field]')[0].value = `${date} às ${time}`;
 </script>
 
 <!-- jQuery autocomplete -->
@@ -221,29 +221,27 @@ $('input[id=prazo_field]')[0].value = date + " às " + time;
   var usuarios;
 
   var _formatRegexp = function(q) {
-      q = q.replace(/[eéèêẽëEÉÈÊẼË]/gi,'[eéèêẽëEÉÈÊẼË]');
-      q = q.replace(/[aáàâãäAÁÀÂÃÄÅÆ]/gi,'[aáàâãäAÁÀÂÃÄÅÆ]');
-      q = q.replace(/[cçCÇ]/gi,'[cçCÇ]');
-      q = q.replace(/[iíìîïIÌÍÎÏ]/gi,'[iíìîïIÌÍÎÏ]');
-      q = q.replace(/[oóòôõöOÓÒÔÕÖ]/gi,'[oóòôõöOÓÒÔÕÖ]');
-      q = q.replace(/[uúùûüUÚÙÛÜ]/gi,'[uúùûüUÚÙÛÜ]');
-      q = q.replace(/[nñNÑ]/gi,'[nñNÑ]');
-      q = q.replace(/[yYÿ^yÝ]/gi,'[yYÿ^yÝ]');
-      return q;
+    q = q.replace(/[eéèêẽëEÉÈÊẼË]/gi,'[eéèêẽëEÉÈÊẼË]');
+    q = q.replace(/[aáàâãäAÁÀÂÃÄÅÆ]/gi,'[aáàâãäAÁÀÂÃÄÅÆ]');
+    q = q.replace(/[cçCÇ]/gi,'[cçCÇ]');
+    q = q.replace(/[iíìîïIÌÍÎÏ]/gi,'[iíìîïIÌÍÎÏ]');
+    q = q.replace(/[oóòôõöOÓÒÔÕÖ]/gi,'[oóòôõöOÓÒÔÕÖ]');
+    q = q.replace(/[uúùûüUÚÙÛÜ]/gi,'[uúùûüUÚÙÛÜ]');
+    q = q.replace(/[nñNÑ]/gi,'[nñNÑ]');
+    q = q.replace(/[yYÿ^yÝ]/gi,'[yYÿ^yÝ]');
+    return q;
   }
-
   var _autocompleteLookup = function (suggestion, originalQuery, queryLowerCase) {
-          var pattern = '(\\b|)('+$.Autocomplete.utils.escapeRegExChars(queryLowerCase)+')';
-          pattern = _formatRegexp(pattern);
-          var matcher = new RegExp(pattern);
-          var ret = suggestion.value.toLowerCase().match(matcher);
-          return ret;
+    var pattern = '(\\b|)('+$.Autocomplete.utils.escapeRegExChars(queryLowerCase)+')';
+    pattern = _formatRegexp(pattern);
+    var matcher = new RegExp(pattern);
+    var ret = suggestion.value.toLowerCase().match(matcher);
+    return ret;
   };
-
   var _autocompleteFormatResult = function (suggestion, currentValue) {
-          var pattern = '(\\b|)('+$.Autocomplete.utils.escapeRegExChars(currentValue)+')';
-          pattern = _formatRegexp(pattern);
-          return suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1$2<\/strong>');
+    var pattern = '(\\b|)('+$.Autocomplete.utils.escapeRegExChars(currentValue)+')';
+    pattern = _formatRegexp(pattern);
+    return suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1$2<\/strong>');
   };
 
   $.post("/gtic/public/get_services_suggestions")
@@ -251,17 +249,17 @@ $('input[id=prazo_field]')[0].value = date + " às " + time;
     servicos = data;
     $('form[name=solicitar_chamado] input[name=servico]').prop("readonly", false);
     $('form[name=solicitar_chamado] input[name=servico]').autocomplete({
-        minChars: 0,
-        lookup: servicos,
-        groupBy: 'category',
-        showNoSuggestionNotice: true,
-        noSuggestionNotice: "Serviço não encontrado no sistema",
-        lookupFilter: _autocompleteLookup,
-        formatResult: _autocompleteFormatResult,
-        onSelect: function (suggestion) {
-            checkFormValidity();
-            $('form[name=solicitar_chamado] input[id=id_servico]').val(suggestion.data.id_servico);
-        }
+      minChars: 0,
+      lookup: servicos,
+      groupBy: 'category',
+      showNoSuggestionNotice: true,
+      noSuggestionNotice: "Serviço não encontrado no sistema",
+      lookupFilter: _autocompleteLookup,
+      formatResult: _autocompleteFormatResult,
+      onSelect: function (suggestion) {
+        checkFormValidity();
+        $('form[name=solicitar_chamado] input[id=id_servico]').val(suggestion.data.id_servico);
+      }
     });
   })
   .fail(function() {
@@ -273,17 +271,17 @@ $('input[id=prazo_field]')[0].value = date + " às " + time;
     locais = data;
     $('form[name=solicitar_chamado] input[name=local]').prop("readonly", false);
     $('form[name=solicitar_chamado] input[name=local]').autocomplete({
-        minChars: 0,
-        lookup: locais,
-        groupBy: 'category',
-        showNoSuggestionNotice: true,
-        noSuggestionNotice: "Local não reconhecido pelo sistema",
-        lookupFilter: _autocompleteLookup,
-        formatResult: _autocompleteFormatResult,
-        onSelect: function (suggestion) {
-            checkFormValidity();
-            $('form[name=solicitar_chamado] input[id=id_local]').val(suggestion.data.id_local);
-        }
+      minChars: 0,
+      lookup: locais,
+      groupBy: 'category',
+      showNoSuggestionNotice: true,
+      noSuggestionNotice: "Local não reconhecido pelo sistema",
+      lookupFilter: _autocompleteLookup,
+      formatResult: _autocompleteFormatResult,
+      onSelect: function (suggestion) {
+        checkFormValidity();
+        $('form[name=solicitar_chamado] input[id=id_local]').val(suggestion.data.id_local);
+      }
     });
   })
   .fail(function() {
@@ -295,21 +293,20 @@ $('input[id=prazo_field]')[0].value = date + " às " + time;
     usuarios = data;
     $('form[name=solicitar_chamado] input[name=usuario]').prop("readonly", false);
     $('form[name=solicitar_chamado] input[name=usuario]').autocomplete({
-        minChars: 0,
-        lookup: usuarios,
-        showNoSuggestionNotice: true,
-        noSuggestionNotice: "Usuário não reconhecido pelo sistema",
-        lookupFilter: _autocompleteLookup,
-        formatResult: _autocompleteFormatResult,
-        onSelect: function (suggestion) {
-            checkFormValidity();
-            $('form[name=solicitar_chamado] input[id=id_usuario]').val(suggestion.data.usuario_id);
-        }
+      minChars: 0,
+      lookup: usuarios,
+      showNoSuggestionNotice: true,
+      noSuggestionNotice: "Usuário não reconhecido pelo sistema",
+      lookupFilter: _autocompleteLookup,
+      formatResult: _autocompleteFormatResult,
+      onSelect: function (suggestion) {
+        checkFormValidity();
+        $('form[name=solicitar_chamado] input[id=id_usuario]').val(suggestion.data.usuario_id);
+      }
     });
   })
   .fail(function(data) {
-      console.log(data);
-    // alert("Houve um problema enquanto carregava os usuários");
+    alert("Houve um problema enquanto carregava os usuários");
   });
 </script>
 
@@ -335,22 +332,22 @@ $('input[id=prazo_field]')[0].value = date + " às " + time;
   </div>
 </div>
 <script>
-function setSimpleModalContent(title, body, primaryButtonAction, primaryButtonText = "Confirmar", secondaryButtonText = "Cancelar") {
-  $('#simple-modal-title')[0].innerHTML = title;
-  $('#simple-modal-body')[0].innerHTML = body;
-  $('#simple-modal-primary-button')[0].innerHTML = primaryButtonText;
-  $('#simple-modal-primary-button').off('click');
-  $('#simple-modal-primary-button').on('click', primaryButtonAction);
-  $('#simple-modal-secondary-button')[0].innerHTML = secondaryButtonText;
-}
+  function setSimpleModalContent(title, body, primaryButtonAction, primaryButtonText = "Confirmar", secondaryButtonText = "Cancelar") {
+    $('#simple-modal-title')[0].innerHTML = title;
+    $('#simple-modal-body')[0].innerHTML = body;
+    $('#simple-modal-primary-button')[0].innerHTML = primaryButtonText;
+    $('#simple-modal-primary-button').off('click');
+    $('#simple-modal-primary-button').on('click', primaryButtonAction);
+    $('#simple-modal-secondary-button')[0].innerHTML = secondaryButtonText;
+  }
 </script>
 
 <!-- Check if request form can be submitted or reset -->
 <script>
-function checkFormValidity() {
-    var servico = $('form[name=solicitar_chamado] input[name=servico]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
-    var local = $('form[name=solicitar_chamado] input[name=local]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
-    var descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+  function checkFormValidity() {
+    let servico = $('form[name=solicitar_chamado] input[name=servico]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    let local = $('form[name=solicitar_chamado] input[name=local]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    let descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
 
     // If at least one is not empty, enable reset button
     if (!servico.match(/^\s*$/) || !local.match(/^\s*$/) || !descricao.match(/^\s*$/)) {
@@ -365,123 +362,126 @@ function checkFormValidity() {
     } else {
       disableButton($('form[name=solicitar_chamado] button[type=submit]'));
     }
-}
+  }
+  function enableButton(button) {
+    button.removeClass("btn-default");
+    button.addClass("btn-primary");
+    button.prop("disabled", false);
+  }
+  function disableButton(button) {
+    button.addClass("btn-default");
+    button.removeClass("btn-primary");
+    button.prop("disabled", true);
+  }
 
-$("input[name=servico], textarea[name=descricao], input[name=local]").on("input", function() {
-    checkFormValidity();
-});
-$("input[name=prazo_field]").on("input", function(e) {
-
-});
-$('form button[type=reset]').on('click', function() {
-  disableButton($('form[name=solicitar_chamado] button[type=reset]'));
-  disableButton($('form[name=solicitar_chamado] button[type=submit]'));
-});
-
-function enableButton(button) {
-  button.removeClass("btn-default");
-  button.addClass("btn-primary");
-  button.prop("disabled", false);
-}
-
-function disableButton(button) {
-  button.addClass("btn-default");
-  button.removeClass("btn-primary");
-  button.prop("disabled", true);
-}
-
-// On form reset
-$('form[name=solicitar_chamado]').on("reset", function() {
-  setTimeout(function() {
-    var date = moment().add(2, 'days').format("DD/MM/YYYY");
-    var time = moment().format("HH:mm");
-    $('input[id=prazo_field]')[0].value = date + " às " + time;
+  $("input[name=servico], textarea[name=descricao], input[name=local]").on("input", function() {
+      checkFormValidity();
   });
-});
+  $("input[name=prazo_field]").on("input", function(e) {
+    checkFormValidity();
+  });
+  $('form button[type=reset]').on('click', function() {
+    disableButton($('form[name=solicitar_chamado] button[type=reset]'));
+    disableButton($('form[name=solicitar_chamado] button[type=submit]'));
+  });
 
-// On form submit
-$('form[name=solicitar_chamado] button[type=submit]').on('click', function() {
-  // Remove white space excess if any
-  var descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
-  $('form[name=solicitar_chamado] textarea[name=descricao]').val(descricao);
+  // On form reset
+  $('form[name=solicitar_chamado]').on("reset", function() {
+    setTimeout(function() {
+      let date = moment().add(2, 'days').format("DD/MM/YYYY");
+      let time = moment().format("HH:mm");
+      $('input[id=prazo_field]')[0].value = `${date} às ${time}`;
+    });
+  });
 
-  // Adjust the deadline date
-  var deadline_date = $('form[name=solicitar_chamado] input[name=prazo_field]')[0].value;
-  var datetime;
-  if (deadline_date.match(/\d{2}\/\d{2}\/\d{4} [aà]s \d{2}:\d{2}/)) {
-    deadline_date = deadline_date.replace(/[aà]s /g, "");
-    deadline_date += ":00";
-    datetime = deadline_date.split(" ");
-    var date = datetime[0].split("/");
-    var time = datetime[1];
-    datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
-  }
+  // On form submit
+  $('form[name=solicitar_chamado] button[type=submit]').on('click', function() {
+    // Remove white space excess if any
+    var descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    $('form[name=solicitar_chamado] textarea[name=descricao]').val(descricao);
 
-  // Check if service is valid
-  var service = $("input[name=servico]").val();
-  var isServiceListed = ((servicos.filter(x => x.value === service)).length > 0);
-  if (!isServiceListed) {
-    alert("É preciso selecionar uma opção da lista de serviços");
-    return false;
-  }
+    // Adjust the deadline date
+    let deadline_date = $('form[name=solicitar_chamado] input[name=prazo_field]')[0].value;
+    let datetime;
+    if (deadline_date.match(/\d{2}\/\d{2}\/\d{4} [aà]s \d{2}:\d{2}/)) {
+      deadline_date = deadline_date.replace(/[aà]s /g, "");
+      deadline_date += ":00";
+      datetime = deadline_date.split(" ");
+      let date = datetime[0].split("/");
+      let time = datetime[1];
+      datetime = `${date[2]}-${date[1]}-${date[0]} ${time}`;
+    } else {
+      alert("Prazo não está no formato esperado.\nExemplo de resposta esperada:\nDD/MM/AAAA às HH:mm");
+      return false;
+    }
 
-  // Check if locale is valid
-  var local = $("input[name=local]").val();
-  var isLocaleListed = ((locais.filter(x => x.value === local)).length > 0);
-  if (!isLocaleListed) {
-    alert("É preciso selecionar uma opção da lista de locais");
-    return false;
-  }
+    // Check if service is valid
+    let service = $("input[name=servico]").val();
+    let isServiceListed = ((servicos.filter(x => x.value === service)).length > 0);
+    if (!isServiceListed) {
+      alert("É preciso selecionar uma opção da lista de serviços");
+      return false;
+    }
 
-  // Check if client is valid
-  var cliente = $("input[name=usuario]").val();
-  var isClientListed = ((usuarios.filter(x => x.value === cliente)).length > 0);
-  if (!isClientListed) {
-    alert("É preciso selecionar uma opção da lista de usuários");
-    return false;
-  }
+    // Check if locale is valid
+    let local = $("input[name=local]").val();
+    let isLocaleListed = ((locais.filter(x => x.value === local)).length > 0);
+    if (!isLocaleListed) {
+      alert("É preciso selecionar uma opção da lista de locais");
+      return false;
+    }
 
-  var id_servico = $('form[name=solicitar_chamado] input[id=id_servico]')[0].value;
-  var id_local = $('form[name=solicitar_chamado] input[id=id_local]')[0].value;
-  var id_cliente = $('form[name=solicitar_chamado] input[id=id_usuario]')[0].value;
+    // Check if client is valid
+    let cliente = $("input[name=usuario]").val();
+    let isClientListed = ((usuarios.filter(x => x.value === cliente)).length > 0);
+    if (!isClientListed) {
+      alert("É preciso selecionar uma opção da lista de usuários");
+      return false;
+    }
 
-  $("html").css("cursor", "wait");
-  $("body").css("pointer-events", "none");
+    let id_servico = $('form[name=solicitar_chamado] input[id=id_servico]')[0].value;
+    let id_local = $('form[name=solicitar_chamado] input[id=id_local]')[0].value;
+    let id_cliente = $('form[name=solicitar_chamado] input[id=id_usuario]')[0].value;
 
-  $.post("/gtic/public/tecnico/register_call_request", {
-    "id_servico": id_servico,
-    "id_local": id_local,
-    "id_usuario": id_cliente,
-    "prazo": datetime,
-    "descricao": descricao
-  })
-  .done(function(data) {
-    $("html").css("cursor", "auto");
-    $("body").css("pointer-events", "auto");
+    $("html").css("cursor", "wait");
+    $("body").css("pointer-events", "none");
 
-    alert("Chamado aberto com sucesso");
-    $("form[name=solicitar_chamado]").trigger("reset");
-  })
-  .fail(function(data) {
-    $("html").css("cursor", "auto");
-    $("body").css("pointer-events", "auto");
+    $.post("/gtic/public/tecnico/register_call_request", {
+      "id_servico": id_servico,
+      "id_local": id_local,
+      "id_usuario": id_cliente,
+      "prazo": datetime,
+      "descricao": descricao
+    })
+    .done(function(data) {
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
 
-    if (data.hasOwnProperty("responseJSON")) {
-      var response = data.responseJSON;
-      if (response.hasOwnProperty("event") && response.event === "error") {
-        if (response.hasOwnProperty("type") && response.type === "deadline_wrong_format") {
-          alert("O prazo foi informado em um formato não reconhecido");
+      alert("Chamado aberto com sucesso");
+      $("form[name=solicitar_chamado]").trigger("reset");
+    })
+    .fail(function(data) {
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      if (data.hasOwnProperty("responseJSON")) {
+        let response = data.responseJSON;
+        if (response.hasOwnProperty("event") && response.event === "error") {
+          if (response.type === "deadline_wrong_format") {
+            alert("Prazo não está no formato esperado.\nExemplo de resposta esperada:\nDD/MM/AAAA às HH:mm");
+          } else if (response.type === "missing_data") {
+            alert("Preencha todos os campos do formulário");
+          } else {
+            alert("Houve um problema não previsto");
+          }
         } else {
           alert("Houve um problema não previsto");
         }
       } else {
         alert("Houve um problema não previsto");
       }
-    } else {
-      alert("Houve um problema não previsto");
-    }
+    });
+    return false;
   });
-  return false;
-});
 </script>
 </body>
