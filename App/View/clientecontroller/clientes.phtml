@@ -76,24 +76,6 @@
           </div>
 
         </div>
-        <!-- /sidebar menu -->
-
-        <!-- /menu footer buttons -->
-        <!--<div class="sidebar-footer hidden-small">
-          <a data-toggle="tooltip" data-placement="top" title="Settings">
-            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-          </a>
-          <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-            <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-          </a>
-          <a data-toggle="tooltip" data-placement="top" title="Lock">
-            <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-          </a>
-          <a data-toggle="tooltip" data-placement="top" title="Logout" href="logout">
-            <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-          </a>
-        </div>-->
-        <!-- /menu footer buttons -->
       </div>
     </div>
 
@@ -145,11 +127,6 @@
                   <h2>CHAMADOS<small>Em atendimento</small></h2>
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
-                    </li>
-                    <!--<li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
-                    </li>-->
-                    <!-- <li><a class="close-link"><i class="fas fa-times"></i></a> -->
                     </li>
                   </ul>
                   <div class="clearfix"></div>
@@ -206,11 +183,6 @@
                   <h2>NA FILA<small>para atendimento</small></h2>
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
-                    </li>
-                    <!--<li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
-                    </li>-->
-                    <!-- <li><a class="close-link"><i class="fas fa-times"></i></a> -->
                     </li>
                   </ul>
                   <div class="clearfix"></div>
@@ -383,14 +355,14 @@ $('#not-processing-requests tr').on('click', function(e) {
   </div>
 </div>
 <script>
-function setSimpleModalContent(title, body, primaryButtonAction, primaryButtonText = "Confirmar", secondaryButtonText = "Cancelar") {
-  $('#simple-modal-title')[0].innerHTML = title;
-  $('#simple-modal-body')[0].innerHTML = body;
-  $('#simple-modal-primary-button')[0].innerHTML = primaryButtonText;
-  $('#simple-modal-primary-button').off('click');
-  $('#simple-modal-primary-button').on('click', primaryButtonAction);
-  $('#simple-modal-secondary-button')[0].innerHTML = secondaryButtonText;
-}
+  function setSimpleModalContent(title, body, primaryButtonAction, primaryButtonText = "Confirmar", secondaryButtonText = "Cancelar") {
+    $('#simple-modal-title')[0].innerHTML = title;
+    $('#simple-modal-body')[0].innerHTML = body;
+    $('#simple-modal-primary-button')[0].innerHTML = primaryButtonText;
+    $('#simple-modal-primary-button').off('click');
+    $('#simple-modal-primary-button').on('click', primaryButtonAction);
+    $('#simple-modal-secondary-button')[0].innerHTML = secondaryButtonText;
+  }
 </script>
 
 <!-- Archive request confirmation -->
