@@ -264,7 +264,7 @@
             tecnico_responsavel_field: true
           }
         };
-        let requestData = openedServiceRequests.find(r => r.id_chamado === requestId);
+        let requestData = openTickets.find(r => r.id_chamado === requestId);
         defineSimpleModal(modalConfig, requestData);
       }
     }
@@ -286,7 +286,7 @@
             prazo_field: true
           }
         };
-        let requestData = openedServiceRequests.find(r => r.id_chamado === requestId);
+        let requestData = openTickets.find(r => r.id_chamado === requestId);
         defineSimpleModal(modalConfig, requestData);
       }
     }
@@ -479,14 +479,14 @@
 <script>
   const populateInProcessRequestsTable = () => {
     // Take only the requests being processed (status "AGUARDANDO")
-    let inProcessRequests = openedServiceRequests.filter(r => r.status === "ATENDIMENTO");
+    let inProcessRequests = openTickets.filter(r => r.status === "ATENDIMENTO");
     for (request of inProcessRequests) {
       insertInProcessingRequestsTable(request);
     }
   };
   const populateOpenRequestsTable = () => {
     // Take only the accepted requests (status "AGUARDANDO")
-    let openedRequests = openedServiceRequests.filter(r => r.status === "AGUARDANDO");
+    let openedRequests = openTickets.filter(r => r.status === "AGUARDANDO");
     for (request of openedRequests) {
       insertInOpenedRequestsTable(request);
     }
@@ -503,7 +503,7 @@
     }
 
     // Load the requests for the page
-    window.openedServiceRequests = <?php echo json_encode($this->view->openedServiceRequests) ?>;
+    window.openTickets = <?php echo json_encode($this->view->openTickets) ?>;
 
     // Populate the tables
     populateInProcessRequestsTable();

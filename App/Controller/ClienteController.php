@@ -9,8 +9,8 @@ class ClienteController extends Action{
     session_start();
     if($_SESSION['user_role'] === "CLIENTE"){
       $Chamado = Container::getClass("Chamado");
-      $openedServiceRequests = $Chamado->getUserOpenedRequests($_SESSION['user_id']);
-      $this->view->openedServiceRequests = $openedServiceRequests;
+      $openTickets = $Chamado->getUsersOpenTickets($_SESSION['user_id']);
+      $this->view->openTickets = $openTickets;
       $this->render('clientes');
     }else{
       $this->forbidenAccess();
@@ -21,8 +21,8 @@ class ClienteController extends Action{
     session_start();
     if($_SESSION['user_role'] == "CLIENTE"){
       $SolicitarChamado = Container::getClass("SolicitarChamado");
-      $serviceRequests = $SolicitarChamado->getUserServiceRequests($_SESSION['user_id']);
-      $this->view->serviceRequests = $serviceRequests;
+      $activeTicketRequests = $SolicitarChamado->getUsersActiveTicketRequests($_SESSION['user_id']);
+      $this->view->activeTicketRequests = $activeTicketRequests;
       $this->render('cliente_chamado_request');
     }else{
       $this->forbidenAccess();
@@ -47,8 +47,8 @@ class ClienteController extends Action{
       session_start();
       if($_SESSION['user_role'] === "CLIENTE") {
         $Chamado = Container::getClass("Chamado");
-        $openedServiceRequests = $Chamado->getUserOpenedRequests($_SESSION['user_id']);
-        $this->view->openedServiceRequests = $openedServiceRequests;
+        $inactiveTickets = $Chamado->getUsersInactiveTickets($_SESSION['user_id']);
+        $this->view->inactiveTickets = $inactiveTickets;
         $this->render('cliente_historico');
       } else {
           $this->forbidenAccess();

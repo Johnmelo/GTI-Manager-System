@@ -192,7 +192,7 @@
               tecnico_responsavel_field: true
             }
           };
-          let requestData = openedServiceRequests.find(r => r.id_chamado === requestId);
+          let requestData = inactiveTickets.find(r => r.id_chamado === requestId);
           defineSimpleModal(modalConfig, requestData);
         }
       }
@@ -201,7 +201,7 @@
 
   <!-- Table handling -->
   <script>
-    function insertInServiceRequestsTable(request) {
+    function insertInInactiveTicketsTable(request) {
       let pastRequestsTable = $('#closed-requests');
 
       // Row structure
@@ -225,21 +225,21 @@
 
   <!-- Ready -->
   <script>
-    const populatePastRequestsTable = () => {
+    const populateInactiveTicketsTable = () => {
       // Take only the requests already resolved (all status except "AGUARDANDO" and "ATENDIMENTO")
-      let pastRequests = openedServiceRequests.filter(r =>
+      let pastRequests = inactiveTickets.filter(r =>
         r.status !== "AGUARDANDO" && r.status !== "ATENDIMENTO");
       for (request of pastRequests) {
-        insertInServiceRequestsTable(request);
+        insertInInactiveTicketsTable(request);
       }
     };
 
     $(document).ready(function() {
       // Load the requests for the page
-      window.openedServiceRequests = <?php echo json_encode($this->view->openedServiceRequests) ?>;
+      window.inactiveTickets = <?php echo json_encode($this->view->inactiveTickets) ?>;
 
       // Fill up unopen requests table
-      populatePastRequestsTable();
+      populateInactiveTicketsTable();
     });
   </script>
 </body>
