@@ -8,83 +8,15 @@ class TecnicoController extends Action{
   public function index(){
     session_start();
     if($_SESSION['user_role'] === "TECNICO"){
+        $SolicitarChamado = Container::getClass("SolicitarChamado");
+        $activeTicketRequests = $SolicitarChamado->getActiveTicketRequests();
 
-      //LOADING AND PREPARE INFORMATIOS ABOUT CALL REQUEST
-      $chamado = Container::getClass("Chamado");
-      $chamados = $chamado->fetchAll();
-      $chamados_abertos = $chamado->getChamadosByStatus("AGUARDANDO");
-      $chamados_atendimentos = $chamado->getChamadosByStatus("ATENDIMENTO");
-      $chamados_finalizados = $chamado->getChamadosByStatus("FINALIZADO");
-      $myRequests = [];
-      $myRequestsFinished = [];
-      foreach ($chamados_atendimentos as $request) {
-        if($request['id_tecnico_responsavel'] == $_SESSION['user_id']){
-          $myRequests[] = $request;
-        }
-      }
-      foreach ($chamados_finalizados as $request) {
-        if($request['id_tecnico_responsavel'] == $_SESSION['user_id']){
-          $myRequestsFinished[] = $request;
-        }
-      }
-      //------------------------------------------------------------------------
+        $Chamado = Container::getClass("Chamado");
+        $openTickets = $Chamado->getOpenTickets($_SESSION['user_id']);
 
-      //LOADING AND PREPARE INFORMATIONS ABOUT USERS TO IDENTIFY
-      //OPEN REQUEST TECHNICIAN AND CLIENT THAT HAVE REQUESTED
-      $user = Container::getClass("Usuario");
-      $users = $user->fetchAll();
-      $array_users_names = [];
-      foreach ($users as $client) {
-        $array_users_names[$client['id']]['nome'] = $client['nome'];
-        $array_users_names[$client['id']]['setor'] = $client['setor'];
-      }
-      //------------------------------------------------------------------------
-
-      //LOADING AND PREPARE INFORMATIONS ABOUT SERVICES
-      $servico = Container::getClass("Servico");
-      $servicos = $servico->fetchAll();
-      $array_servicos_names = [];
-      foreach ($servicos as $service) {
-        $array_servicos_names[$service['id']] = $service['nome'];
-      }
-      //-------------------------------------------------------
-
-      //LOADING AND PREPARE INFORMATIONS ABOUT CALL REQUEST
-      $requisicao_atendendimento = Container::getClass("SolicitarChamado");
-      $requisicoes_atendimento = $requisicao_atendendimento->fetchAll();
-      $requisicoes_atendimento_aguardando = [];
-      foreach ($requisicoes_atendimento as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $requisicoes_atendimento_aguardando[] = $request;
-        }
-      }
-     //---------------------------------------------------
-
-     $local = Container::getClass("Local");
-     $locais = $local->fetchAll();
-     $array_locais = [];
-     foreach ($locais as $local) {
-         $array_locais[$local['id']]['nome'] = $local['nome'];
-         $array_locais[$local['id']]['tipo'] = $local['tipo'];
-         $array_locais[$local['id']]['ativo'] = $local['ativo'];
-     }
-    //---------------------------------------------------
-
-      //SENDING VALUES TO TECHNICIAN VIEW PAGE
-      $this->view->myRequests = $myRequests;
-      $this->view->myRequestsFinished = $myRequestsFinished;
-      $this->view->openRequests = $chamados_abertos;
-      $this->view->requisicoes_atendimento = $requisicoes_atendimento_aguardando;
-      $this->view->users_names = $array_users_names;
-      $this->view->service_names = $array_servicos_names;
-      $this->view->requests_attendance = $chamados_atendimentos;
-      $this->view->locais = $array_locais;
-      //------------------------------------------------------------------------
-
-      //RENDERING PAGE
-      $this->render('tecnicos');
-      //------------------------------------------------------------------------
-
+        $this->view->activeTicketRequests = $activeTicketRequests;
+        $this->view->openTickets = $openTickets;
+        $this->render('tecnicos');
     }else{
       $this->forbidenAccess();
     }
@@ -122,50 +54,10 @@ class TecnicoController extends Action{
   public function technician_history () {
       session_start();
       if($_SESSION['user_role'] === "TECNICO") {
-
-        $requestDb = Container::getClass("Chamado");
-        $requests = $requestDb->fetchAll();
-        $requestsFinished = [];
-
-        foreach ($requests as $request) {
-          if(($request['id_tecnico_responsavel'] == $_SESSION['user_id']) && ($request['status'] == "FINALIZADO")){
-            $requestsFinished[] = $request;
-          }
-        }
-
-        $userDb = Container::getClass("Usuario");
-        $users = $userDb->fetchAll();
-        $user_info=[];
-        foreach ($users as $user) {
-          $user_info[$user['id']]['nome'] = $user['nome'];
-          $user_info[$user['id']]['setor'] = $user['setor'];
-        }
-
-        //LOADING AND PREPARE INFORMATIONS ABOUT SERVICES
-        $servico = Container::getClass("Servico");
-        $servicos = $servico->fetchAll();
-        $array_servicos_names = [];
-        foreach ($servicos as $service) {
-          $array_servicos_names[$service['id']] = $service['nome'];
-        }
-        //-------------------------------------------------------
-
-        // LOAD AND PREPARE PLACES INFORMATION
-        $local = Container::getClass("Local");
-        $locais = $local->fetchAll();
-        $array_locais = [];
-        foreach ($locais as $local) {
-            $array_locais[$local['id']]['nome'] = $local['nome'];
-            $array_locais[$local['id']]['tipo'] = $local['tipo'];
-            $array_locais[$local['id']]['ativo'] = $local['ativo'];
-        }
-        //---------------------------------------------------
-
-        $this->view->requests = $requestsFinished;
-        $this->view->user_info = $user_info;
-        $this->view->service_names = $array_servicos_names;
-        $this->view->locais = $array_locais;
-        $this->render('technician_request_history');
+          $Chamado = Container::getClass("Chamado");
+          $closedTickets = $Chamado->getTechniciansClosedTickets($_SESSION['user_id']);
+          $this->view->closedTickets = $closedTickets;
+          $this->render('technician_request_history');
       } else {
           $this->forbidenAccess();
       }
