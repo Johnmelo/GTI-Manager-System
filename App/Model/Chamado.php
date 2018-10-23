@@ -23,9 +23,9 @@ class Chamado extends Table{
   public function getUsersOpenTickets($userId) {
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
-          ." `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`status`, `sc`.`data_solicitacao`,"
-          ." `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`,"
-          ." `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`,"
+          ." `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
@@ -44,9 +44,9 @@ class Chamado extends Table{
   public function getUsersInactiveTickets($userId) {
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
-          ." `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`status`, `sc`.`data_solicitacao`,"
-          ." `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`,"
-          ." `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`,"
+          ." `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
@@ -62,12 +62,33 @@ class Chamado extends Table{
       return $res;
   }
 
+  public function getTechniciansClosedTickets($technicianId) {
+      $stmt = $this->db->prepare(
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
+          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`,"
+          ." `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." FROM `{$this->table}` AS `c`"
+          ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
+          ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
+          ." LEFT JOIN `usuarios` AS `u1` ON `u1`.`id` = `c`.`id_cliente_solicitante`"
+          ." LEFT JOIN `usuarios` AS `u2` ON `u2`.`id` = `c`.`id_tecnico_abertura`"
+          ." LEFT JOIN `usuarios` AS `u3` ON `u3`.`id` = `c`.`id_tecnico_responsavel`"
+          ." LEFT JOIN `locais` AS `l` ON `l`.`id` = `sc`.`id_local`"
+          ." WHERE `c`.`id_tecnico_responsavel` = :technicianId AND `c`.`status` = 'FINALIZADO'"
+          ." ORDER BY `c`.`data_abertura` DESC");
+      $stmt->bindParam(":technicianId", $technicianId);
+      $stmt->execute();
+      $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      return $res;
+  }
+
   public function getOpenTickets() {
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
-          ." `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`status`, `sc`.`data_solicitacao`,"
-          ." `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`,"
-          ." `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`,"
+          ." `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
@@ -85,9 +106,9 @@ class Chamado extends Table{
   public function getInactiveTickets() {
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
-          ." `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`status`, `sc`.`data_solicitacao`,"
-          ." `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`,"
-          ." `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`,"
+          ." `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
