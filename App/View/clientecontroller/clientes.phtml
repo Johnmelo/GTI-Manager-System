@@ -461,7 +461,7 @@
       class="btn btn-primary"\
       name="btnCancelarSolicitacao"\
       value="${request.id_chamado}">Cancelar</button>`);
-    newRow.append($("<td>").append(btnCancelRequest));cols += `<td><button type="button" class="btn btn-primary" name="btnCancelarSolicitacao" value="${request.id_chamado}">Cancelar</button></td>`;
+    newRow.append($("<td>").append(btnCancelRequest));
 
     // Events
     $(newRow).on('click', clickOpenedRequestTableRow);
