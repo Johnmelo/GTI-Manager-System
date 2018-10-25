@@ -113,27 +113,17 @@ class GerenteController extends Action{
       // Check if wat was submitted is a list of accounts selected, a new
       // user manually created or a request which was edited
 
-      // If it's a list of selected requests
+      // If it's one or more directly accepted requests
       if (isset($_POST['requests'])) {
+        $successfulIds = [];
         $invalidEmails = [];
+        $failedToSendEmail = [];
         $alreadyInUseEmails = [];
         $alreadyInUseLogins = [];
         $alreadyInUseRegistrationNumbers = [];
         foreach ($_POST['requests'] as $request) {
           // Register only users with unique email, username and
           // registration number and with valid email
-          if (!filter_var($request['email'], FILTER_VALIDATE_EMAIL)) {
-            array_push($invalidEmails, $request['email']);
-          }
-          if ($this->isLoginInUse($request['usuario']) == true) {
-            array_push($alreadyInUseLogins, $request['usuario']);
-          }
-          if ($this->isEmailInUse($request['email']) == true) {
-            array_push($alreadyInUseEmails, $request['email']);
-          }
-          if ($this->isRegistrationNumberInUse($request['matricula']) == true) {
-            array_push($alreadyInUseRegistrationNumbers, $request['matricula']);
-          }
           if (filter_var($request['email'], FILTER_VALIDATE_EMAIL)) {
             if ($this->isLoginInUse($request['usuario']) == false) {
               if ($this->isEmailInUse($request['email']) == false) {
@@ -149,18 +139,59 @@ class GerenteController extends Action{
                   $user_role =  Container::getClass("UsuarioRole");
                   $user_role->save($cliente_role['id'],1,0,0);
 
+                  array_push($successfulIds, $request['idSolicitacao']);
+
                   // Send email
-                  $email = new Email();
-                  $email->requestGrantedNotification($request['nome'],$request['email']);
+                  try {
+                    $email = new Email();
+                    if (!$email->requestGrantedNotification($request['nome'],$request['email'])) {
+                      array_push($failedToSendEmail, $request['email']);
+                    }
+                  } catch (\Exception $e) {
+                    array_push($failedToSendEmail, $request['email']);
+                  }
+                } else {
+                  array_push($alreadyInUseRegistrationNumbers, $request['matricula']);
                 }
+              } else {
+                array_push($alreadyInUseEmails, $request['email']);
               }
+            } else {
+              array_push($alreadyInUseLogins, $request['usuario']);
             }
+          } else {
+            array_push($invalidEmails, $request['email']);
           }
         }
-        $failedData = array( 'invalid_emails'=> $invalidEmails, 'used_logins' => $alreadyInUseLogins, 'used_emails' => $alreadyInUseEmails, 'used_registration_numbers' => $alreadyInUseRegistrationNumbers);
+
+        // If some accounts failed to be registered, notify about them
+        if (count($invalidEmails)
+        || count($failedToSendEmail)
+        || count($alreadyInUseLogins)
+        || count($alreadyInUseEmails)
+        || count($alreadyInUseRegistrationNumbers)) {
+            $failedData = array(
+              'successful_ids' => $successfulIds,
+              'invalid_emails'=> $invalidEmails,
+              'failed_to_send_email'=> $failedToSendEmail,
+              'used_logins' => $alreadyInUseLogins,
+              'used_emails' => $alreadyInUseEmails,
+              'used_registration_numbers' => $alreadyInUseRegistrationNumbers
+            );
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 400');
+            die(json_encode(array('event' => 'error', 'type' => 'prevented_registrations', 'data' => $failedData)));
+        }
+
+        // Inform the request id that was accepted
         header('Content-Type: application/json; charset=UTF-8');
-        header('HTTP/1.1 400');
-        die(json_encode(array('event' => 'error', 'type' => 'prevented_registrations', 'data' => $failedData)));
+        die(json_encode(
+            array(
+                'event' => 'info',
+                'type' => 'request_accepted',
+                'data' => ['requestIds' => $successfulIds]
+            )
+        ));
 
       // If it's a edited request
       } elseif ($_POST['new_user'] && $_POST['new_user']['idSolicitacao']) {
@@ -183,8 +214,28 @@ class GerenteController extends Action{
                 $user_role->save($cliente_role['id'],$request['isClient'],$request['isTechnician'],$request['isAdmin']);
 
                 // Send email
-                $email = new Email();
-                $email->requestGrantedNotification($request['nome'],$request['email']);
+                $emailSent = true;
+                try {
+                  $email = new Email();
+                  if (!$email->requestGrantedNotification($request['nome'],$request['email'])) {
+                    $emailSent = false;
+                  }
+                } catch (\Exception $e) {
+                  $emailSent = false;
+                }
+
+                // Inform the request id that was accepted
+                header('Content-Type: application/json; charset=UTF-8');
+                die(json_encode(
+                    array(
+                        'event' => 'info',
+                        'type' => 'request_accepted',
+                        'data' => [
+                          'requestId' => $request['idSolicitacao'],
+                          'emailSent' => $emailSent
+                        ]
+                    )
+                ));
               } else {
                 // Error: the submitted registration number is already in use
                 header('Content-Type: application/json; charset=UTF-8');
@@ -228,8 +279,26 @@ class GerenteController extends Action{
                 $user_role->save($cliente_role['id'],$request['isClient'],$request['isTechnician'],$request['isAdmin']);
 
                 // Send email
-                $email = new Email();
-                $email->requestGrantedNotification($request['nome'],$request['email']);
+                $emailSent = true;
+                try {
+                  $email = new Email();
+                  if (!$email->requestGrantedNotification($request['nome'],$request['email'])) {
+                    $emailSent = false;
+                  }
+                } catch (\Exception $e) {
+                  $emailSent = false;
+                }
+
+                // Inform if email was not sent
+                if ($emailSent === false) {
+                  header('Content-Type: application/json; charset=UTF-8');
+                  die(json_encode(
+                      array(
+                          'event' => 'info',
+                          'type' => 'email_notification_failed'
+                      )
+                  ));
+                }
               } else {
                 header('Content-Type: application/json; charset=UTF-8');
                 header('HTTP/1.1 400');
