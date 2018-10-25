@@ -85,7 +85,7 @@ class Email {
             $registration_number_field->innertext = $registrationNumber;
             $email_content = $dom->save();
 
-            $this->sendEmail($email, $name." ".$lastname, self::ACCESS_REQUEST_NOTIFICATION_SUBJECT, $email_content);
+            return $this->sendEmail($email, $name." ".$lastname, self::ACCESS_REQUEST_NOTIFICATION_SUBJECT, $email_content);
         } catch (\Exception $e) {
             throw $e;
         }
@@ -105,7 +105,7 @@ class Email {
             $full_name_field->innertext = $name;
             $email_content = $dom->save();
 
-            $this->sendEmail($email, $name, self::ACCESS_GRANTED_NOTIFICATION_SUBJECT, $email_content);
+            return $this->sendEmail($email, $name, self::ACCESS_GRANTED_NOTIFICATION_SUBJECT, $email_content);
         } catch (\Exception $e) {
             throw $e;
         }
@@ -127,7 +127,7 @@ class Email {
             $message_field->innertext = $message;
             $email_content = $dom->save();
 
-            $this->sendEmail($email, $name, self::ACCESS_REFUSED_NOTIFICATION_SUBJECT, $email_content);
+            return $this->sendEmail($email, $name, self::ACCESS_REFUSED_NOTIFICATION_SUBJECT, $email_content);
         } catch (\Exception $e) {
             throw $e;
         }
