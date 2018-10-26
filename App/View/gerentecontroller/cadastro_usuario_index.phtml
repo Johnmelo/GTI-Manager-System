@@ -617,8 +617,30 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
       .done(function(data){
         $("html").css("cursor", "auto");
         $("body").css("pointer-events", "auto");
-        alert("Feito!");
-        window.location.reload(true);
+        if (data) {
+          let msg = "";
+          if (data.event === "info") {
+            if (data.type === "response" && data.data) {
+              let responseData = data.data;
+              if (responseData.failedToSendEmail) {
+                let failedEmails = responseData.failedToSendEmail;
+                msg += "Não foi possível enviar email de notificação para:\n";
+                for (email of responseData.failedToSendEmail) {
+                  msg += "•  " + email + ";\n";
+                }
+              }
+            }
+          }
+          if (msg !== "") {
+            alert(msg);
+          }
+        }
+        // Remove the requests from the page
+        for (req of requests) {
+          $('#request-list-wrapper').find(`[data-id-solicitacao=${req.idSolicitacao}]`).parents(':eq(1)').remove();
+        }
+        // Hide modal
+        $('#archive-request-modal').modal('hide');
       })
       .fail(function(data){
         $("html").css("cursor", "auto");
@@ -630,7 +652,7 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
             if (response.type == "insuficient_data") {
               alert("Não foi possível realizar a ação por falta de dados");
             } else if(response.type == "insuficient_email_data") {
-              alert("Não foi possível realizar a ação por insuficiência de dados para envio de email");
+              alert("Não foi possível realizar a ação porque faltou digitar o texto do email");
             } else {
               alert("Houve uma falha inesperada");
             }
@@ -663,9 +685,9 @@ $('button#accept-selection').on('click', function() {
       for (reqId of data.data.requestIds) {
         $('#request-list-wrapper').find(`[data-id-solicitacao=${reqId}]`).parents(':eq(1)').remove();
         // Hide the modal
-        $('#edit-request-modal').modal('hide');
       }
     }
+    $('#edit-request-modal').modal('hide');
   })
   .fail(data => failedRegistration(data));
 });
