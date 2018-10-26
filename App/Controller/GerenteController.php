@@ -330,11 +330,12 @@ class GerenteController extends Action{
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
       if (isset($_POST['reason']) && isset($_POST['request_list']) && isset($_POST['send_email'])) {
-        if ($_POST['send_email'] == "true" && (!isset($_POST['email_message']) || preg_match('/^\S*$/', $_POST['email_message']))) {
+        if ($_POST['send_email'] == "true" && (!isset($_POST['email_message']) || preg_match('/^\s*$/', $_POST['email_message']))) {
           header('Content-Type: application/json; charset=UTF-8');
           header('HTTP/1.1 400');
           die(json_encode(array('event' => 'error', 'type' => 'insuficient_email_data')));
         } else {
+          $failedToSendEmail = [];
           foreach ($_POST['request_list'] as $request) {
             // Archive request
 
@@ -349,11 +350,24 @@ class GerenteController extends Action{
 
             // Send email to requester if so chosen
             if ($_POST['send_email'] == "true") {
-               $email = new Email();
-               $email->requestRefusedNotification($request['nome'],$request['email'], $_POST['email_message']);
+               try {
+                 $email = new Email();
+                 if (!$email->requestRefusedNotification($request['nome'],$request['email'], $_POST['email_message'])) {
+                   array_push($failedToSendEmail, $request['email']);
+                 }
+               } catch (\Exception $e) {
+                 array_push($failedToSendEmail, $request['email']);
+               }
             }
           }
         }
+
+        $responseData = [];
+        if (count($failedToSendEmail)) {
+          $responseData["failedToSendEmail"] = $failedToSendEmail;
+        }
+        header('Content-Type: application/json; charset=UTF-8');
+        echo json_encode(array('event' => 'info', 'type' => 'response', 'data' => $responseData));
       } else {
         header('Content-Type: application/json; charset=UTF-8');
         header('HTTP/1.1 400');
