@@ -435,7 +435,7 @@
     $(newRow).on('click', clickInProcessRequestTableRow);
 
     // Add the row to the table
-    inProcessRequestsTable.prepend(newRow);
+    inProcessRequestsTable.append(newRow);
   }
   function insertInOpenedRequestsTable(request) {
     let openedRequestsTable = $('#not-processing-requests');
@@ -471,7 +471,7 @@
     $(btnCancelRequest).on('click', btnCancelarSolicitacao);
 
     // Add the row to the table
-    openedRequestsTable.prepend(newRow);
+    openedRequestsTable.append(newRow);
   }
 </script>
 

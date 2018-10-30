@@ -12,7 +12,7 @@ class TecnicoController extends Action{
         $activeTicketRequests = $SolicitarChamado->getActiveTicketRequests();
 
         $Chamado = Container::getClass("Chamado");
-        $openTickets = $Chamado->getOpenTickets($_SESSION['user_id']);
+        $openTickets = $Chamado->getOpenTickets();
 
         $this->view->activeTicketRequests = $activeTicketRequests;
         $this->view->openTickets = $openTickets;
