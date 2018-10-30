@@ -8,67 +8,17 @@ class GerenteController extends Action{
   public function index(){
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
+      $SolicitarAcesso = Container::getClass("SolicitarAcesso");
+      $SolicitarChamado = Container::getClass("SolicitarChamado");
+      $Chamado = Container::getClass("Chamado");
 
-      $requisicao_acesso = Container::getClass("SolicitarAcesso");
-      $requisicoes = $requisicao_acesso->fetchAll();
-      $requisicoes_acesso_aguardando = [];
-      foreach ($requisicoes as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $requisicoes_acesso_aguardando[] = $request;
-        }
-      }
+      $unreviewedAccountRequests = $SolicitarAcesso->getUnreviewedRequests();
+      $activeTicketRequests = $SolicitarChamado->getActiveTicketRequests();
+      $openTickets = $Chamado->getOpenTickets();
 
-      $chamado = Container::getClass("Chamado");
-      $chamados = $chamado->fetchAll();
-      $chamados_abertos = $chamado->getChamadosByStatus("AGUARDANDO");
-      $chamados_atendimentos = $chamado->getChamadosByStatus("ATENDIMENTO");
-      $chamados_finalizados = $chamado->getChamadosByStatus("FINALIZADO");
-      $count = count($chamados);
-
-      $servico = Container::getClass("Servico");
-      $servicos = $servico->fetchAll();
-      $array_servicos_names = [];
-      foreach ($servicos as $service) {
-        $array_servicos_names[$service['id']] = $service['nome'];
-      }
-
-      $requisicao_atendendimento = Container::getClass("SolicitarChamado");
-      $requisicoes_atendimento = $requisicao_atendendimento->fetchAll();
-      $requisicoes_atendimento_aguardando = [];
-      foreach ($requisicoes_atendimento as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $requisicoes_atendimento_aguardando[] = $request;
-        }
-      }
-
-      $cliente = Container::getClass("Usuario");
-      $clientes = $cliente->fetchAll();
-      $array_clients_names = [];
-      foreach ($clientes as $client) {
-        $array_clients_names[$client['id']]['nome'] = $client['nome'];
-        $array_clients_names[$client['id']]['setor'] = $client['setor'];
-      }
-
-      $local = Container::getClass("Local");
-      $locais = $local->fetchAll();
-      $array_locais = [];
-      foreach ($locais as $local) {
-          $array_locais[$local['id']]['nome'] = $local['nome'];
-          $array_locais[$local['id']]['tipo'] = $local['tipo'];
-          $array_locais[$local['id']]['ativo'] = $local['ativo'];
-      }
-
-      //atribuindo para a view
-      $this->view->clients_names = $array_clients_names;
-      $this->view->service_names = $array_servicos_names;
-      $this->view->requisicoes_atendimento = $requisicoes_atendimento_aguardando;
-      $this->view->requisicoes = $requisicoes_acesso_aguardando;
-      $this->view->chamados = $chamados;
-      $this->view->chamados_abertos = $chamados_abertos;
-      $this->view->chamados_atendimentos = $chamados_atendimentos;
-      $this->view->chamados_finalizados = $chamados_finalizados;
-      $this->view->locais = $array_locais;
-      $this->view->count = $count - 1;
+      $this->view->unreviewedAccountRequests = $unreviewedAccountRequests;
+      $this->view->activeTicketRequests = $activeTicketRequests;
+      $this->view->openTickets = $openTickets;
       $this->render('gerentes');
     }else{
       $this->forbidenAccess();
