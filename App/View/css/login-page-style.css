@@ -29,7 +29,7 @@ body {
     overflow: hidden;
 }
 #content-wrapper.login-form-view {
-    min-height: 426px;
+    min-height: 400px;
 }
 #content-wrapper.register-form-view {
     min-height: 520px;
@@ -311,7 +311,7 @@ ul#botoes-abas li.selected > span {
         border: 0;
     }
     #content-wrapper.login-form-view {
-        min-height: 450px;
+        min-height: 420px;
     }
     #content-wrapper.register-form-view {
         min-height: 570px;
@@ -437,7 +437,7 @@ ul#botoes-abas li.selected > span {
 
 
     #content-wrapper.login-form-view {
-        min-height: 472px;
+        min-height: 450px;
     }
     #content-wrapper.register-form-view {
         min-height: 590px;
