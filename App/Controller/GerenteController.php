@@ -80,16 +80,8 @@ class GerenteController extends Action{
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
       $requisicao_acesso = Container::getClass("SolicitarAcesso");
-      $requisicoes = $requisicao_acesso->fetchAll();
-      $requisicoes_aguardando = [];
-
-      foreach ($requisicoes as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $requisicoes_aguardando[] = $request;
-        }
-      }
-
-      $this->view->requisicoes = $requisicoes_aguardando;
+      $unreviewedAccountRequests = $requisicao_acesso->getUnreviewedRequests();
+      $this->view->unreviewedAccountRequests = $unreviewedAccountRequests;
       $this->render('cadastro_usuario_index');
     }else{
       $this->forbidenAccess();
