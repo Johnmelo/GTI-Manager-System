@@ -30,17 +30,34 @@ class ClienteController extends Action{
   }
 
   public function client_register_call_request(){
-    $id_servico = $_POST['id_servico'];
-    $id_local = $_POST['id_local'];
-    $descricao = $_POST['descricao'];
+      if (
+          isset($_POST['id_servico']) &&
+          isset($_POST['id_local']) &&
+          (isset($_POST['descricao']) && preg_match('/^\S*$/', $_POST['descricao']))
+      ){
+          $id_servico = $_POST['id_servico'];
+          $id_local = $_POST['id_local'];
+          $descricao = $_POST['descricao'];
 
-    session_start();
-    $id_usuario = $_SESSION['user_id'];
+          session_start();
+          $id_usuario = $_SESSION['user_id'];
 
-    $requisicao = Container::getClass("SolicitarChamado");
-    $requisicao->save($id_usuario,$id_servico,$id_local,$descricao);
-    header('Location: ./solicitar_atendimento');
-
+          $SolicitarChamado = Container::getClass("SolicitarChamado");
+          $requestId = $SolicitarChamado->save($id_usuario,$id_servico,$id_local,$descricao);
+          if ($requestId !== false) {
+            $request = $SolicitarChamado->getTicketRequestById($requestId);
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(array('event' => 'success', 'type' => 'new_ticket_request', 'request' => $request));
+          } else {
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 400');
+            die(json_encode(array('event' => 'error', 'type' => 'db_op_failed')));
+          }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'insuficient_data')));
+      }
   }
 
   public function client_request_history() {
@@ -86,7 +103,7 @@ class ClienteController extends Action{
           if (isset($_POST['request_id_list']) && isset($_POST['requestType'])) {
               $solicitacao = ($_POST['requestType'] === "pending_acceptance") ? Container::getClass("SolicitarChamado") : Container::getClass("Chamado");
               foreach ($_POST['request_id_list'] as $id) {
-                  $solicitacao->updateColumnById("status", "CANCELADA", $id);
+                  // $solicitacao->updateColumnById("status", "CANCELADA", $id);
               }
           } else {
               header("HTTP/1.1 400 Bad Request");
