@@ -479,25 +479,24 @@
 <script>
   const requestChecked = () => {
     let btnDelRequest = $('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]');
-    if (btnDelRequest.hasClass('btn-default')) {
-      btnDelRequest.toggleClass('btn-default btn-primary');
-      btnDelRequest.prop('disabled', function(i, v) { return !v; });
-    }
+    btnDelRequest.addClass('btn-primary').removeClass('btn-default');
+    btnDelRequest.prop('disabled', false);
   }
   const requestUnchecked = () => {
     let btnDelRequest = $('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]');
-    let isAllUnchecked = true;
     let formInputs = $('form[name=solicitacoes_chamado] input[type=checkbox]');
+    let isAllUnchecked = true;
 
     formInputs.each(function() {
       if (this.checked) {
         isAllUnchecked = false;
+        return false;
       }
     });
 
     if (isAllUnchecked) {
-      btnDelRequest.toggleClass('btn-default btn-primary');
-      btnDelRequest.prop('disabled', function(i, v) { return !v; });
+      btnDelRequest.addClass('btn-default').removeClass('btn-primary');
+      btnDelRequest.prop('disabled', true);
     }
   }
 </script>
