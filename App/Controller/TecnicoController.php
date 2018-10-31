@@ -88,10 +88,9 @@ class TecnicoController extends Action{
             $date = new \DateTime($deadline, new \DateTimeZone("America/Recife"));
             $deadline_db = $date->format("Y-m-d H:i:s");
             // Store the request in the pending requests table
+            // and immediately after alter the status on the pending table
             $Request = Container::getClass("SolicitarChamado");
             $open_request_id = $Request->save($client_id,$service_id,$place_id,$description);
-            // Immediately alter the status on the pending table
-            $open_request = $Request->getSolicitacoesById($open_request_id)[0];
             $Request->updateColumnById("status", "ATENDIDA", $open_request_id);
             // Save the service request as accepted by saving its data
             // in the accepted requests table
