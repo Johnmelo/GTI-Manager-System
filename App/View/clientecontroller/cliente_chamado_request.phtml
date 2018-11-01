@@ -386,6 +386,9 @@
       $('#simple-modal').modal('hide');
       for (reqId of requestArray) {
         $('form[name=solicitacoes_chamado]').find(`[data-request-id=${reqId}]`).remove();
+        window.activeTicketRequests = window.activeTicketRequests.filter(
+            r => r.id_solicitacao !== reqId
+        );
       }
       requestUnchecked();
     })
