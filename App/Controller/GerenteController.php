@@ -273,7 +273,18 @@ class GerenteController extends Action{
           $date = new \DateTime($_POST['deadline_value'], new \DateTimeZone("America/Recife"));
           $prazo = $date->format("Y-m-d H:i:s");
           $chamadoDb = Container::getClass("Chamado");
-          $chamadoDb->save($requisicao['id_servico'],$requisicao['id_local'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$prazo,$requisicao['descricao']);
+          $ticketId = $chamadoDb->save($requisicao['id_servico'],$requisicao['id_local'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$prazo,$requisicao['descricao']);
+
+          if ($ticketId !== false) {
+            // Return the new ticket data
+            $ticket = $chamadoDb->getTicketById($ticketId);
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(array('event' => 'success', 'type' => 'new_ticket', 'ticket' => $ticket));
+          } else {
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 400');
+            die(json_encode(array('event' => 'error', 'type' => 'db_op_failed')));
+          }
         } else {
           header('Content-Type: application/json; charset=UTF-8');
           header('HTTP/1.1 400');

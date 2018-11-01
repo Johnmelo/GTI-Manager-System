@@ -321,9 +321,9 @@
   }
   function acceptTicketRequestBtnClick(e) {
     if (e.target.nodeName == "BUTTON") {
-      var requestId = getRowId(e);
+      let requestId = getRowId(e);
       if (requestId) {
-        var modalConfig = {
+        let modalConfig = {
           title: "Aceitar solicitação de chamado",
           visible_fields: {
             id_solicitacao_field: true,
@@ -337,7 +337,7 @@
             {
               btnContent: "Aceitar chamado",
               class: "btn btn-primary",
-              callback: acceptRequest.bind(null, $(e.target).parents('tr'))
+              callback: acceptRequest.bind(null, requestId)
             }
           ]
         };
@@ -365,7 +365,7 @@
             {
               btnContent: "Recusar solicitação",
               class: "btn btn-primary",
-              callback: refuseRequest.bind(null, $(e.target).parents('tr'))
+              callback: refuseRequest.bind(null, requestId)
             }
           ]
         };
@@ -469,6 +469,27 @@
         defineSimpleModal(modalConfig, requestData);
       }
     }
+  }
+  function ticketRequestAccepted(ticket) {
+    // Put the ticket in the local open tickets list
+    //  and remove from the active requests list
+    window.openTickets.push(ticket);
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticket.id_solicitacao
+    );
+    // Insert the ticket in the table
+    insertInInQueueTicketsTable(ticket);
+    // Remove the ticket request from the table it were before
+    $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
+  }
+  function ticketRequestRefused(request) {
+    // Search for the request in the local list and delete it
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== request.id_solicitacao
+    );
+
+    // Remove the request from the table
+    $('form[name=solicitacoes_chamados]').find(`[data-request-id=${request.id_solicitacao}]`).remove();
   }
 </script>
 

@@ -116,50 +116,69 @@ function fillUpRequestModal(requestData, visibleFields) {
     }
 }
 
-function acceptRequest(tableRow) {
-    var request_id = tableRow.find('button[name="request-acceptance"]').val();
-    var data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
+function acceptRequest(requestId) {
+  var data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
 
-    // Check if inserted deadline is in valid format
-    if (data_prazo.match(/\d{2}\/\d{2}\/\d{4} [aà]s \d{2}:\d{2}/)) {
-        // Convert the deadline info into the format accepted by the DB
-        data_prazo = data_prazo.replace(/[aà]s /g, "");
-        data_prazo += ":00";
-        var datetime = data_prazo.split(" ");
-        var date = datetime[0].split("/");
-        var time = datetime[1];
-        datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
-        $.post("/gtic/public/admin/open_call_request",
-        {
-            "call_request_id": request_id,
-            "deadline_value": datetime
-        })
-        .done(function() {
-            tableRow.remove();
-            $('.request-modal').modal('toggle');
-            setTimeout(function() {
-                document.location.reload(true);
-            }, 500);
-        })
-        .fail(function(data) {
-            if (data.hasOwnProperty("responseJSON")) {
-                response = data.responseJSON;
-                if (response.hasOwnProperty("event") && response.event === "error") {
-                    if (response.hasOwnProperty("type") && response.type === "deadline_wrong_format") {
-                        alert("O prazo foi informado em um formato não reconhecido");
-                    } else {
-                        alert("Houve um problema não previsto");
-                    }
-                } else {
-                    alert("Houve um problema não previsto");
-                }
-            } else {
-                alert("Houve um problema não previsto");
+  // Check if inserted deadline is in valid format
+  if (data_prazo.match(/\d{2}\/\d{2}\/\d{4} [aà]s \d{2}:\d{2}/)) {
+    // Convert the deadline info into the format accepted by the DB
+    data_prazo = data_prazo.replace(/[aà]s /g, "");
+    data_prazo += ":00";
+    var datetime = data_prazo.split(" ");
+    var date = datetime[0].split("/");
+    var time = datetime[1];
+    datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
+
+    $("html").css("cursor", "wait");
+    $("body").css("pointer-events", "none");
+    $.post("/gtic/public/admin/open_call_request",
+    {
+      "call_request_id": requestId,
+      "deadline_value": datetime
+    })
+    .done(function(response) {
+      // Unblock page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      if (response && response.event === "success") {
+        if (response.type && response.type === "new_ticket") {
+          if (response.ticket) {
+            ticketRequestAccepted(response.ticket);
+            $('.request-modal').modal('hide');
+            return true;
+          }
+        }
+      }
+      window.location.reload(true);
+    })
+    .fail(function(data) {
+      // Unblock page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      if (data && data.responseJSON) {
+        response = data.responseJSON;
+        if (response.event && response.event === "error") {
+          if (response.type) {
+            if(response.type === "deadline_wrong_format") {
+              alert("O prazo foi informado em um formato não reconhecido");
+              return false;
+            } else if (response.type === "missing_data") {
+              alert("Há dados fazendo falta");
+              return false;
+            } else if (response.type === "db_op_failed") {
+              alert("O chamado não pôde ser armazenado no banco");
+              return false;
             }
-        });
-    } else {
-        alert("O prazo foi informado em um formato não reconhecido");
-    }
+          }
+        }
+      }
+      alert("Houve uma falha não identificada");
+    });
+  } else {
+    alert("O prazo foi informado em um formato não reconhecido");
+  }
 }
 
 function finalizeRequest(tableRow) {
@@ -229,25 +248,57 @@ function acquireRequest(tableRow) {
     }
 }
 
-function refuseRequest(tableRow) {
-    var request_id = tableRow.get(0).dataset.requestId;
-    var refusal_reason = $('.request-modal-form')[0].elements["motivo_recusa_field"].value;
+function refuseRequest(requestId) {
+  let refusalReason = $('.request-modal-form')[0].elements["motivo_recusa_field"].value;
+  refusalReason = refusalReason.replace(/^\s+/g, '').replace(/\s+$/g, '');
 
-    $.post("/gtic/public/tecnico/refuse_support_request",
-    {
-        "request_id": request_id,
-        "refusal_reason": refusal_reason
-    })
-    .done(function() {
-        tableRow.remove();
-        $('.request-modal').modal('toggle');
-        setTimeout(function() {
-            document.location.reload(true);
-        }, 500);
-    })
-    .fail(function() {
-        alert("Não foi possível realizar a ação");
-    });
+  if (refusalReason.match(/^\s*$/)) {
+    alert("Insira o motivo da recusa");
+    return false;
+  }
+
+  $("html").css("cursor", "wait");
+  $("body").css("pointer-events", "none");
+
+  $.post("/gtic/public/tecnico/refuse_support_request",
+  {
+    "request_id": requestId,
+    "refusal_reason": refusalReason
+  })
+  .done(function(response) {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+
+    if (response && response.event === "success") {
+      if (response.type && response.type === "ticket_request_refused") {
+        if (response.request) {
+          ticketRequestRefused(response.request);
+          $('.request-modal').modal('hide');
+          return true;
+        }
+      }
+    }
+    window.location.reload(true);
+  })
+  .fail(function(data) {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+
+    if (data && data.responseJSON) {
+      response = data.responseJSON;
+      if (response.event && response.event === "error") {
+        if (response.type) {
+          if (response.type === "missing_data") {
+            alert("Há dados fazendo falta");
+            return false;
+          }
+        }
+      }
+    }
+    alert("Houve uma falha não identificada");
+  });
 }
 
 // Inserting HTML structure into modal tag

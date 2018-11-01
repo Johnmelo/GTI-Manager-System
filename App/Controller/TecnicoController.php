@@ -158,14 +158,26 @@ class TecnicoController extends Action{
     public function refuse_support_request() {
         session_start();
         if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
-            if (isset($_POST['request_id']) && isset($_POST['refusal_reason'])) {
+            if (
+                isset($_POST['request_id']) &&
+                (isset($_POST['refusal_reason']) && !preg_match('/^\s*$/', $_POST['refusal_reason']))
+            ){
+                $requestId = $_POST['request_id'];
                 $date = new \DateTime("now", new \DateTimeZone('America/Fortaleza'));
                 $date = $date->format("Y-m-d H:i:s");
-                $request = Container::getClass("SolicitarChamado");
-                $request->updateColumnById("status", "RECUSADA", $_POST['request_id']);
-                $request->updateColumnById("data_recusado", $date, $_POST['request_id']);
-                $request->updateColumnById("id_recusante", $_SESSION['user_id'], $_POST['request_id']);
-                $request->updateColumnById("motivo_recusa", $_POST['refusal_reason'], $_POST['request_id']);
+                $SolicitarChamado = Container::getClass("SolicitarChamado");
+                $SolicitarChamado->updateColumnById("status", "RECUSADA", $requestId);
+                $SolicitarChamado->updateColumnById("data_recusado", $date, $requestId);
+                $SolicitarChamado->updateColumnById("id_recusante", $_SESSION['user_id'], $requestId);
+                $SolicitarChamado->updateColumnById("motivo_recusa", $_POST['refusal_reason'], $requestId);
+
+                $ticketRequest = $SolicitarChamado->getTicketRequestById($requestId);
+                header('Content-Type: application/json; charset=UTF-8');
+                echo json_encode(array('event' => 'success', 'type' => 'ticket_request_refused', 'request' => $ticketRequest));
+            } else {
+                header('Content-Type: application/json; charset=UTF-8');
+                header('HTTP/1.1 400');
+                die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
             }
         } else {
             $this->forbidenAccess();
