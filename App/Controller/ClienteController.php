@@ -33,7 +33,7 @@ class ClienteController extends Action{
       if (
           isset($_POST['id_servico']) &&
           isset($_POST['id_local']) &&
-          (isset($_POST['descricao']) && preg_match('/^\S*$/', $_POST['descricao']))
+          (isset($_POST['descricao']) && !preg_match('/^\s*$/', $_POST['descricao']))
       ){
           $id_servico = $_POST['id_servico'];
           $id_local = $_POST['id_local'];
@@ -103,7 +103,7 @@ class ClienteController extends Action{
           if (isset($_POST['request_id_list']) && isset($_POST['requestType'])) {
               $solicitacao = ($_POST['requestType'] === "pending_acceptance") ? Container::getClass("SolicitarChamado") : Container::getClass("Chamado");
               foreach ($_POST['request_id_list'] as $id) {
-                  // $solicitacao->updateColumnById("status", "CANCELADA", $id);
+                  $solicitacao->updateColumnById("status", "CANCELADA", $id);
               }
           } else {
               header("HTTP/1.1 400 Bad Request");

@@ -203,7 +203,7 @@ class GerenteController extends Action{
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
       if (isset($_POST['reason']) && isset($_POST['request_list']) && isset($_POST['send_email'])) {
-        if ($_POST['send_email'] == "true" && (!isset($_POST['email_message']) || preg_match('/^\S*$/', $_POST['email_message']))) {
+        if ($_POST['send_email'] == "true" && (!isset($_POST['email_message']) || !preg_match('/^\s*$/', $_POST['email_message']))) {
           header('Content-Type: application/json; charset=UTF-8');
           header('HTTP/1.1 400');
           die(json_encode(array('event' => 'error', 'type' => 'insuficient_email_data')));

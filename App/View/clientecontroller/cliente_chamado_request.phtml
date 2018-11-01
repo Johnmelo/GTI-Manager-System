@@ -505,7 +505,7 @@
         if (response.event === "error") {
           if (response.type === "insuficient_data") {
             alert("Preencha todos os campos do formulário");
-          } if (response.type === "db_op_failed") {
+        } else if (response.type === "db_op_failed") {
             alert("A requisição não pôde ser armazenada no banco de dados");
           } else {
             alert("Houve um erro não identificado");
