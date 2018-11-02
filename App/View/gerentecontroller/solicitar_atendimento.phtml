@@ -432,6 +432,13 @@ $('form[name=solicitar_chamado] button[type=submit]').on('click', function() {
     var date = datetime[0].split("/");
     var time = datetime[1];
     datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
+  } else {
+    alert(
+      "O prazo foi informado em um formato não reconhecido.\
+      \nO formato esperado é o seguinte:\
+      \nDD/MM/YYYY às HH:mm"
+    );
+    return false;
   }
 
   // Check if service is valid

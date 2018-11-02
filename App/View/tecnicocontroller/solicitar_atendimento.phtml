@@ -411,7 +411,11 @@
       let time = datetime[1];
       datetime = `${date[2]}-${date[1]}-${date[0]} ${time}`;
     } else {
-      alert("Prazo não está no formato esperado.\nExemplo de resposta esperada:\nDD/MM/AAAA às HH:mm");
+      alert(
+        "O prazo foi informado em um formato não reconhecido.\
+        \nO formato esperado é o seguinte:\
+        \nDD/MM/YYYY às HH:mm"
+      );
       return false;
     }
 
