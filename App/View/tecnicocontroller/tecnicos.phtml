@@ -311,7 +311,7 @@
           {
             btnContent: "Assumir chamado",
             class: "btn btn-primary",
-            callback: acquireRequest.bind(null, $(e.target).parents('tr'))
+            callback: acquireRequest.bind(null, requestId)
           }
         ]
       };
@@ -490,6 +490,17 @@
 
     // Remove the request from the table
     $('form[name=solicitacoes_chamados]').find(`[data-request-id=${request.id_solicitacao}]`).remove();
+  }
+  function ticketAcquired(ticket) {
+    // Replace the ticket with the new one that came with new data
+    let oldTicketID = openTickets.findIndex(t => t.id_chamado === ticket.id_chamado);
+    openTickets.splice(oldTicketID, 1, ticket);
+
+    // Remove the ticket from the In Queue table
+    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
+
+    // Insert the ticket in the In Process table
+    insertInTechniciansTicketsTable(ticket);
   }
 </script>
 

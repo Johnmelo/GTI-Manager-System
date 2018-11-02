@@ -26,16 +26,22 @@ class TecnicoController extends Action{
     session_start();
     if($_SESSION['user_role'] === "TECNICO"){
       // Check if the necessary data was sent
-      if(isset($_POST['call_request_id']) && isset($_POST['deadline_value'])){
+      if(isset($_POST['ticket_id']) && isset($_POST['deadline_value'])){
         // Check if the data was sent in the expected format
         if(preg_match("/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/", $_POST['deadline_value']) === 1) {
           // Update the service request status and details
+          $ticketID = $_POST['ticket_id'];
           $date = new \DateTime($_POST['deadline_value'], new \DateTimeZone("America/Recife"));
           $prazo = $date->format("Y-m-d H:i:s");
-          $requestDb = Container::getClass("Chamado");
-          $requestDb->updateColumnById("id_tecnico_responsavel",$_SESSION['user_id'],$_POST['call_request_id']);
-          $requestDb->updateColumnById("status","ATENDIMENTO",$_POST['call_request_id']);
-          $requestDb->updateColumnById("prazo",$prazo,$_POST['call_request_id']);
+          $Chamado = Container::getClass("Chamado");
+          $Chamado->updateColumnById("id_tecnico_responsavel", $_SESSION['user_id'], $ticketID);
+          $Chamado->updateColumnById("status", "ATENDIMENTO", $ticketID);
+          $Chamado->updateColumnById("prazo", $prazo, $ticketID);
+          $ticket = $Chamado->getTicketById($ticketID);
+          if ($ticket) {
+              header('Content-Type: application/json; charset=UTF-8');
+              echo json_encode(array('event' => 'success', 'type' => 'acquired_ticket', 'ticket' => $ticket));
+          }
         } else {
           header('Content-Type: application/json; charset=UTF-8');
           header('HTTP/1.1 400');

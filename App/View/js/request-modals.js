@@ -177,7 +177,11 @@ function acceptRequest(requestId) {
       alert("Houve uma falha não identificada");
     });
   } else {
-    alert("O prazo foi informado em um formato não reconhecido");
+    alert(
+      "O prazo foi informado em um formato não reconhecido.\
+      \nO formato esperado é o seguinte:\
+      \nDD/MM/YYYY às HH:mm"
+    );
   }
 }
 
@@ -202,50 +206,70 @@ function finalizeRequest(tableRow) {
     });
 }
 
-function acquireRequest(tableRow) {
-    var request_id = tableRow.find('button[name="btnJoin"]').val();
-    var data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
+function acquireRequest(ticketID) {
+  var data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
 
-    // Check if inserted deadline is in valid format
-    if (data_prazo.match(/\d{2}\/\d{2}\/\d{4} [aà]s \d{2}:\d{2}/)) {
-        // Convert the deadline info into the format accepted by the DB
-        data_prazo = data_prazo.replace(/[aà]s /g, "");
-        data_prazo += ":00";
-        var datetime = data_prazo.split(" ");
-        var date = datetime[0].split("/");
-        var time = datetime[1];
-        datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
-        $.post("/gtic/public/technician_select_request",
-        {
-            "call_request_id": request_id,
-            "deadline_value": datetime
-        })
-        .done(function() {
-            tableRow.remove();
-            $('.request-modal').modal('toggle');
-            setTimeout(function() {
-                document.location.reload(true);
-            }, 500);
-        })
-        .fail(function(data) {
-            if (data.hasOwnProperty("responseJSON")) {
-                response = data.responseJSON;
-                if (response.hasOwnProperty("event") && response.event === "error") {
-                    if (response.hasOwnProperty("type") && response.type === "deadline_wrong_format") {
-                        alert("O prazo foi informado em um formato não reconhecido");
-                    } else {
-                        alert("Houve um problema não previsto");
-                    }
-                } else {
-                    alert("Houve um problema não previsto");
-                }
-            } else {
-                alert("Houve um problema não previsto");
+  // Check if inserted deadline is in valid format
+  if (data_prazo.match(/\d{2}\/\d{2}\/\d{4} [aà]s \d{2}:\d{2}/)) {
+    // Convert the deadline info into the format accepted by the DB
+    data_prazo = data_prazo.replace(/[aà]s /g, "");
+    data_prazo += ":00";
+    var datetime = data_prazo.split(" ");
+    var date = datetime[0].split("/");
+    var time = datetime[1];
+    datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
+
+    $("html").css("cursor", "wait");
+    $("body").css("pointer-events", "none");
+    $.post("/gtic/public/technician_select_request",
+    {
+      "ticket_id": ticketID,
+      "deadline_value": datetime
+    })
+    .done(function(response) {
+      // Unblock page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      if (response && response.event === "success") {
+        if (response.type && response.type === "acquired_ticket") {
+          if (response.ticket){
+            ticketAcquired(response.ticket);
+            $('.request-modal').modal('hide');
+            return true;
+          }
+        }
+      }
+      window.location.reload(true);
+    })
+    .fail(function(data) {
+      // Unblock page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      if (data && data.responseJSON) {
+        response = data.responseJSON;
+        if (response.event && response.type) {
+          if (response.event === "error") {
+            if (response.type === "missing_data") {
+              alert("Há dados fazendo falta");
+              return false;
+            } else if (response.type === "deadline_wrong_format") {
+              alert("O prazo foi informado em um formato não reconhecido");
+              return false;
             }
-        });
-    } else {
-        alert("O prazo foi informado em um formato não reconhecido");
-    }
+          }
+        }
+      }
+      alert("Houve um problema não previsto");
+    });
+  } else {
+    alert(
+      "O prazo foi informado em um formato não reconhecido.\
+      \nO formato esperado é o seguinte:\
+      \nDD/MM/YYYY às HH:mm"
+    );
+  }
 }
 
 function refuseRequest(requestId) {
