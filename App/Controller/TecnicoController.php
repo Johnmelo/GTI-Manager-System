@@ -50,8 +50,12 @@ class TecnicoController extends Action{
           $ticketID = $_POST['ticket_id'];
           $date = new \DateTime($_POST['deadline_value'], new \DateTimeZone("America/Recife"));
           $prazo = $date->format("Y-m-d H:i:s");
+          $date = new \DateTime("now", new \DateTimeZone("America/Recife"));
+          $date->setTimestamp(time());
+          $data_assumido = $date->format("Y-m-d H:i:s");
           $Chamado = Container::getClass("Chamado");
           $Chamado->updateColumnById("id_tecnico_responsavel", $_SESSION['user_id'], $ticketID);
+          $Chamado->updateColumnById("data_assumido", $data_assumido, $ticketID);
           $Chamado->updateColumnById("status", "ATENDIMENTO", $ticketID);
           $Chamado->updateColumnById("prazo", $prazo, $ticketID);
           $ticket = $Chamado->getTicketById($ticketID);

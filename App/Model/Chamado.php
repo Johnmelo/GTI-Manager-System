@@ -8,8 +8,8 @@ class Chamado extends Table{
     $stmt = $this->db->prepare(
       "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`, ".
       "`c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, ".
-      "`c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`, ".
-      "`u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico` ".
+      "`c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_assumido`, `c`.`data_finalizado`, ".
+      "`c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico` ".
       "FROM `{$this->table}` AS `c` ".
       "LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao` ".
       "LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico` ".
@@ -46,8 +46,8 @@ class Chamado extends Table{
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
-          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`,"
-          ." `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
+          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
@@ -67,8 +67,8 @@ class Chamado extends Table{
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
-          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`,"
-          ." `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
+          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
@@ -88,8 +88,8 @@ class Chamado extends Table{
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
-          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`,"
-          ." `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
+          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
@@ -109,8 +109,8 @@ class Chamado extends Table{
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
-          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`,"
-          ." `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
+          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
@@ -129,8 +129,8 @@ class Chamado extends Table{
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
-          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`prazo`,"
-          ." `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
+          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"

@@ -100,8 +100,9 @@ function fillUpRequestModal(requestData, visibleFields) {
                 field.value = datetime;
             }
         } else if (
-            field.id === "data_abertura_field" ||
             field.id === "data_solicitacao_field" ||
+            field.id === "data_abertura_field" ||
+            field.id === "data_assumido_field" ||
             field.id === "data_finalizado_field") {
                 // If datetime, just format it
                 let datetime = moment(
@@ -413,6 +414,12 @@ $(document).ready(function() {
               <label for="data_abertura_field" class="col-sm-4 control-label">Data de abertura</label>\
               <div class="col-sm-8">\
                 <input type="text" class="form-control" id="data_abertura_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="data_assumido_field" class="col-sm-4 control-label">Data de assunção</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="data_assumido_field" readonly>\
               </div>\
             </div>\
             <div class="form-group" style="display: none;">\

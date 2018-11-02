@@ -454,11 +454,12 @@
           title: "Detalhes do chamado",
           visible_fields: {
             id_chamado_field: true,
-            chamado_status_field: true,
+            status_field: true,
             cliente_field: true,
             local_field: true,
             servico_field: true,
             data_abertura_field: true,
+            data_assumido_field: true,
             tecnico_abertura_field: true,
             descricao_field: true,
             prazo_field: true,
@@ -641,7 +642,7 @@
     newRow.append($("<td>").append(btnCloseTicket));
 
     // Events
-    $(newRow).on('click', inQueueTicketsTableRowClick);
+    $(newRow).on('click', inProcessTicketsTableRowClick);
     $(btnCloseTicket).on('click', closeTicketBtnClick);
 
     // Add the row to the table
@@ -662,7 +663,7 @@
     newRow.append(cols);
 
     // Events
-    $(newRow).on('click', inQueueTicketsTableRowClick);
+    $(newRow).on('click', inProcessTicketsTableRowClick);
 
     // Add the row to the table
     inProcessTicketsTable.append(newRow);
