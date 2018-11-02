@@ -319,15 +319,58 @@
 <!-- Archive request confirmation -->
 <script>
   const cancelRequest = (requestId) => {
+    // Block the page
+    $("html").css("cursor", "wait");
+    $("body").css("pointer-events", "none");
+
     $.post("/gtic/public/cliente/client_cancel_call_request", {
       "request_id": requestId,
       "requestType": "open_request"
     })
-    .done(function() {
-      $('#simple-modal').modal('hide');
+    .done(function(response) {
+      // Unblock the page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      if (response && response.event === "success") {
+        if (response.type && response.type === "cancelled_ticket") {
+          if (response.ticket){
+            let ticket = response.ticket;
+            // Remove the ticket request from the local list
+            window.openTickets = window.openTickets.filter(
+              r => r.id_chamado !== ticket.id_chamado
+            );
+
+            // Remove the ticket request from the table
+            $('form[name=chamados_abertos_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+
+            // Hide the modal
+            $('#simple-modal').modal('hide');
+            return true;
+          }
+        }
+      }
+      window.location.reload(true);
     })
-    .fail(function() {
-      alert("Não foi possível realizar a operação");
+    .fail(function(data) {
+      // Unblock the page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      if (data && data.responseJSON) {
+        response = data.responseJSON;
+        if (response.event && response.type) {
+          if (response.event === "error") {
+            if (response.type === "missing_data") {
+              alert("Há dados fazendo falta");
+              $('#simple-modal').modal('hide');
+              return false;
+            }
+          }
+        }
+      }
+      alert("Houve uma falha não identificada");
+      window.location.reload(true);
     });
   }
   const cancelTicketRequestBtnClick = (e) => {

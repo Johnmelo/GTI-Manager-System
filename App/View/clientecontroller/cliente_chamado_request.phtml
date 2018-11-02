@@ -368,25 +368,58 @@
 <!-- Archive request confirmation -->
 <script>
   const cancelRequest = (requestId) => {
+    // Block the page
     $("html").css("cursor", "wait");
     $("body").css("pointer-events", "none");
+
     $.post("/gtic/public/cliente/client_cancel_call_request", {
       "request_id": requestId,
       "requestType": "pending_acceptance"
     })
-    .done(function() {
+    .done(function(response) {
+      // Unblock the page
       $("html").css("cursor", "auto");
       $("body").css("pointer-events", "auto");
-      $('#simple-modal').modal('hide');
-      $('form[name=solicitacoes_chamado]').find(`[data-request-id=${requestId}]`).remove();
-      window.activeTicketRequests = window.activeTicketRequests.filter(
-          r => r.id_solicitacao !== requestId
-      );
+
+      if (response && response.event === "success") {
+        if (response.type && response.type === "cancelled_ticket_request") {
+          if (response.request){
+            let ticketRequest = response.request;
+            // Remove the ticket request from the local list
+            window.activeTicketRequests = window.activeTicketRequests.filter(
+              r => r.id_solicitacao !== ticketRequest.id_solicitacao
+            );
+
+            // Remove the ticket request from the table
+            $('form[name=solicitacoes_chamado]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+
+            // Hide the modal
+            $('#simple-modal').modal('hide');
+            return true;
+          }
+        }
+      }
+      window.location.reload(true);
     })
-    .fail(function() {
+    .fail(function(data) {
+      // Unblock the page
       $("html").css("cursor", "auto");
       $("body").css("pointer-events", "auto");
-      alert("Não foi possível realizar a operação");
+
+      if (data && data.responseJSON) {
+        response = data.responseJSON;
+        if (response.event && response.type) {
+          if (response.event === "error") {
+            if (response.type === "missing_data") {
+              alert("Há dados fazendo falta");
+              $('#simple-modal').modal('hide');
+              return false;
+            }
+          }
+        }
+      }
+      alert("Houve uma falha não identificada");
+      window.location.reload(true);
     });
   }
   const cancelTicketRequestBtnClick = (e) => {
@@ -399,23 +432,23 @@
 <!-- Check if request form can be submitted or reset -->
 <script>
   function checkFormValidity() {
-      let servico = $('form[name=solicitar_chamado] input[name=servico]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
-      let local = $('form[name=solicitar_chamado] input[name=local]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
-      let descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    let servico = $('form[name=solicitar_chamado] input[name=servico]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    let local = $('form[name=solicitar_chamado] input[name=local]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    let descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
 
-      // If at least one is not empty, enable reset button
-      if (!servico.match(/^\s*$/) || !local.match(/^\s*$/) || !descricao.match(/^\s*$/)) {
-        enableButton($('form[name=solicitar_chamado] button[type=reset]'));
-      } else {
-        disableButton($('form[name=solicitar_chamado] button[type=reset]'));
-      }
+    // If at least one is not empty, enable reset button
+    if (!servico.match(/^\s*$/) || !local.match(/^\s*$/) || !descricao.match(/^\s*$/)) {
+      enableButton($('form[name=solicitar_chamado] button[type=reset]'));
+    } else {
+      disableButton($('form[name=solicitar_chamado] button[type=reset]'));
+    }
 
-      // If all inputs are filled, enable submit button
-      if (!servico.match(/^\s*$/) && !local.match(/^\s*$/) && !descricao.match(/^\s*$/)) {
-        enableButton($('form[name=solicitar_chamado] button[id=submit-btn]'));
-      } else {
-        disableButton($('form[name=solicitar_chamado] button[id=submit-btn]'));
-      }
+    // If all inputs are filled, enable submit button
+    if (!servico.match(/^\s*$/) && !local.match(/^\s*$/) && !descricao.match(/^\s*$/)) {
+      enableButton($('form[name=solicitar_chamado] button[id=submit-btn]'));
+    } else {
+      disableButton($('form[name=solicitar_chamado] button[id=submit-btn]'));
+    }
   }
   function ticketRequestFormSubmit() {
     // Remove white space excess if any

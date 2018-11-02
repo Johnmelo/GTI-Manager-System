@@ -103,8 +103,25 @@ class ClienteController extends Action{
           if (isset($_POST['request_id']) && isset($_POST['requestType'])) {
               $solicitacao = ($_POST['requestType'] === "pending_acceptance") ? Container::getClass("SolicitarChamado") : Container::getClass("Chamado");
               $solicitacao->updateColumnById("status", "CANCELADA", $_POST['request_id']);
+
+              // Return the ticket or ticket request back'
+              if ($_POST['requestType'] === "open_request") {
+                  $ticket = $solicitacao->getTicketById($_POST['request_id']);
+                  if ($ticket) {
+                      header('Content-Type: application/json; charset=UTF-8');
+                      echo json_encode(array('event' => 'success', 'type' => 'cancelled_ticket', 'ticket' => $ticket));
+                  }
+              } else {
+                  $request = $solicitacao->getTicketRequestById($_POST['request_id']);
+                  if ($request) {
+                      header('Content-Type: application/json; charset=UTF-8');
+                      echo json_encode(array('event' => 'success', 'type' => 'cancelled_ticket_request', 'request' => $request));
+                  }
+              }
           } else {
-              header("HTTP/1.1 400 Bad Request");
+              header('Content-Type: application/json; charset=UTF-8');
+              header('HTTP/1.1 400');
+              die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
           }
       } else {
           $this->forbidenAccess();
