@@ -493,13 +493,13 @@
   }
   function ticketAcquired(ticket) {
     // Replace the ticket with the new one that came with new data
-    let oldTicketID = openTickets.findIndex(t => t.id_chamado === ticket.id_chamado);
-    openTickets.splice(oldTicketID, 1, ticket);
+    let oldTicketIndex = openTickets.findIndex(t => t.id_chamado === ticket.id_chamado);
+    openTickets.splice(oldTicketIndex, 1, ticket);
     // Insert the ticket in the technician's in process tickets list
     techniciansInProcessTickets.push(ticket);
 
     // Remove the ticket from the In Queue table
-    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
+    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
 
     // Insert the ticket in the In Process table
     insertInTechniciansTicketsTable(ticket);
