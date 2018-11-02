@@ -185,25 +185,56 @@ function acceptRequest(requestId) {
   }
 }
 
-function finalizeRequest(tableRow) {
-    var request_id = $('.request-modal-form')[0].elements["id_chamado_field"].value;
-    var parecer_tecnico = $('.request-modal-form')[0].elements["parecer_tecnico_field"].value;
+function finalizeRequest(requestId) {
+  let parecerTecnico = $('.request-modal-form')[0].elements["parecer_tecnico_field"].value;
+  parecerTecnico = parecerTecnico.replace(/^\s+/g, '').replace(/\s+$/g, '');
 
-    $.post("/gtic/public/admin/finalize_request",
-    {
-        "request_id": request_id,
-        "technical_opinion": parecer_tecnico
-    })
-    .done(function() {
-        tableRow.remove();
-        $('.request-modal').modal('toggle');
-        setTimeout(function() {
-            document.location.reload(true);
-        }, 500);
-    })
-    .fail(function() {
-        alert("Não foi possível realizar a ação");
-    });
+  if (parecerTecnico.match(/^\s*$/)) {
+    alert("Insira o parecer técnico");
+    return false;
+  }
+
+  $("html").css("cursor", "wait");
+  $("body").css("pointer-events", "none");
+  $.post("/gtic/public/admin/finalize_request",
+  {
+    "request_id": requestId,
+    "technical_opinion": parecerTecnico
+  })
+  .done(function(response) {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+
+    if (response && response.event === "success") {
+      if (response.type && response.type === "finalized_ticket") {
+        if (response.ticket){
+          ticketClosed(response.ticket);
+          $('.request-modal').modal('hide');
+          return true;
+        }
+      }
+    }
+    window.location.reload(true);
+  })
+  .fail(function(data) {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+
+    if (data && data.responseJSON) {
+      response = data.responseJSON;
+      if (response.event && response.type) {
+        if (response.event === "error") {
+          if (response.type === "missing_data") {
+            alert("Há dados fazendo falta");
+            return false;
+          }
+        }
+      }
+    }
+    alert("Houve uma falha não identificada");
+  });
 }
 
 function acquireRequest(ticketID) {
@@ -261,7 +292,7 @@ function acquireRequest(ticketID) {
           }
         }
       }
-      alert("Houve um problema não previsto");
+      alert("Houve uma falha não identificada");
     });
   } else {
     alert(

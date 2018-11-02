@@ -240,17 +240,32 @@ class GerenteController extends Action{
   public function finalize_request(){
     session_start();
     if(($_SESSION['user_role'] == "GERENTE")||($_SESSION['user_role'] == "TECNICO")){
-      if((isset($_POST['technical_opinion']))&&(isset($_POST['request_id']))){
-        $id = $_POST['request_id'];
+      if(
+          isset($_POST['request_id']) &&
+          isset($_POST['technical_opinion']) &&
+          !preg_match('/^\s*$/', $_POST['technical_opinion'])
+      ){
+        $ticketID = $_POST['request_id'];
         $parecer = $_POST['technical_opinion'];
         $status = "FINALIZADO";
         $date = new \DateTime("now", new \DateTimeZone("America/Recife"));
         $date->setTimestamp(time());
         $data_finalizado = $date->format("Y-m-d H:i:s");
-        $chamadoDb = Container::getClass("Chamado");
-        $chamadoDb->updateColumnById("status",$status,$id);
-        $chamadoDb->updateColumnById("parecer_tecnico",$parecer,$id);
-        $chamadoDb->updateColumnById("data_finalizado",$data_finalizado,$id);
+        $Chamado = Container::getClass("Chamado");
+        $Chamado->updateColumnById("status", $status, $ticketID);
+        $Chamado->updateColumnById("parecer_tecnico", $parecer, $ticketID);
+        $Chamado->updateColumnById("data_finalizado", $data_finalizado, $ticketID);
+
+        // Return the ticket with updated data
+        $ticket = $Chamado->getTicketById($ticketID);
+        if ($ticket) {
+          header('Content-Type: application/json; charset=UTF-8');
+          echo json_encode(array('event' => 'success', 'type' => 'finalized_ticket', 'ticket' => $ticket));
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
       }
     }
   }

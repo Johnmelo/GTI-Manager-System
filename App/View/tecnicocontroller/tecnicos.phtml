@@ -394,7 +394,7 @@
           {
             btnContent:"Finalizar",
             class: "btn btn-primary",
-            callback: finalizeRequest.bind(null, $(e.target).parents('tr'))
+            callback: finalizeRequest.bind(null, requestId)
           }
         ]
       };
@@ -501,6 +501,16 @@
 
     // Insert the ticket in the In Process table
     insertInTechniciansTicketsTable(ticket);
+  }
+  function ticketClosed(ticket) {
+    // Remove the ticket from the local list
+    window.openTickets = window.openTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+
+    // Remove the ticket from the technician's tickets table
+    let techniciansTable = $('form[name=meus_servicos_atendimento_form]');
+    techniciansTable.find(`[data-request-id=${ticket.id_chamado}]`).remove();
   }
 </script>
 
