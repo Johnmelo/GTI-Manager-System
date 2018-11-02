@@ -467,7 +467,7 @@
 <!-- Ready -->
 <script>
   const populateInProcessRequestsTable = () => {
-    // Take only the requests being processed (status "AGUARDANDO")
+    // Take only the requests being processed (status "ATENDIMENTO")
     let inProcessRequests = openTickets.filter(r => r.status === "ATENDIMENTO");
     for (request of inProcessRequests) {
       insertInProcessingRequestsTable(request);
