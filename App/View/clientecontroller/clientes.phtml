@@ -9,8 +9,6 @@
 <script defer src="../App/View/js/fontawesome-all.min.js"></script>
 <!-- NProgress -->
 <link href="../App/View/css/nprogress.css" rel="stylesheet">
-<!-- iCheck -->
-<link href="../App/View/icheck/skins/square/blue.css" rel="stylesheet">
 <!-- Custom Theme Style -->
 <link href="../App/View/css/custom.min.css" rel="stylesheet">
 <link href="../App/View/css/base-style.css" rel="stylesheet">
@@ -192,7 +190,6 @@
                   <table id="not-processing-requests" class="table table-hover  clickable-rows">
                     <thead>
                       <tr>
-                        <th></th>
                         <th>ID</th>
                         <th>Serviço</th>
                         <th>Prazo</th>
@@ -202,7 +199,6 @@
                     </thead>
                     <tbody></tbody>
                   </table>
-                  <button name="cancel-selected-requests" type="button" class="btn btn-default" disabled>Cancelar os selecionados</button>
                 </form>
                 </div>
               </div>
@@ -235,8 +231,6 @@
 <script src="../App/View/js/cliente-tour.js"></script>
 <!-- NProgress -->
 <script src="../App/View/js/nprogress.js"></script>
-<!-- iCheck -->
-<script src="../App/View/js/icheck.min.js"></script>
 <!-- Moment.js -->
 <script src="../App/View/js/moment.min.js"></script>
 
@@ -324,9 +318,9 @@
 
 <!-- Archive request confirmation -->
 <script>
-  const cancelRequest = (requestArray) => {
+  const cancelRequest = (requestId) => {
     $.post("/gtic/public/cliente/client_cancel_call_request", {
-      "request_id_list": requestArray,
+      "request_id": requestId,
       "requestType": "open_request"
     })
     .done(function() {
@@ -336,50 +330,11 @@
       alert("Não foi possível realizar a operação");
     });
   }
-  const btnCancelarSolicitacao = (e) => {
-    let requestId = [e.target.value];
+  const cancelTicketRequestBtnClick = (e) => {
+    let requestId = e.target.value;
     setSimpleModalContent("Cancelar solicitação?", "<h4>Tem certeza que deseja cancelar a solicitação de chamado?</h4>", cancelRequest.bind(null, requestId), "Cancelar solicitação", "Voltar");
     $('#simple-modal').modal('show');
   };
-  const btnCancelarSelecionados = () => {
-    let idArray = [];
-    $('form[name=chamados_abertos_clientes]').find('input[type=checkbox]').each(function(){
-      if (this.checked) {
-        idArray.push(this.value);
-      }
-    });
-    setSimpleModalContent("Cancelar solicitações selecionadas?", "<h4>Tem certeza que deseja cancelar as solicitações de chamado selecionadas?</h4>", cancelRequest.bind(null, idArray), "Cancelar solicitações selecionadas", "Voltar");
-    $('#simple-modal').modal('show');
-  }
-
-  $('form[name=chamados_abertos_clientes]\
-  > button[name=cancel-selected-requests]').on('click', btnCancelarSelecionados);
-</script>
-
-<!-- Check if there's request checked -->
-<script>
-  const requestChecked = () => {
-    let btnDelRequest = $('form[name=chamados_abertos_clientes] > button[name=cancel-selected-requests]');
-    btnDelRequest.addClass('btn-primary').removeClass('btn-default');
-    btnDelRequest.prop('disabled', false);
-  }
-  const requestUnchecked = () => {
-    let btnDelRequest = $('form[name=chamados_abertos_clientes] > button[name=cancel-selected-requests]');
-    let formInputs = $('form[name=chamados_abertos_clientes] input[type=checkbox]');
-    let isAllUnchecked = true;
-
-    formInputs.each(function() {
-      if (this.checked) {
-        isAllUnchecked = false;
-        return false;
-      }
-    });
-
-    if (isAllUnchecked) {
-      btnDelRequest.addClass('btn-default').removeClass('btn-primary');
-      btnDelRequest.prop('disabled', true);
-    }
-  }
 </script>
 
 <!-- Tables handling -->
@@ -442,11 +397,6 @@
     // Row structure
     let newRow = $("<tr>").attr("data-request-id", request.id_chamado);
 
-    // Request row checkbox
-    let chkbox = $(
-      `<input type="checkbox" value="${request.id_chamado}" name="selections[]" />`);
-    newRow.append($("<td>").append(chkbox));
-
     let cols = "";
     cols += `<td>${request.id_chamado}</td>`;
     cols += `<td>${request.servico}</td>`;
@@ -464,10 +414,7 @@
 
     // Events
     $(newRow).on('click', clickOpenedRequestTableRow);
-    $(chkbox).iCheck({ checkboxClass: 'icheckbox_square-blue', radioClass: 'iradio_square' });
-    $(chkbox).on('ifChecked', requestChecked);
-    $(chkbox).on('ifUnchecked', requestUnchecked);
-    $(btnCancelRequest).on('click', btnCancelarSolicitacao);
+    $(btnCancelRequest).on('click', cancelTicketRequestBtnClick);
 
     // Add the row to the table
     openedRequestsTable.append(newRow);

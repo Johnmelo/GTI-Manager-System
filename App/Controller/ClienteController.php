@@ -100,11 +100,9 @@ class ClienteController extends Action{
   public function client_cancel_call_request() {
       session_start();
       if ($_SESSION['user_role'] === 'CLIENTE') {
-          if (isset($_POST['request_id_list']) && isset($_POST['requestType'])) {
+          if (isset($_POST['request_id']) && isset($_POST['requestType'])) {
               $solicitacao = ($_POST['requestType'] === "pending_acceptance") ? Container::getClass("SolicitarChamado") : Container::getClass("Chamado");
-              foreach ($_POST['request_id_list'] as $id) {
-                  $solicitacao->updateColumnById("status", "CANCELADA", $id);
-              }
+              $solicitacao->updateColumnById("status", "CANCELADA", $_POST['request_id']);
           } else {
               header("HTTP/1.1 400 Bad Request");
           }
