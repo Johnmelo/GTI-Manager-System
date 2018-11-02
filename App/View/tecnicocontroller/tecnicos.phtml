@@ -495,6 +495,8 @@
     // Replace the ticket with the new one that came with new data
     let oldTicketID = openTickets.findIndex(t => t.id_chamado === ticket.id_chamado);
     openTickets.splice(oldTicketID, 1, ticket);
+    // Insert the ticket in the technician's in process tickets list
+    techniciansInProcessTickets.push(ticket);
 
     // Remove the ticket from the In Queue table
     $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
@@ -503,8 +505,11 @@
     insertInTechniciansTicketsTable(ticket);
   }
   function ticketClosed(ticket) {
-    // Remove the ticket from the local list
+    // Remove the ticket from the local lists
     window.openTickets = window.openTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+    window.techniciansInProcessTickets = window.techniciansInProcessTickets.filter(
       r => r.id_chamado !== ticket.id_chamado
     );
 
@@ -678,16 +683,12 @@
     }
   };
   const populateTechniciansTicketsTable = () => {
-    let myTickets = openTickets.filter(r =>
-      r.id_tecnico_responsavel === "<?php echo $_SESSION['user_id']?>" && r.status === "ATENDIMENTO");
-    for (ticket of myTickets) {
+    for (ticket of techniciansInProcessTickets) {
       insertInTechniciansTicketsTable(ticket);
     }
   };
   const populateInProcessTicketsTable = () => {
-    let otherTechniciansTickets = openTickets.filter(r =>
-      r.id_tecnico_responsavel !== "<?php echo $_SESSION['user_id']?>" && r.status === "ATENDIMENTO");
-    for (ticket of otherTechniciansTickets) {
+    for (ticket of otherTechniciansInProcessTickets) {
       insertInInProcessTicketsTable(ticket);
     }
   };
@@ -696,6 +697,8 @@
     // Load the requests for the page
     window.activeTicketRequests = <?php echo json_encode($this->view->activeTicketRequests) ?>;
     window.openTickets = <?php echo json_encode($this->view->openTickets) ?>;
+    window.techniciansInProcessTickets = <?php echo json_encode($this->view->techniciansInProcessTickets) ?>;
+    window.otherTechniciansInProcessTickets = <?php echo json_encode($this->view->otherTechniciansInProcessTickets) ?>;
 
     // Populate the tables
     populateActiveTicketRequestsTable();
