@@ -168,7 +168,7 @@
                 <div class="clearfix"></div>
               </div>
               <div class="x_content">
-                <form name="client_call_request" method="post" action="admin/open_call_request">
+                <form name="client_call_request">
                   <table id="call-request-list" class="table table-hover clickable-rows">
                     <thead>
                       <tr>
@@ -180,7 +180,6 @@
                     </thead>
                     <tbody></tbody>
                   </table>
-                <input type="hidden" name="admin_open_client_call_request" value="admin_open_client_call_request"/>
               </form>
               </div>
             </div>
@@ -310,7 +309,7 @@
               {
                 btnContent: "Aceitar chamado",
                 class: "btn btn-primary",
-                callback: acceptRequest.bind(null, $(e.target).parents('tr'))
+                callback: acceptRequest.bind(null, requestId)
               }
             ]
           };
@@ -396,6 +395,20 @@
           defineSimpleModal(modalConfig, requestData);
         }
       }
+    }
+    function ticketRequestAccepted(ticket) {
+      // Put the ticket in the local open tickets list
+      //  and remove from the active requests list
+      window.openTickets.push(ticket);
+      window.activeTicketRequests = window.activeTicketRequests.filter(
+        r => r.id_solicitacao !== ticket.id_solicitacao
+      );
+
+      // Remove the ticket request from the table it were before
+      $('form[name=client_call_request]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
+
+      // Insert the ticket in the "In Queue" table
+      insertInInQueueTicketsTable(ticket);
     }
   </script>
 
