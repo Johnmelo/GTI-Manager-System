@@ -207,16 +207,16 @@ function finalizeRequest(tableRow) {
 }
 
 function acquireRequest(ticketID) {
-  var data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
+  let data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
 
   // Check if inserted deadline is in valid format
   if (data_prazo.match(/\d{2}\/\d{2}\/\d{4} [aà]s \d{2}:\d{2}/)) {
     // Convert the deadline info into the format accepted by the DB
     data_prazo = data_prazo.replace(/[aà]s /g, "");
     data_prazo += ":00";
-    var datetime = data_prazo.split(" ");
-    var date = datetime[0].split("/");
-    var time = datetime[1];
+    let datetime = data_prazo.split(" ");
+    let date = datetime[0].split("/");
+    let time = datetime[1];
     datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
 
     $("html").css("cursor", "wait");
