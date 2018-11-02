@@ -315,7 +315,7 @@
           }
         ]
       };
-      let requestData = openTickets.find(r => r.id_chamado === requestId);
+      let requestData = inQueueTickets.find(r => r.id_chamado === requestId);
       defineSimpleModal(modalConfig, requestData);
     }
   }
@@ -398,7 +398,7 @@
           }
         ]
       };
-      let requestData = openTickets.find(r => r.id_chamado === requestId);
+      let requestData = techniciansInProcessTickets.find(r => r.id_chamado === requestId);
       defineSimpleModal(modalConfig, requestData);
     }
   }
@@ -441,7 +441,7 @@
             prazo_field: true
           }
         };
-        let requestData = openTickets.find(r => r.id_chamado === requestId);
+        let requestData = inQueueTickets.find(r => r.id_chamado === requestId);
         defineSimpleModal(modalConfig, requestData);
       }
     }
@@ -466,7 +466,13 @@
             tecnico_responsavel_field: true
           }
         };
-        let requestData = openTickets.find(r => r.id_chamado === requestId);
+        let tableID = $(e.target).closest("table")[0].id;
+        let requestData;
+        if (tableID === "my-processing-requests") {
+          requestData = techniciansInProcessTickets.find(r => r.id_chamado === requestId);
+        } else {
+          requestData = otherTechniciansInProcessTickets.find(r => r.id_chamado === requestId);
+        }
         defineSimpleModal(modalConfig, requestData);
       }
     }
@@ -474,7 +480,7 @@
   function ticketRequestAccepted(ticket) {
     // Put the ticket in the local open tickets list
     //  and remove from the active requests list
-    window.openTickets.push(ticket);
+    window.inQueueTickets.push(ticket);
     window.activeTicketRequests = window.activeTicketRequests.filter(
       r => r.id_solicitacao !== ticket.id_solicitacao
     );
@@ -493,9 +499,8 @@
     $('form[name=solicitacoes_chamados]').find(`[data-request-id=${request.id_solicitacao}]`).remove();
   }
   function ticketAcquired(ticket) {
-    // Replace the ticket with the new one that came with new data
-    let oldTicketIndex = openTickets.findIndex(t => t.id_chamado === ticket.id_chamado);
-    openTickets.splice(oldTicketIndex, 1, ticket);
+    // Remove from the in queue tickets local list
+    window.inQueueTickets = window.inQueueTickets.filter(t => t.id_chamado !== ticket.id_chamado);
     // Insert the ticket in the technician's in process tickets list
     techniciansInProcessTickets.push(ticket);
 
@@ -506,10 +511,7 @@
     insertInTechniciansTicketsTable(ticket);
   }
   function ticketClosed(ticket) {
-    // Remove the ticket from the local lists
-    window.openTickets = window.openTickets.filter(
-      r => r.id_chamado !== ticket.id_chamado
-    );
+    // Remove the ticket from the local list
     window.techniciansInProcessTickets = window.techniciansInProcessTickets.filter(
       r => r.id_chamado !== ticket.id_chamado
     );
@@ -673,23 +675,22 @@
 <!-- Ready -->
 <script>
   const populateActiveTicketRequestsTable = () => {
-    for (ticket of activeTicketRequests) {
+    for (ticket of window.activeTicketRequests) {
       insertInActiveTicketRequestsTable(ticket);
     }
   };
   const populateInQueueTicketsTable = () => {
-    let queuedTickets = openTickets.filter(r => r.status === "AGUARDANDO");
-    for (ticket of queuedTickets) {
+    for (ticket of window.inQueueTickets) {
       insertInInQueueTicketsTable(ticket);
     }
   };
   const populateTechniciansTicketsTable = () => {
-    for (ticket of techniciansInProcessTickets) {
+    for (ticket of window.techniciansInProcessTickets) {
       insertInTechniciansTicketsTable(ticket);
     }
   };
   const populateInProcessTicketsTable = () => {
-    for (ticket of otherTechniciansInProcessTickets) {
+    for (ticket of window.otherTechniciansInProcessTickets) {
       insertInInProcessTicketsTable(ticket);
     }
   };
@@ -697,7 +698,7 @@
   $(document).ready(function() {
     // Load the requests for the page
     window.activeTicketRequests = <?php echo json_encode($this->view->activeTicketRequests) ?>;
-    window.openTickets = <?php echo json_encode($this->view->openTickets) ?>;
+    window.inQueueTickets = <?php echo json_encode($this->view->inQueueTickets) ?>;
     window.techniciansInProcessTickets = <?php echo json_encode($this->view->techniciansInProcessTickets) ?>;
     window.otherTechniciansInProcessTickets = <?php echo json_encode($this->view->otherTechniciansInProcessTickets) ?>;
 

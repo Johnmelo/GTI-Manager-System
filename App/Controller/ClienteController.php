@@ -9,8 +9,10 @@ class ClienteController extends Action{
     session_start();
     if($_SESSION['user_role'] === "CLIENTE"){
       $Chamado = Container::getClass("Chamado");
-      $openTickets = $Chamado->getUsersOpenTickets($_SESSION['user_id']);
-      $this->view->openTickets = $openTickets;
+      $inQueueTickets = $Chamado->getUsersInQueueTickets($_SESSION['user_id']);
+      $inProcessTickets = $Chamado->getUsersInProcessTickets($_SESSION['user_id']);
+      $this->view->inQueueTickets = $inQueueTickets;
+      $this->view->inProcessTickets = $inProcessTickets;
       $this->render('clientes');
     }else{
       $this->forbidenAccess();

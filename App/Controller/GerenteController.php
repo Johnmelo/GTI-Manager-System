@@ -14,11 +14,13 @@ class GerenteController extends Action{
 
       $unreviewedAccountRequests = $SolicitarAcesso->getUnreviewedRequests();
       $activeTicketRequests = $SolicitarChamado->getActiveTicketRequests();
-      $openTickets = $Chamado->getOpenTickets();
+      $inQueueTickets = $Chamado->getInQueueTickets();
+      $inProcessTickets = $Chamado->getInProcessTickets();
 
       $this->view->unreviewedAccountRequests = $unreviewedAccountRequests;
       $this->view->activeTicketRequests = $activeTicketRequests;
-      $this->view->openTickets = $openTickets;
+      $this->view->inQueueTickets = $inQueueTickets;
+      $this->view->inProcessTickets = $inProcessTickets;
       $this->render('gerentes');
     }else{
       $this->forbidenAccess();

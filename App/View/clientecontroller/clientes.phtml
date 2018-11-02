@@ -259,7 +259,7 @@
             tecnico_responsavel_field: true
           }
         };
-        let requestData = openTickets.find(r => r.id_chamado === requestId);
+        let requestData = inProcessTickets.find(r => r.id_chamado === requestId);
         defineSimpleModal(modalConfig, requestData);
       }
     }
@@ -281,7 +281,7 @@
             prazo_field: true
           }
         };
-        let requestData = openTickets.find(r => r.id_chamado === requestId);
+        let requestData = inQueueTickets.find(r => r.id_chamado === requestId);
         defineSimpleModal(modalConfig, requestData);
       }
     }
@@ -338,7 +338,7 @@
           if (response.ticket){
             let ticket = response.ticket;
             // Remove the ticket request from the local list
-            window.openTickets = window.openTickets.filter(
+            window.inQueueTickets = window.inQueueTickets.filter(
               r => r.id_chamado !== ticket.id_chamado
             );
 
@@ -469,15 +469,13 @@
 <script>
   const populateInProcessRequestsTable = () => {
     // Take only the requests being processed (status "ATENDIMENTO")
-    let inProcessRequests = openTickets.filter(r => r.status === "ATENDIMENTO");
-    for (request of inProcessRequests) {
+    for (request of window.inProcessTickets) {
       insertInProcessingRequestsTable(request);
     }
   };
   const populateOpenRequestsTable = () => {
     // Take only the accepted requests (status "AGUARDANDO")
-    let openedRequests = openTickets.filter(r => r.status === "AGUARDANDO");
-    for (request of openedRequests) {
+    for (request of window.inQueueTickets) {
       insertInOpenedRequestsTable(request);
     }
   };
@@ -493,7 +491,8 @@
     }
 
     // Load the requests for the page
-    window.openTickets = <?php echo json_encode($this->view->openTickets) ?>;
+    window.inQueueTickets = <?php echo json_encode($this->view->inQueueTickets) ?>;
+    window.inProcessTickets = <?php echo json_encode($this->view->inProcessTickets) ?>;
 
     // Populate the tables
     populateInProcessRequestsTable();

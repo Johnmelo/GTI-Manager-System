@@ -367,7 +367,7 @@
               prazo_field: true
             }
           };
-          let requestData = openTickets.find(r => r.id_chamado === requestId);
+          let requestData = inQueueTickets.find(r => r.id_chamado === requestId);
           defineSimpleModal(modalConfig, requestData);
         }
       }
@@ -392,7 +392,7 @@
               tecnico_responsavel_field: true
             }
           };
-          let requestData = openTickets.find(r => r.id_chamado === requestId);
+          let requestData = inProcessTickets.find(r => r.id_chamado === requestId);
           defineSimpleModal(modalConfig, requestData);
         }
       }
@@ -400,7 +400,7 @@
     function ticketRequestAccepted(ticket) {
       // Put the ticket in the local open tickets list
       //  and remove from the active requests list
-      window.openTickets.push(ticket);
+      window.inQueueTickets.push(ticket);
       window.activeTicketRequests = window.activeTicketRequests.filter(
         r => r.id_solicitacao !== ticket.id_solicitacao
       );
@@ -552,24 +552,22 @@
   <!-- Ready -->
   <script>
     const populateUnreviewedAccountRequests = () => {
-      for (request of unreviewedAccountRequests) {
+      for (request of window.unreviewedAccountRequests) {
         insertInUnreviewedAccountRequestsTable(request);
       }
     }
     const populateActiveTicketRequestsTable = () => {
-      for (request of activeTicketRequests) {
+      for (request of window.activeTicketRequests) {
         insertInActiveTicketRequestsTable(request);
       }
     }
     const populateInQueueTicketsTable = () => {
-      let inQueueTickets = openTickets.filter(r => r.status === "AGUARDANDO");
-      for (ticket of inQueueTickets) {
+      for (ticket of window.inQueueTickets) {
         insertInInQueueTicketsTable(ticket);
       }
     }
     const populateInProcessTicketsTable = () => {
-      let inProcessTickets = openTickets.filter(r => r.status === "ATENDIMENTO");
-      for (ticket of inProcessTickets) {
+      for (ticket of window.inProcessTickets) {
         insertInInProcessTicketsTable(ticket);
       }
     }
@@ -578,7 +576,8 @@
       // Load the requests for the page
       window.unreviewedAccountRequests = <?php echo json_encode($this->view->unreviewedAccountRequests) ?>;
       window.activeTicketRequests = <?php echo json_encode($this->view->activeTicketRequests) ?>;
-      window.openTickets = <?php echo json_encode($this->view->openTickets) ?>;
+      window.inQueueTickets = <?php echo json_encode($this->view->inQueueTickets) ?>;
+      window.inProcessTickets = <?php echo json_encode($this->view->inProcessTickets) ?>;
 
       // Populate the tables
       populateUnreviewedAccountRequests();

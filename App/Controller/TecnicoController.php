@@ -12,25 +12,26 @@ class TecnicoController extends Action{
         $activeTicketRequests = $SolicitarChamado->getActiveTicketRequests();
 
         $Chamado = Container::getClass("Chamado");
-        $openTickets = $Chamado->getOpenTickets();
+        $inQueueTickets = $Chamado->getInQueueTickets();
+        $inProcessTickets = $Chamado->getInProcessTickets();
 
         $techniciansInProcessTickets = [];
         $otherTechniciansInProcessTickets = [];
 
-        $techniciansInProcessTickets = \array_filter($openTickets, function($ticket) {
+        $techniciansInProcessTickets = \array_filter($inProcessTickets, function($ticket) {
           $inProcess = ($ticket["status"] === "ATENDIMENTO");
           $techniciansTicket = ($ticket["id_tecnico_responsavel"] === $_SESSION["user_id"]);
             return ($inProcess && $techniciansTicket);
         });
 
-        $otherTechniciansInProcessTickets = \array_filter($openTickets, function($ticket) {
+        $otherTechniciansInProcessTickets = \array_filter($inProcessTickets, function($ticket) {
           $inProcess = ($ticket["status"] === "ATENDIMENTO");
           $otherTechniciansTicket = ($ticket["id_tecnico_responsavel"] !== $_SESSION["user_id"]);
             return ($inProcess && $otherTechniciansTicket);
         });
 
         $this->view->activeTicketRequests = $activeTicketRequests;
-        $this->view->openTickets = $openTickets;
+        $this->view->inQueueTickets = $inQueueTickets;
         $this->view->techniciansInProcessTickets = \array_values($techniciansInProcessTickets);
         $this->view->otherTechniciansInProcessTickets = \array_values($otherTechniciansInProcessTickets);
         $this->render('tecnicos');
