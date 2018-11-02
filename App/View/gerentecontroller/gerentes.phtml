@@ -337,7 +337,7 @@
               {
                 btnContent: "Recusar solicitação",
                 class: "btn btn-primary",
-                callback: refuseRequest.bind(null, $(e.target).parents('tr'))
+                callback: refuseRequest.bind(null, requestId)
               }
             ]
           };
@@ -409,6 +409,15 @@
 
       // Insert the ticket in the "In Queue" table
       insertInInQueueTicketsTable(ticket);
+    }
+    function ticketRequestRefused(request) {
+      // Search for the request in the local list and delete it
+      window.activeTicketRequests = window.activeTicketRequests.filter(
+        r => r.id_solicitacao !== request.id_solicitacao
+      );
+
+      // Remove the request from the table
+      $('form[name=client_call_request]').find(`[data-request-id=${request.id_solicitacao}]`).remove();
     }
   </script>
 
