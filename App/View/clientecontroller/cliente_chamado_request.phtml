@@ -229,6 +229,27 @@
 <script>
   autosize($('textarea[name=descricao]'));
 </script>
+<!-- forge-sha256 -->
+<script src="../../App/View/js/forge-sha256.min.js"></script>
+
+<!-- Socket.IO -->
+<script src="../../App/View/js/socket.io.js"></script>
+<script>
+  let token = <?php echo $this->view->token ?>;
+
+  // Connect to the WebSocket server
+  let socket = io(`ws://${window.location.host}:5530`);
+
+  // Try to resolve the challenge in order to stay connected to the WS server
+  socket.on('connecting', ({challenge}) => {
+    let solution = `${challenge}${token.last_login_date}`;
+    let tokenData = {
+      "username": token.username,
+      "challengeSolution": forge_sha256(solution)
+    };
+    socket.emit('challenge solution', tokenData);
+  });
+</script>
 
 <!-- jQuery autocomplete -->
 <script src="../../App/View/js/jquery.autocomplete.min.js"></script>

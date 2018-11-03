@@ -191,22 +191,6 @@ class IndexController extends Action{
     echo(json_encode($suggestions));
   }
 
-  public function get_token_data() {
-      session_start();
-      $userRole = $_SESSION['user_role'];
-      $allowedRoles = ["CLIENTE", "TECNICO", "GERENTE"];
-      if(in_array($userRole, $allowedRoles)) {
-          $Usuario = Container::getClass("Usuario");
-          $user = $Usuario->findById($_SESSION['user_id']);
-         header("Content-type:application/json");
-         echo(json_encode(array(
-           "username" => $user["login"],
-           "last_login_date" => $user["data_ultimo_login"],
-           "timestamp" => time()
-         )));
-      }
-  }
-
   public function logout(){
     session_start();
     $_SESSION = array();

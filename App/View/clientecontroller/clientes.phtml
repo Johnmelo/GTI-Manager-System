@@ -237,33 +237,6 @@
 <!-- Custom Theme Scripts -->
 <script src="../App/View/js/custom.min.js"></script>
 
-<!-- forge-sha256 -->
-<script src="../App/View/js/forge-sha256.min.js"></script>
-
-<!-- Socket.IO -->
-<script src="../App/View/js/socket.io.js"></script>
-<script>
-  // Connect to the WebSocket server
-  let socket = io(`wss://${window.location.host}:5530`);
-
-  // Try to resolve the challenge in order to stay connected to the WS server
-  socket.on('connecting', ({challenge}) => {
-    $.post("/gtic/public/get_token_data")
-    .done(({username, last_login_date, timestamp}) => {
-      let solution = `${challenge}${last_login_date}`;
-      let token_data = {
-        "username": username,
-        "challengeSolution": forge_sha256(solution)
-      };
-      socket.emit('challenge solution', token_data);
-    })
-    .fail(data => {
-      console.error("Não foi possível adquirir o token para autenticação no servidor de WebSocket");
-      if (data) console.error(data);
-    });
-  });
-</script>
-
 <!-- Request modal settings -->
 <script src="../App/View/js/request-modals.js"></script>
 <script>

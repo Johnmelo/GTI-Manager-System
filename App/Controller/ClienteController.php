@@ -2,6 +2,7 @@
 namespace App\Controller;
 use SON\Controller\Action;
 use \SON\Di\Container;
+use \App\Model\Token;
 
 class ClienteController extends Action{
 
@@ -22,9 +23,13 @@ class ClienteController extends Action{
   public function solicitar_atendimento(){
     session_start();
     if($_SESSION['user_role'] == "CLIENTE"){
+      // Get the token for WebSocket
+      $token = new Token($_SESSION['user_id']);
+
       $SolicitarChamado = Container::getClass("SolicitarChamado");
       $activeTicketRequests = $SolicitarChamado->getUsersActiveTicketRequests($_SESSION['user_id']);
       $this->view->activeTicketRequests = $activeTicketRequests;
+      $this->view->token = \json_encode($token->data);
       $this->render('cliente_chamado_request');
     }else{
       $this->forbidenAccess();
