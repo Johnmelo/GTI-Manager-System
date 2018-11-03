@@ -62,6 +62,11 @@ $io->on('connection', function($socket) {
         if ($event === "client cancelled ticket request") {
             $socket->broadcast->to('support')->emit($event, $data);
         }
+
+        // Client cancels a ticket
+        if ($event === "client cancelled ticket") {
+            $socket->broadcast->to('support')->emit($event, $data);
+        }
     });
 });
 

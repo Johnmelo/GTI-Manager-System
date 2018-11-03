@@ -9,11 +9,15 @@ class ClienteController extends Action{
   public function index(){
     session_start();
     if($_SESSION['user_role'] === "CLIENTE"){
+      // Get the token for WebSocket
+      $token = new Token($_SESSION['user_id']);
+
       $Chamado = Container::getClass("Chamado");
       $inQueueTickets = $Chamado->getUsersInQueueTickets($_SESSION['user_id']);
       $inProcessTickets = $Chamado->getUsersInProcessTickets($_SESSION['user_id']);
       $this->view->inQueueTickets = $inQueueTickets;
       $this->view->inProcessTickets = $inProcessTickets;
+      $this->view->token = \json_encode($token->data);
       $this->render('clientes');
     }else{
       $this->forbidenAccess();
