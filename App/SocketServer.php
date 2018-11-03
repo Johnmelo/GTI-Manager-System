@@ -20,15 +20,31 @@ $io->on('connection', function($socket) {
     // Disconnect the client otherwise.
     $socket->on('challenge solution', function($token_data)use($socket) {
         $Usuario = Container::getClass("Usuario");
+        $UsuarioRole = Container::getClass("UsuarioRole");
+
+        // User info
         $user = $Usuario->findByLogin($token_data["username"]);
+        $userRole = $UsuarioRole->findByIdUser($user['id']);
+
+        // Check if challenge was concluded
         $challenge = $socket->challenge.$user["data_ultimo_login"];
         $challenge_solution = hash("sha256", $challenge, false);
         if ($challenge_solution === $token_data["challengeSolution"]) {
+            // Store the user data in its socket
             $socket->userInfo = array(
                 "id" => $user["id"],
                 "nome" => $user["nome"]
             );
-            $socket->join("authed users");
+            // Organize the users in groups (rooms)
+            if ($userRole['cliente'] === "1") {
+                $socket->join("clients");
+            } else if ($userRole['tecnico'] === "1") {
+                $socket->join("technicians");
+                $socket->join("support");
+            } else if ($userRole['gerente'] === "1") {
+                $socket->join("admins");
+                $socket->join("support");
+            }
         } else {
             $socket->disconnect(true);
         }
