@@ -407,7 +407,7 @@
           if (response.request){
             let ticketRequest = response.request;
             // Send the ticket request to connected support users
-            socket.emit('message', 'client cancelled ticket request', ticketRequest);
+            socket.emit('from client', 'client cancelled ticket request', ticketRequest);
 
             // Remove the ticket request from the local list
             window.activeTicketRequests = window.activeTicketRequests.filter(
@@ -526,7 +526,7 @@
       if (response) {
         if (response.request) {
           // Send the ticket request to connected support users
-          socket.emit('message', 'client requested ticket', response.request);
+          socket.emit('from client', 'client requested ticket', response.request);
 
           // Insert the ticket request in the page
           window.activeTicketRequests.push(response.request);

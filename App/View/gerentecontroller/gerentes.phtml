@@ -414,7 +414,7 @@
     }
     function ticketRequestAccepted(ticket) {
       // Send the ticket request to connected support users and to the requester client
-      socket.emit('message', 'support accepted ticket request', ticket);
+      socket.emit('from support', 'support accepted ticket request', ticket);
 
       // Put the ticket in the local open tickets list
       //  and remove from the active requests list
@@ -431,7 +431,7 @@
     }
     function ticketRequestRefused(request) {
       // Send the ticket request to connected support users and to the requester client
-      socket.emit('message', 'support refused ticket request', request);
+      socket.emit('from support', 'support refused ticket request', request);
 
       // Search for the request in the local list and delete it
       window.activeTicketRequests = window.activeTicketRequests.filter(

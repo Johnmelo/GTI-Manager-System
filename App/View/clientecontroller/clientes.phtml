@@ -359,7 +359,7 @@
           if (response.ticket){
             let ticket = response.ticket;
             // Send the ticket to connected support users
-            socket.emit('message', 'client cancelled ticket', ticket);
+            socket.emit('from client', 'client cancelled ticket', ticket);
 
             // Remove the ticket request from the local list
             window.inQueueTickets = window.inQueueTickets.filter(

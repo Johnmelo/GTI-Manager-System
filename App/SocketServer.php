@@ -50,23 +50,18 @@ $io->on('connection', function($socket)use($io) {
         }
     });
 
-    // When a message is sent
-    $socket->on('message', function($event, $data)use($socket, $io) {
+    // When support sends data
+    $socket->on('from support', function($event, $data)use($socket, $io) {
+        // Send to connected users from support
+        $socket->broadcast->to('support')->emit($event, $data);
+        // And send to the requester client
+        $clientID = $data['id_cliente'];
+        emitToUserID($io, $clientID, $event, $data);
+    });
 
-        // Client makes a new ticket request
-        if ($event === "client requested ticket") {
-            $socket->broadcast->to('support')->emit($event, $data);
-        }
-
-        // Client cancels a ticket request
-        if ($event === "client cancelled ticket request") {
-            $socket->broadcast->to('support')->emit($event, $data);
-        }
-
-        // Client cancels a ticket
-        if ($event === "client cancelled ticket") {
-            $socket->broadcast->to('support')->emit($event, $data);
-        }
+    // When clients sends data
+    $socket->on('from client', function($event, $data)use($socket) {
+        $socket->broadcast->to('support')->emit($event, $data);
     });
 });
 
