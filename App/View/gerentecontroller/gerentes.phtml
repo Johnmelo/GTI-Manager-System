@@ -258,6 +258,27 @@
   <script src="../App/View/js/nprogress.js"></script>
   <!-- Moment.js -->
   <script src="../App/View/js/moment.min.js"></script>
+  <!-- forge-sha256 -->
+  <script src="../App/View/js/forge-sha256.min.js"></script>
+
+  <!-- Socket.IO -->
+  <script src="../App/View/js/socket.io.js"></script>
+  <script>
+    let token = <?php echo $this->view->token ?>;
+
+    // Connect to the WebSocket server
+    let socket = io(`ws://${window.location.host}:5530`);
+
+    // Try to resolve the challenge in order to stay connected to the WS server
+    socket.on('connecting', ({challenge}) => {
+      let solution = `${challenge}${token.last_login_date}`;
+      let tokenData = {
+        "username": token.username,
+        "challengeSolution": forge_sha256(solution)
+      };
+      socket.emit('challenge solution', tokenData);
+    });
+  </script>
   <!-- Custom Theme Scripts -->
   <script src="../App/View/js/custom.min.js"></script>
 
@@ -392,6 +413,9 @@
       }
     }
     function ticketRequestAccepted(ticket) {
+      // Send the ticket request to connected support users and to the requester client
+      socket.emit('message', 'support accepted ticket request', ticket);
+
       // Put the ticket in the local open tickets list
       //  and remove from the active requests list
       window.inQueueTickets.push(ticket);
@@ -406,6 +430,9 @@
       insertInInQueueTicketsTable(ticket);
     }
     function ticketRequestRefused(request) {
+      // Send the ticket request to connected support users and to the requester client
+      socket.emit('message', 'support refused ticket request', request);
+
       // Search for the request in the local list and delete it
       window.activeTicketRequests = window.activeTicketRequests.filter(
         r => r.id_solicitacao !== request.id_solicitacao

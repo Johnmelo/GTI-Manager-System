@@ -3,11 +3,15 @@ namespace App\Controller;
 use SON\Controller\Action;
 use \SON\Di\Container;
 use \App\Model\Email;
+use \App\Model\Token;
 
 class GerenteController extends Action{
   public function index(){
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
+      // Get the token for WebSocket
+      $token = new Token($_SESSION['user_id']);
+
       $SolicitarAcesso = Container::getClass("SolicitarAcesso");
       $SolicitarChamado = Container::getClass("SolicitarChamado");
       $Chamado = Container::getClass("Chamado");
@@ -17,6 +21,7 @@ class GerenteController extends Action{
       $inQueueTickets = $Chamado->getInQueueTickets();
       $inProcessTickets = $Chamado->getInProcessTickets();
 
+      $this->view->token = \json_encode($token->data);
       $this->view->unreviewedAccountRequests = $unreviewedAccountRequests;
       $this->view->activeTicketRequests = $activeTicketRequests;
       $this->view->inQueueTickets = $inQueueTickets;
