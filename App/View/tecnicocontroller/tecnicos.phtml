@@ -504,6 +504,9 @@
     }
   }
   function ticketRequestAccepted(ticket) {
+    // Send the ticket request to connected support users and to the requester client
+    socket.emit('message', 'support accepted ticket request', ticket);
+
     // Put the ticket in the local open tickets list
     //  and remove from the active requests list
     window.inQueueTickets.push(ticket);
@@ -516,6 +519,9 @@
     $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
   }
   function ticketRequestRefused(request) {
+    // Send the ticket request to connected support users and to the requester client
+    socket.emit('message', 'support refused ticket request', request);
+
     // Search for the request in the local list and delete it
     window.activeTicketRequests = window.activeTicketRequests.filter(
       r => r.id_solicitacao !== request.id_solicitacao
@@ -525,6 +531,9 @@
     $('form[name=solicitacoes_chamados]').find(`[data-request-id=${request.id_solicitacao}]`).remove();
   }
   function ticketAcquired(ticket) {
+    // Send the ticket to connected support users and to the requester client
+    socket.emit('message', 'technician acquired ticket', ticket);
+
     // Remove from the in queue tickets local list
     window.inQueueTickets = window.inQueueTickets.filter(t => t.id_chamado !== ticket.id_chamado);
     // Insert the ticket in the technician's in process tickets list
@@ -537,6 +546,9 @@
     insertInTechniciansTicketsTable(ticket);
   }
   function ticketClosed(ticket) {
+    // Send the ticket to connected support users and to the requester client
+    socket.emit('message', 'technician finalized ticket', ticket);
+
     // Remove the ticket from the local list
     window.techniciansInProcessTickets = window.techniciansInProcessTickets.filter(
       r => r.id_chamado !== ticket.id_chamado
