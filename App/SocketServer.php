@@ -7,7 +7,7 @@ use \SON\Di\Container;
 // Set the websocket port
 $io = new SocketIO(5530);
 
-// When a client is connecting to the server
+// When a client is connected to the server
 $io->on('connection', function($socket) {
 
     // First, send only to him a challenge to resolve
@@ -32,6 +32,11 @@ $io->on('connection', function($socket) {
         } else {
             $socket->disconnect(true);
         }
+    });
+
+    // When a message is sent
+    $socket->on('message', function($event, $data)use($socket) {
+        $socket->broadcast->to('authed users')->emit($event, $data);
     });
 });
 
