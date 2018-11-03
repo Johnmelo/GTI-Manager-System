@@ -52,7 +52,16 @@ $io->on('connection', function($socket) {
 
     // When a message is sent
     $socket->on('message', function($event, $data)use($socket) {
-        $socket->broadcast->to('authed users')->emit($event, $data);
+
+        // Client makes a new ticket request
+        if ($event === "client requested ticket") {
+            $socket->broadcast->to('support')->emit($event, $data);
+        }
+
+        // Client cancels a ticket request
+        if ($event === "client cancelled ticket request") {
+            $socket->broadcast->to('support')->emit($event, $data);
+        }
     });
 });
 
