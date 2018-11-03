@@ -249,6 +249,28 @@
     };
     socket.emit('challenge solution', tokenData);
   });
+
+  // When the support accepts a ticket request
+  socket.on('support accepted ticket request', ticketRequest => {
+    // Remove the ticket request from the local list
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticketRequest.id_solicitacao
+    );
+
+    // Remove the ticket request from the table
+    $('form[name=solicitacoes_chamado]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+  });
+
+  // When the support refuses a ticket request
+  socket.on('support refused ticket request', ticketRequest => {
+    // Remove the ticket request from the local list
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticketRequest.id_solicitacao
+    );
+
+    // Remove the ticket request from the table
+    $('form[name=solicitacoes_chamado]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+  });
 </script>
 
 <!-- jQuery autocomplete -->

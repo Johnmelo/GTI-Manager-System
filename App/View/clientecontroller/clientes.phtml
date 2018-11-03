@@ -253,6 +253,39 @@
     };
     socket.emit('challenge solution', tokenData);
   });
+
+  // When the support accepts a ticket request
+  socket.on('support accepted ticket request', ticket => {
+    // Insert in the ticket into the "in queue" list and table
+    window.inQueueTickets.push(ticket);
+    insertInOpenedRequestsTable(ticket);
+  });
+
+  // When a technician assumes a ticket
+  socket.on('technician acquired ticket', ticket => {
+    // Move the ticket from the "in queue" table to the "in process" one
+
+    // Remove the old ticket from the "in queue" list
+    window.inQueueTickets = window.inQueueTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+
+    // Remove the old ticket from the "in queue" table
+    $('form[name=chamados_abertos_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+
+    // Insert the ticket with new data in the "in process" list and table
+    window.inProcessTickets.push(ticket);
+    insertInProcessingRequestsTable(ticket);
+  });
+
+  // When a technician finalizes a ticket
+  socket.on('technician finalized ticket', ticket => {
+    // Remove the ticket from the "in process" list and table
+    window.inProcessTickets = window.inProcessTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+    $('form[name=chamados_atendimento_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+  });
 </script>
 
 <!-- Custom Theme Scripts -->
