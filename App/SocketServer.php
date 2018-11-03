@@ -8,7 +8,7 @@ use \SON\Di\Container;
 $io = new SocketIO(5530);
 
 // When a client is connected to the server
-$io->on('connection', function($socket) {
+$io->on('connection', function($socket)use($io) {
 
     // First, send only to him a challenge to resolve
     $socket->challenge = bin2hex(random_bytes(32));
@@ -51,7 +51,7 @@ $io->on('connection', function($socket) {
     });
 
     // When a message is sent
-    $socket->on('message', function($event, $data)use($socket) {
+    $socket->on('message', function($event, $data)use($socket, $io) {
 
         // Client makes a new ticket request
         if ($event === "client requested ticket") {
@@ -69,6 +69,19 @@ $io->on('connection', function($socket) {
         }
     });
 });
+
+function emitToUserID($io, $userID, $event, $data) {
+    // Get the connected users
+    $connected = $io->nsps['/']->sockets;
+    // Search for the user index
+    $requesterClientIndex = array_search($userID, array_column(array_column($connected, 'userInfo'), 'id'));
+    // If the user was found (it's connected to the WS server)
+    if ($requesterClientIndex !== false) {
+        // Get the user socket and emit to it
+        $requesterClient = array_values($connected)[$requesterClientIndex];
+        $requesterClient->emit($event, $data);
+    }
+}
 
 Worker::runAll();
 ?>
