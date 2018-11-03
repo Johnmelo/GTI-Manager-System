@@ -8,67 +8,19 @@ class GerenteController extends Action{
   public function index(){
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
+      $SolicitarAcesso = Container::getClass("SolicitarAcesso");
+      $SolicitarChamado = Container::getClass("SolicitarChamado");
+      $Chamado = Container::getClass("Chamado");
 
-      $requisicao_acesso = Container::getClass("SolicitarAcesso");
-      $requisicoes = $requisicao_acesso->fetchAll();
-      $requisicoes_acesso_aguardando = [];
-      foreach ($requisicoes as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $requisicoes_acesso_aguardando[] = $request;
-        }
-      }
+      $unreviewedAccountRequests = $SolicitarAcesso->getUnreviewedRequests();
+      $activeTicketRequests = $SolicitarChamado->getActiveTicketRequests();
+      $inQueueTickets = $Chamado->getInQueueTickets();
+      $inProcessTickets = $Chamado->getInProcessTickets();
 
-      $chamado = Container::getClass("Chamado");
-      $chamados = $chamado->fetchAll();
-      $chamados_abertos = $chamado->getChamadosByStatus("AGUARDANDO");
-      $chamados_atendimentos = $chamado->getChamadosByStatus("ATENDIMENTO");
-      $chamados_finalizados = $chamado->getChamadosByStatus("FINALIZADO");
-      $count = count($chamados);
-
-      $servico = Container::getClass("Servico");
-      $servicos = $servico->fetchAll();
-      $array_servicos_names = [];
-      foreach ($servicos as $service) {
-        $array_servicos_names[$service['id']] = $service['nome'];
-      }
-
-      $requisicao_atendendimento = Container::getClass("SolicitarChamado");
-      $requisicoes_atendimento = $requisicao_atendendimento->fetchAll();
-      $requisicoes_atendimento_aguardando = [];
-      foreach ($requisicoes_atendimento as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $requisicoes_atendimento_aguardando[] = $request;
-        }
-      }
-
-      $cliente = Container::getClass("Usuario");
-      $clientes = $cliente->fetchAll();
-      $array_clients_names = [];
-      foreach ($clientes as $client) {
-        $array_clients_names[$client['id']]['nome'] = $client['nome'];
-        $array_clients_names[$client['id']]['setor'] = $client['setor'];
-      }
-
-      $local = Container::getClass("Local");
-      $locais = $local->fetchAll();
-      $array_locais = [];
-      foreach ($locais as $local) {
-          $array_locais[$local['id']]['nome'] = $local['nome'];
-          $array_locais[$local['id']]['tipo'] = $local['tipo'];
-          $array_locais[$local['id']]['ativo'] = $local['ativo'];
-      }
-
-      //atribuindo para a view
-      $this->view->clients_names = $array_clients_names;
-      $this->view->service_names = $array_servicos_names;
-      $this->view->requisicoes_atendimento = $requisicoes_atendimento_aguardando;
-      $this->view->requisicoes = $requisicoes_acesso_aguardando;
-      $this->view->chamados = $chamados;
-      $this->view->chamados_abertos = $chamados_abertos;
-      $this->view->chamados_atendimentos = $chamados_atendimentos;
-      $this->view->chamados_finalizados = $chamados_finalizados;
-      $this->view->locais = $array_locais;
-      $this->view->count = $count - 1;
+      $this->view->unreviewedAccountRequests = $unreviewedAccountRequests;
+      $this->view->activeTicketRequests = $activeTicketRequests;
+      $this->view->inQueueTickets = $inQueueTickets;
+      $this->view->inProcessTickets = $inProcessTickets;
       $this->render('gerentes');
     }else{
       $this->forbidenAccess();
@@ -80,16 +32,8 @@ class GerenteController extends Action{
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
       $requisicao_acesso = Container::getClass("SolicitarAcesso");
-      $requisicoes = $requisicao_acesso->fetchAll();
-      $requisicoes_aguardando = [];
-
-      foreach ($requisicoes as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $requisicoes_aguardando[] = $request;
-        }
-      }
-
-      $this->view->requisicoes = $requisicoes_aguardando;
+      $unreviewedAccountRequests = $requisicao_acesso->getUnreviewedRequests();
+      $this->view->unreviewedAccountRequests = $unreviewedAccountRequests;
       $this->render('cadastro_usuario_index');
     }else{
       $this->forbidenAccess();
@@ -113,27 +57,17 @@ class GerenteController extends Action{
       // Check if wat was submitted is a list of accounts selected, a new
       // user manually created or a request which was edited
 
-      // If it's a list of selected requests
+      // If it's one or more directly accepted requests
       if (isset($_POST['requests'])) {
+        $successfulIds = [];
         $invalidEmails = [];
+        $failedToSendEmail = [];
         $alreadyInUseEmails = [];
         $alreadyInUseLogins = [];
         $alreadyInUseRegistrationNumbers = [];
         foreach ($_POST['requests'] as $request) {
           // Register only users with unique email, username and
           // registration number and with valid email
-          if (!filter_var($request['email'], FILTER_VALIDATE_EMAIL)) {
-            array_push($invalidEmails, $request['email']);
-          }
-          if ($this->isLoginInUse($request['usuario']) == true) {
-            array_push($alreadyInUseLogins, $request['usuario']);
-          }
-          if ($this->isEmailInUse($request['email']) == true) {
-            array_push($alreadyInUseEmails, $request['email']);
-          }
-          if ($this->isRegistrationNumberInUse($request['matricula']) == true) {
-            array_push($alreadyInUseRegistrationNumbers, $request['matricula']);
-          }
           if (filter_var($request['email'], FILTER_VALIDATE_EMAIL)) {
             if ($this->isLoginInUse($request['usuario']) == false) {
               if ($this->isEmailInUse($request['email']) == false) {
@@ -149,18 +83,59 @@ class GerenteController extends Action{
                   $user_role =  Container::getClass("UsuarioRole");
                   $user_role->save($cliente_role['id'],1,0,0);
 
+                  array_push($successfulIds, $request['idSolicitacao']);
+
                   // Send email
-                  $email = new Email();
-                  $email->requestGrantedNotification($request['nome'],$request['email']);
+                  try {
+                    $email = new Email();
+                    if (!$email->requestGrantedNotification($request['nome'],$request['email'])) {
+                      array_push($failedToSendEmail, $request['email']);
+                    }
+                  } catch (\Exception $e) {
+                    array_push($failedToSendEmail, $request['email']);
+                  }
+                } else {
+                  array_push($alreadyInUseRegistrationNumbers, $request['matricula']);
                 }
+              } else {
+                array_push($alreadyInUseEmails, $request['email']);
               }
+            } else {
+              array_push($alreadyInUseLogins, $request['usuario']);
             }
+          } else {
+            array_push($invalidEmails, $request['email']);
           }
         }
-        $failedData = array( 'invalid_emails'=> $invalidEmails, 'used_logins' => $alreadyInUseLogins, 'used_emails' => $alreadyInUseEmails, 'used_registration_numbers' => $alreadyInUseRegistrationNumbers);
+
+        // If some accounts failed to be registered, notify about them
+        if (count($invalidEmails)
+        || count($failedToSendEmail)
+        || count($alreadyInUseLogins)
+        || count($alreadyInUseEmails)
+        || count($alreadyInUseRegistrationNumbers)) {
+            $failedData = array(
+              'successful_ids' => $successfulIds,
+              'invalid_emails'=> $invalidEmails,
+              'failed_to_send_email'=> $failedToSendEmail,
+              'used_logins' => $alreadyInUseLogins,
+              'used_emails' => $alreadyInUseEmails,
+              'used_registration_numbers' => $alreadyInUseRegistrationNumbers
+            );
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 400');
+            die(json_encode(array('event' => 'error', 'type' => 'prevented_registrations', 'data' => $failedData)));
+        }
+
+        // Inform the request id that was accepted
         header('Content-Type: application/json; charset=UTF-8');
-        header('HTTP/1.1 400');
-        die(json_encode(array('event' => 'error', 'type' => 'prevented_registrations', 'data' => $failedData)));
+        die(json_encode(
+            array(
+                'event' => 'info',
+                'type' => 'request_accepted',
+                'data' => ['requestIds' => $successfulIds]
+            )
+        ));
 
       // If it's a edited request
       } elseif ($_POST['new_user'] && $_POST['new_user']['idSolicitacao']) {
@@ -183,8 +158,28 @@ class GerenteController extends Action{
                 $user_role->save($cliente_role['id'],$request['isClient'],$request['isTechnician'],$request['isAdmin']);
 
                 // Send email
-                $email = new Email();
-                $email->requestGrantedNotification($request['nome'],$request['email']);
+                $emailSent = true;
+                try {
+                  $email = new Email();
+                  if (!$email->requestGrantedNotification($request['nome'],$request['email'])) {
+                    $emailSent = false;
+                  }
+                } catch (\Exception $e) {
+                  $emailSent = false;
+                }
+
+                // Inform the request id that was accepted
+                header('Content-Type: application/json; charset=UTF-8');
+                die(json_encode(
+                    array(
+                        'event' => 'info',
+                        'type' => 'request_accepted',
+                        'data' => [
+                          'requestId' => $request['idSolicitacao'],
+                          'emailSent' => $emailSent
+                        ]
+                    )
+                ));
               } else {
                 // Error: the submitted registration number is already in use
                 header('Content-Type: application/json; charset=UTF-8');
@@ -228,8 +223,26 @@ class GerenteController extends Action{
                 $user_role->save($cliente_role['id'],$request['isClient'],$request['isTechnician'],$request['isAdmin']);
 
                 // Send email
-                $email = new Email();
-                $email->requestGrantedNotification($request['nome'],$request['email']);
+                $emailSent = true;
+                try {
+                  $email = new Email();
+                  if (!$email->requestGrantedNotification($request['nome'],$request['email'])) {
+                    $emailSent = false;
+                  }
+                } catch (\Exception $e) {
+                  $emailSent = false;
+                }
+
+                // Inform if email was not sent
+                if ($emailSent === false) {
+                  header('Content-Type: application/json; charset=UTF-8');
+                  die(json_encode(
+                      array(
+                          'event' => 'info',
+                          'type' => 'email_notification_failed'
+                      )
+                  ));
+                }
               } else {
                 header('Content-Type: application/json; charset=UTF-8');
                 header('HTTP/1.1 400');
@@ -261,11 +274,12 @@ class GerenteController extends Action{
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
       if (isset($_POST['reason']) && isset($_POST['request_list']) && isset($_POST['send_email'])) {
-        if ($_POST['send_email'] == "true" && (!isset($_POST['email_message']) || preg_match('/^\S*$/', $_POST['email_message']))) {
+        if ($_POST['send_email'] == "true" && (!isset($_POST['email_message']) || !preg_match('/^\s*$/', $_POST['email_message']))) {
           header('Content-Type: application/json; charset=UTF-8');
           header('HTTP/1.1 400');
           die(json_encode(array('event' => 'error', 'type' => 'insuficient_email_data')));
         } else {
+          $failedToSendEmail = [];
           foreach ($_POST['request_list'] as $request) {
             // Archive request
 
@@ -280,11 +294,24 @@ class GerenteController extends Action{
 
             // Send email to requester if so chosen
             if ($_POST['send_email'] == "true") {
-               $email = new Email();
-               $email->requestRefusedNotification($request['nome'],$request['email'], $_POST['email_message']);
+               try {
+                 $email = new Email();
+                 if (!$email->requestRefusedNotification($request['nome'],$request['email'], $_POST['email_message'])) {
+                   array_push($failedToSendEmail, $request['email']);
+                 }
+               } catch (\Exception $e) {
+                 array_push($failedToSendEmail, $request['email']);
+               }
             }
           }
         }
+
+        $responseData = [];
+        if (count($failedToSendEmail)) {
+          $responseData["failedToSendEmail"] = $failedToSendEmail;
+        }
+        header('Content-Type: application/json; charset=UTF-8');
+        echo json_encode(array('event' => 'info', 'type' => 'response', 'data' => $responseData));
       } else {
         header('Content-Type: application/json; charset=UTF-8');
         header('HTTP/1.1 400');
@@ -298,17 +325,32 @@ class GerenteController extends Action{
   public function finalize_request(){
     session_start();
     if(($_SESSION['user_role'] == "GERENTE")||($_SESSION['user_role'] == "TECNICO")){
-      if((isset($_POST['technical_opinion']))&&(isset($_POST['request_id']))){
-        $id = $_POST['request_id'];
+      if(
+          isset($_POST['request_id']) &&
+          isset($_POST['technical_opinion']) &&
+          !preg_match('/^\s*$/', $_POST['technical_opinion'])
+      ){
+        $ticketID = $_POST['request_id'];
         $parecer = $_POST['technical_opinion'];
         $status = "FINALIZADO";
         $date = new \DateTime("now", new \DateTimeZone("America/Recife"));
         $date->setTimestamp(time());
         $data_finalizado = $date->format("Y-m-d H:i:s");
-        $chamadoDb = Container::getClass("Chamado");
-        $chamadoDb->updateColumnById("status",$status,$id);
-        $chamadoDb->updateColumnById("parecer_tecnico",$parecer,$id);
-        $chamadoDb->updateColumnById("data_finalizado",$data_finalizado,$id);
+        $Chamado = Container::getClass("Chamado");
+        $Chamado->updateColumnById("status", $status, $ticketID);
+        $Chamado->updateColumnById("parecer_tecnico", $parecer, $ticketID);
+        $Chamado->updateColumnById("data_finalizado", $data_finalizado, $ticketID);
+
+        // Return the ticket with updated data
+        $ticket = $Chamado->getTicketById($ticketID);
+        if ($ticket) {
+          header('Content-Type: application/json; charset=UTF-8');
+          echo json_encode(array('event' => 'success', 'type' => 'finalized_ticket', 'ticket' => $ticket));
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
       }
     }
   }
@@ -331,7 +373,18 @@ class GerenteController extends Action{
           $date = new \DateTime($_POST['deadline_value'], new \DateTimeZone("America/Recife"));
           $prazo = $date->format("Y-m-d H:i:s");
           $chamadoDb = Container::getClass("Chamado");
-          $chamadoDb->save($requisicao['id_servico'],$requisicao['id_local'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$prazo,$requisicao['descricao']);
+          $ticketId = $chamadoDb->save($requisicao['id_servico'],$requisicao['id_local'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$prazo,$requisicao['descricao']);
+
+          if ($ticketId !== false) {
+            // Return the new ticket data
+            $ticket = $chamadoDb->getTicketById($ticketId);
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(array('event' => 'success', 'type' => 'new_ticket', 'ticket' => $ticket));
+          } else {
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 400');
+            die(json_encode(array('event' => 'error', 'type' => 'db_op_failed')));
+          }
         } else {
           header('Content-Type: application/json; charset=UTF-8');
           header('HTTP/1.1 400');

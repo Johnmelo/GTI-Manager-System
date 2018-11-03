@@ -165,16 +165,16 @@
               <button id="archive-selection" class="btn btn-default" disabled>Arquivar selecionados</button>
             </div>
             <div id="request-list-wrapper" class="row">
-              <?php foreach ($this->view->requisicoes as $requisicao):?>
+              <?php foreach ($this->view->unreviewedAccountRequests as $request):?>
               <div class="col-xs-12 col-lg-6">
                 <div class="x_panel">
-                    <div class="x_title" data-id-solicitacao="<?php echo $requisicao['id'];?>" data-nome="<?php echo $requisicao['nome'];?>" data-usuario="<?php echo $requisicao['login'];?>" data-email="<?php echo $requisicao['email'];?>" data-setor="<?php echo $requisicao['setor'];?>" data-matricula="<?php echo $requisicao['matricula'];?>">
-                        <input type="checkbox" value="<?php echo $requisicao['id'];?>" name="selections[]" id="r_client_role_<?php echo $requisicao['id'];?>" />
-                        <label for="r_client_role_<?php echo $requisicao['id'];?>"><h2><?php echo $requisicao['nome'];?></h2></label>
+                    <div class="x_title" data-id-solicitacao="<?php echo $request['id'];?>" data-nome="<?php echo $request['nome'];?>" data-usuario="<?php echo $request['login'];?>" data-email="<?php echo $request['email'];?>" data-setor="<?php echo $request['setor'];?>" data-matricula="<?php echo $request['matricula'];?>">
+                        <input type="checkbox" value="<?php echo $request['id'];?>" name="selections[]" id="r_client_role_<?php echo $request['id'];?>" />
+                        <label for="r_client_role_<?php echo $request['id'];?>"><h2><?php echo $request['nome'];?></h2></label>
                         <ul class="nav navbar-right panel_toolbox">
-                            <li><button type="button" class="btn btn-primary btn-edit-request" title="Editar dados" value="<?php echo $requisicao['id'];?>"><i class="fas fa-pencil-alt"></i></button></li>
-                            <li><button type="button" class="btn btn-primary btn-refuse-request" title="Recusar solicitação" value="<?php echo $requisicao['id'];?>"><i class="fas fa-times"></i></button></li>
-                            <li><button type="button" class="btn btn-primary btn-accept-request" title="Cadastrar usuário" value="<?php echo $requisicao['id'];?>"><i class="fas fa-check"></i> Cadastrar</button></li>
+                            <li><button type="button" class="btn btn-primary btn-edit-request" title="Editar dados" value="<?php echo $request['id'];?>"><i class="fas fa-pencil-alt"></i></button></li>
+                            <li><button type="button" class="btn btn-primary btn-refuse-request" title="Recusar solicitação" value="<?php echo $request['id'];?>"><i class="fas fa-times"></i></button></li>
+                            <li><button type="button" class="btn btn-primary btn-accept-request" title="Cadastrar usuário" value="<?php echo $request['id'];?>"><i class="fas fa-check"></i> Cadastrar</button></li>
                         </ul>
                         <div class="clearfix">
                         </div>
@@ -188,10 +188,10 @@
                                 <h4>Matrícula</h4>
                             </div>
                             <div class="value-column">
-                                <h4><?php echo $requisicao['login'];?></h4>
-                                <h4><?php echo $requisicao['email'];?></h4>
-                                <h4><?php echo $requisicao['setor'];?></h4>
-                                <h4><?php echo $requisicao['matricula'];?></h4>
+                                <h4><?php echo $request['login'];?></h4>
+                                <h4><?php echo $request['email'];?></h4>
+                                <h4><?php echo $request['setor'];?></h4>
+                                <h4><?php echo $request['matricula'];?></h4>
                             </div>
                         </div>
                     </div>
@@ -357,18 +357,14 @@ var btn_cadastrar = $('div#request-list-wrapper input[type=submit]');
 
 function toggleOptionsButtons () {
   if ($('div#request-list-wrapper input[type=checkbox]:checked').length > 0) {
-    $('button#accept-selection').removeClass("btn-default");
-    $('button#accept-selection').addClass("btn-primary");
+    $('button#accept-selection').removeClass("btn-default").addClass("btn-primary");
     $('button#accept-selection').prop("disabled", false);
-    $('button#archive-selection').removeClass("btn-default");
-    $('button#archive-selection').addClass("btn-primary");
+    $('button#archive-selection').removeClass("btn-default").addClass("btn-primary");
     $('button#archive-selection').prop("disabled", false);
   } else {
-    $('button#accept-selection').addClass("btn-default");
-    $('button#accept-selection').removeClass("btn-primary");
+    $('button#accept-selection').removeClass("btn-primary").addClass("btn-default");
     $('button#accept-selection').prop("disabled", true);
-    $('button#archive-selection').addClass("btn-default");
-    $('button#archive-selection').removeClass("btn-primary");
+    $('button#archive-selection').removeClass("btn-primary").addClass("btn-default");
     $('button#archive-selection').prop("disabled", true);
   }
 }
@@ -484,11 +480,30 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
       $.post("/gtic/public/admin/cadastrar_usuarios", {
         "new_user": user_data
       })
-      .done(function() {
+      .done(function(data) {
         $("html").css("cursor", "auto");
         $("body").css("pointer-events", "auto");
-        alert("Usuário adicionado");
-        window.location.reload(true);
+        // Notify if email notification failed
+        if (data.event === "info" && data.type === "request_accepted") {
+          // If edited request
+          if (data.data.emailSent === false) {
+            alert(`Usuário adicionado mas não foi possível notificar por e-mail (${$('#email_field').val()})`);
+          }
+          // Remove the request card from the page
+          let requestId = data.data.requestId;
+          $('#request-list-wrapper').find(`[data-id-solicitacao=${requestId}]`).parents(':eq(1)').remove();
+          // Hide the modal
+          $('#edit-request-modal').modal('hide');
+        } else {
+          // If manually added new account
+          if (data.event === "info" && data.type === "email_notification_failed") {
+            // If email notification failed, notify the admin
+            alert(`Usuário adicionado mas não foi possível notificar por e-mail (${$('#email_field').val()})`);
+            $('#edit-request-modal').modal('hide');
+          } else {
+            $('#edit-request-modal').modal('hide');
+          }
+        }
       })
       .fail(function(data) {
         $("html").css("cursor", "auto");
@@ -505,11 +520,13 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
             } else if (response.type == "registration_number_already_in_use") {
               alert("A matrícula informada está registrada com outro usuário");
             } else {
-              alert("Houve uma falha inesperada.\nNão foi possível completar a ação.");
+              alert("Houve uma falha inesperada");
             }
           } else {
-            alert("Houve uma falha inesperada.\nNão foi possível completar a ação.");
+            alert("Houve uma falha inesperada");
           }
+        } else {
+          alert("Houve uma falha inesperada");
         }
       });
     } else {
@@ -596,8 +613,30 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
       .done(function(data){
         $("html").css("cursor", "auto");
         $("body").css("pointer-events", "auto");
-        alert("Feito!");
-        window.location.reload(true);
+        if (data) {
+          let msg = "";
+          if (data.event === "info") {
+            if (data.type === "response" && data.data) {
+              let responseData = data.data;
+              if (responseData.failedToSendEmail) {
+                let failedEmails = responseData.failedToSendEmail;
+                msg += "Não foi possível enviar email de notificação para:\n";
+                for (email of responseData.failedToSendEmail) {
+                  msg += "•  " + email + ";\n";
+                }
+              }
+            }
+          }
+          if (msg !== "") {
+            alert(msg);
+          }
+        }
+        // Remove the requests from the page
+        for (req of requests) {
+          $('#request-list-wrapper').find(`[data-id-solicitacao=${req.idSolicitacao}]`).parents(':eq(1)').remove();
+        }
+        // Hide modal
+        $('#archive-request-modal').modal('hide');
       })
       .fail(function(data){
         $("html").css("cursor", "auto");
@@ -609,13 +648,15 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
             if (response.type == "insuficient_data") {
               alert("Não foi possível realizar a ação por falta de dados");
             } else if(response.type == "insuficient_email_data") {
-              alert("Não foi possível realizar a ação por insuficiência de dados para envio de email");
+              alert("Não foi possível realizar a ação porque faltou digitar o texto do email");
             } else {
-              alert("Houve uma falha inesperada.\nNão foi possível completar a ação.");
+              alert("Houve uma falha inesperada");
             }
           } else {
-            alert("Houve uma falha inesperada.\nNão foi possível completar a ação.");
+            alert("Houve uma falha inesperada");
           }
+        } else {
+          alert("Houve uma falha inesperada.");
         }
       });
     }
@@ -635,56 +676,16 @@ $('button#accept-selection').on('click', function() {
   .done(function(data) {
     $("html").css("cursor", "auto");
     $("body").css("pointer-events", "auto");
-      requests = [];
-      document.location.reload(true);
-  })
-  .fail(function(data) {
-    $("html").css("cursor", "auto");
-    $("body").css("pointer-events", "auto");
-    if (data.hasOwnProperty('responseJSON')) {
-      if (data.responseJSON.event == "error") {
-        if (data.responseJSON.type == "prevented_registrations") {
-          var text = "";
-          var data = data.responseJSON.data;
-          if (data.hasOwnProperty('invalid_emails') && data.invalid_emails.length > 0) {
-            text += "Email(s) inválido(s):\n";
-            for (var email in data.invalid_emails) {
-              text += "•  " + email + ";\n";
-            }
-            text += "\n\n";
-          }
-          if (data.hasOwnProperty('used_emails') && data.used_emails.length > 0) {
-            text += "Emails(s) já registrado(s):\n";
-            for (var email of data.used_emails) {
-              text += "•  " + email + ";\n";
-            }
-            text += "\n\n";
-          }
-          if (data.hasOwnProperty('used_logins') && data.used_logins.length > 0) {
-            text += "Username(s) já em uso:\n";
-            for (var login of data.used_logins) {
-              text += "•  " + login + ";\n";
-            }
-            text += "\n\n";
-          }
-          if (data.hasOwnProperty('used_registration_numbers') && data.used_registration_numbers.length > 0) {
-            text += "Matrícula(s) já registrada(s):\n";
-            for (var registrationNumber of data.used_registration_numbers) {
-              text += "•  " + registrationNumber + ";\n";
-            }
-            text += "\n\n";
-          }
-          alert(text);
-        } else {
-          alert("Houve algum problema");
-        }
-      } else {
-        alert("Houve algum problema");
+    if (data.event === "info" && data.type === "request_accepted") {
+      // Remove the request card from the page
+      for (reqId of data.data.requestIds) {
+        $('#request-list-wrapper').find(`[data-id-solicitacao=${reqId}]`).parents(':eq(1)').remove();
+        // Hide the modal
       }
-    } else {
-      alert("Houve algum problema");
     }
-  });
+    $('#edit-request-modal').modal('hide');
+  })
+  .fail(data => failedRegistration(data));
 });
 
 // Arquivar solicitações de cadastro selecionadas
@@ -717,38 +718,93 @@ $('div#request-list-wrapper button.btn-accept-request').on('click', function() {
     var dataset_obj = JSON.parse(JSON.stringify(dataset));
 
     $.post("/gtic/public/admin/cadastrar_usuarios", {
-        "new_user": dataset_obj
+        "requests": [dataset_obj]
     })
     .done(function(data) {
         $("html").css("cursor", "auto");
         $("body").css("pointer-events", "auto");
-        alert("O usuário foi cadastrado com sucesso");
-        document.location.reload(true);
-    })
-    .fail(function(data) {
-      $("html").css("cursor", "auto");
-      $("body").css("pointer-events", "auto");
-      if (data && data.responseJSON) {
-        var response = data.responseJSON;
-        if (response.event === "error") {
-          if (response.type === "invalid_email") {
-            alert("A solicitação não pôde ser aceita pois o endereço de email não é válido.");
-          } else if (response.type == "login_already_in_use") {
-            alert("O username submetido já está em uso por outro usuário");
-          } else if (response.type == "email_already_in_use") {
-            alert("O endereço de e-mail está registrado com outro usuário");
-          } else if (response.type == "registration_number_already_in_use") {
-            alert("A matrícula informada está registrada com outro usuário");
-          } else {
-            alert("Houve uma falha inesperada.\nNão foi possível completar a ação.");
-          }
-        } else {
-          alert("Houve um problema desconhecido.");
+        if (data.event === "info" && data.type === "request_accepted") {
+          // Remove the request card from the page
+          let requestId = data.data.requestIds[0];
+          $('#request-list-wrapper').find(`[data-id-solicitacao=${requestId}]`).parents(':eq(1)').remove();
+          // Hide the modal
+          $('#edit-request-modal').modal('hide');
         }
-      } else {
-        alert("Houve um problema desconhecido.");
-      }
-    });
+    })
+    .fail(data => failedRegistration(data));
 });
+
+// When one or more directly accepted requests causes an error
+function failedRegistration(data) {
+  $("html").css("cursor", "auto");
+  $("body").css("pointer-events", "auto");
+
+  // If one request was accepted directly and only the email notification
+  // failed to be sent
+  if (data.event && data.event === "info" && data.type === "request_accepted") {
+    // Remove the request card from the page
+    for (reqId of data.data.requestIds) {
+      $('#request-list-wrapper').find(`[data-id-solicitacao=${reqId}]`).parents(':eq(1)').remove();
+    }
+  } else if (data.responseJSON && data.responseJSON.data && data.responseJSON.data.successful_ids) {
+    // or else if more than one request was accepted and some of them were successful
+    let successfulIds = data.responseJSON.data.successful_ids;
+    for (reqId of successfulIds) {
+      $('#request-list-wrapper').find(`[data-id-solicitacao=${reqId}]`).parents(':eq(1)').remove();
+    }
+  }
+
+  // Identify the error to tell the user
+  if (data.hasOwnProperty('responseJSON')) {
+    if (data.responseJSON.event == "error") {
+      if (data.responseJSON.type == "prevented_registrations") {
+        var text = "";
+        var data = data.responseJSON.data;
+        if (data.hasOwnProperty('invalid_emails') && data.invalid_emails.length > 0) {
+          text += "Email(s) inválido(s):\n";
+          for (var email of data.invalid_emails) {
+            text += "•  " + email + ";\n";
+          }
+          text += "\n\n";
+        }
+        if (data.hasOwnProperty('failed_to_send_email') && data.failed_to_send_email.length > 0) {
+          text += "Não foi possível enviar email de notificação para:\n";
+          for (var email of data.failed_to_send_email) {
+            text += "•  " + email + ";\n";
+          }
+          text += "\n\n";
+        }
+        if (data.hasOwnProperty('used_emails') && data.used_emails.length > 0) {
+          text += "Emails(s) já registrado(s):\n";
+          for (var email of data.used_emails) {
+            text += "•  " + email + ";\n";
+          }
+          text += "\n\n";
+        }
+        if (data.hasOwnProperty('used_logins') && data.used_logins.length > 0) {
+          text += "Username(s) já em uso:\n";
+          for (var login of data.used_logins) {
+            text += "•  " + login + ";\n";
+          }
+          text += "\n\n";
+        }
+        if (data.hasOwnProperty('used_registration_numbers') && data.used_registration_numbers.length > 0) {
+          text += "Matrícula(s) já registrada(s):\n";
+          for (var registrationNumber of data.used_registration_numbers) {
+            text += "•  " + registrationNumber + ";\n";
+          }
+          text += "\n\n";
+        }
+        alert(text);
+      } else {
+        alert("Houve uma falha inesperada");
+      }
+    } else {
+      alert("Houve uma falha inesperada");
+    }
+  } else {
+    alert("Houve uma falha inesperada");
+  }
+}
 </script>
 </body>

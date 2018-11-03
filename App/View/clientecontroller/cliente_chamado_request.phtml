@@ -9,18 +9,6 @@
 <script defer src="../../App/View/js/fontawesome-all.min.js"></script>
 <!-- NProgress -->
 <link href="../../App/View/css/nprogress.css" rel="stylesheet">
-<!-- iCheck -->
-<link href="../../App/View/icheck/skins/square/blue.css" rel="stylesheet">
-<!-- code prettifier -->
-<link href="../../App/View/css/prettify.min.css" rel="stylesheet">
-<!-- Select2 -->
-<link href="../../App/View/css/select2.min.css" rel="stylesheet">
-<!-- Switchery -->
-<link href="../../App/View/css/switchery.min.css" rel="stylesheet">
-<!-- starrr -->
-<link href="../../App/View/css/starrr.css" rel="stylesheet">
-<!-- bootstrap-daterangepicker -->
-<link href="../../App/View/css/daterangepicker.css" rel="stylesheet">
 
 <!-- Custom Theme Style -->
 <link href="../../App/View/css/custom.min.css" rel="stylesheet">
@@ -88,24 +76,6 @@
           </div>
 
         </div>
-        <!-- /sidebar menu -->
-
-        <!-- /menu footer buttons -->
-        <!--<div class="sidebar-footer hidden-small">
-          <a data-toggle="tooltip" data-placement="top" title="Settings">
-            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-          </a>
-          <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-            <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-          </a>
-          <a data-toggle="tooltip" data-placement="top" title="Lock">
-            <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-          </a>
-          <a data-toggle="tooltip" data-placement="top" title="Logout" href="../logout">
-            <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-          </a>
-        </div>-->
-        <!-- /menu footer buttons -->
       </div>
     </div>
 
@@ -158,26 +128,15 @@
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
                     </li>
-                    <!--<li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
-                      <ul class="dropdown-menu" role="menu">
-                        <li><a href="#">Settings 1</a>
-                        </li>
-                        <li><a href="#">Settings 2</a>
-                        </li>
-                      </ul>
-                    </li>-->
-                    <!-- <li><a class="close-link"><i class="fas fa-times"></i></a>
-                    </li> -->
                   </ul>
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
                   <br />
-                  <form class="form-horizontal form-label-left" name="solicitar_chamado" method="post" action="client_register_call_request">
+                  <form class="form-horizontal form-label-left" name="solicitar_chamado">
 
                     <div class="form-group">
-                      <label class="control-label col-md-3 col-sm-3 col-xs-12">Motivo</label>
+                      <label class="control-label col-md-3 col-sm-3 col-xs-12">Serviço</label>
                       <div class="col-md-9 col-sm-9 col-xs-12">
                         <input type="text" name="servico" class="form-control" placeholder="Digite para pesquisar uma opção ..." readonly>
                         <input type="text" id="id_servico" name="id_servico" hidden/>
@@ -200,7 +159,7 @@
                     <div class="form-group">
                       <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
                         <button type="reset" class="btn btn-default" disabled>Resetar campos</button>
-                        <button type="submit" class="btn btn-default" disabled>Solicitar</button>
+                        <button id="submit-btn" type="button" class="btn btn-default" disabled>Solicitar</button>
                       </div>
                     </div>
 
@@ -215,11 +174,6 @@
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
                     </li>
-                    <!--<li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
-                    </li>-->
-                    <!-- <li><a class="close-link"><i class="fas fa-times"></i></a> -->
-                    </li>
                   </ul>
                   <div class="clearfix"></div>
                 </div>
@@ -228,28 +182,14 @@
                   <table id="call-request-list" class="table table-hover clickable-rows">
                     <thead>
                       <tr>
-                        <th></th>
                         <th>Data</th>
                         <th>Serviço</th>
                         <th>Status</th>
                         <th>Ação</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <?php foreach ($this->view->requisicoes as $requisicao):?>
-                          <?php if ($requisicao['status'] === "AGUARDANDO"): ?>
-                            <tr data-request-id="<?php echo $requisicao['id'];?>">
-                                <td> <input type="checkbox" value=<?php echo $requisicao['id'];?> name="selections[]"/></td>
-                                <td><?php $data = strtotime($requisicao['data_solicitacao']); $data = date('d/m/Y',$data); echo $data;?></td>
-                                <td><?php echo $this->view->requests_services_names[$requisicao['id_servico']];?></td>
-                                <td><?php echo $requisicao['status'];?></td>
-                                <td><button type="button" class="btn btn-primary" name="btnCancelarSolicitacao" value=<?php echo $requisicao['id'];?>>Cancelar</button></td>
-                            </tr>
-                          <?php endif; ?>
-                      <?php endforeach;?>
-                    </tbody>
+                    <tbody></tbody>
                   </table>
-                  <button name="cancel-selected-requests" type="button" class="btn btn-default" disabled>Cancelar os selecionados</button>
                 </form>
                 </div>
               </div>
@@ -280,56 +220,14 @@
 <!-- Bootstrap Tour -->
 <script src="../../App/View/js/bootstrap-tour.min.js"></script>
 <script src="../../App/View/js/cliente-tour.js"></script>
-<script>
-$(document).ready(function() {
-  if (localStorage.getItem('tour_current_step') == "5") {
-    tour.init();
-    tour.start();
-    tour.next();
-  }
-});
-</script>
-<!-- FastClick -->
-<script src="../../App/View/js/fastclick.js"></script>
 <!-- NProgress -->
 <script src="../../App/View/js/nprogress.js"></script>
-<!-- iCheck -->
-<script src="../../App/View/js/icheck.min.js"></script>
-<script>
-$(document).ready(function(){
-  $('input').iCheck({
-    checkboxClass: 'icheckbox_square-blue',
-    radioClass: 'iradio_square'
-  });
-});
-</script>
-<!-- bootstrap-daterangepicker -->
+<!-- moment.js -->
 <script src="../../App/View/js/moment.min.js"></script>
-<script src="../../App/View/js/daterangepicker.js"></script>
-<!-- bootstrap-wysiwyg -->
-<script src="../../App/View/js/bootstrap-wysiwyg.min.js"></script>
-<script src="../../App/View/js/jquery.hotkeys.js"></script>
-<script src="../../App/View/js/prettify.js"></script>
-<!-- jQuery Tags Input -->
-<script src="../../App/View/js/jquery.tagsinput.js"></script>
-<!-- Switchery -->
-<script src="../../App/View/js/switchery.min.js"></script>
-<!-- Select2 -->
-<script src="../../App/View/js/select2.full.min.js"></script>
-<!-- Parsley -->
-<script src="../../App/View/js/parsley.min.js"></script>
 <!-- Autosize -->
 <script src="../../App/View/js/autosize.min.js"></script>
 <script>
-autosize($('textarea[name=descricao]'));
-</script>
-
-<!-- Get the last place to which the request was done -->
-<script>
-  var lastLocation = localStorage.getItem("lastLocation");
-  if (lastLocation != null) {
-    $("input[name=local]").val(lastLocation);
-  }
+  autosize($('textarea[name=descricao]'));
 </script>
 
 <!-- jQuery autocomplete -->
@@ -339,29 +237,29 @@ autosize($('textarea[name=descricao]'));
   var locais;
 
   var _formatRegexp = function(q) {
-      q = q.replace(/[eéèêẽëEÉÈÊẼË]/gi,'[eéèêẽëEÉÈÊẼË]');
-      q = q.replace(/[aáàâãäAÁÀÂÃÄÅÆ]/gi,'[aáàâãäAÁÀÂÃÄÅÆ]');
-      q = q.replace(/[cçCÇ]/gi,'[cçCÇ]');
-      q = q.replace(/[iíìîïIÌÍÎÏ]/gi,'[iíìîïIÌÍÎÏ]');
-      q = q.replace(/[oóòôõöOÓÒÔÕÖ]/gi,'[oóòôõöOÓÒÔÕÖ]');
-      q = q.replace(/[uúùûüUÚÙÛÜ]/gi,'[uúùûüUÚÙÛÜ]');
-      q = q.replace(/[nñNÑ]/gi,'[nñNÑ]');
-      q = q.replace(/[yYÿ^yÝ]/gi,'[yYÿ^yÝ]');
-      return q;
+    q = q.replace(/[eéèêẽëEÉÈÊẼË]/gi,'[eéèêẽëEÉÈÊẼË]');
+    q = q.replace(/[aáàâãäAÁÀÂÃÄÅÆ]/gi,'[aáàâãäAÁÀÂÃÄÅÆ]');
+    q = q.replace(/[cçCÇ]/gi,'[cçCÇ]');
+    q = q.replace(/[iíìîïIÌÍÎÏ]/gi,'[iíìîïIÌÍÎÏ]');
+    q = q.replace(/[oóòôõöOÓÒÔÕÖ]/gi,'[oóòôõöOÓÒÔÕÖ]');
+    q = q.replace(/[uúùûüUÚÙÛÜ]/gi,'[uúùûüUÚÙÛÜ]');
+    q = q.replace(/[nñNÑ]/gi,'[nñNÑ]');
+    q = q.replace(/[yYÿ^yÝ]/gi,'[yYÿ^yÝ]');
+    return q;
   }
 
   var _autocompleteLookup = function (suggestion, originalQuery, queryLowerCase) {
-          var pattern = '(\\b|)('+$.Autocomplete.utils.escapeRegExChars(queryLowerCase)+')';
-          pattern = _formatRegexp(pattern);
-          var matcher = new RegExp(pattern);
-          var ret = suggestion.value.toLowerCase().match(matcher);
-          return ret;
+    var pattern = '(\\b|)('+$.Autocomplete.utils.escapeRegExChars(queryLowerCase)+')';
+    pattern = _formatRegexp(pattern);
+    var matcher = new RegExp(pattern);
+    var ret = suggestion.value.toLowerCase().match(matcher);
+    return ret;
   };
 
   var _autocompleteFormatResult = function (suggestion, currentValue) {
-          var pattern = '(\\b|)('+$.Autocomplete.utils.escapeRegExChars(currentValue)+')';
-          pattern = _formatRegexp(pattern);
-          return suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1$2<\/strong>');
+    var pattern = '(\\b|)('+$.Autocomplete.utils.escapeRegExChars(currentValue)+')';
+    pattern = _formatRegexp(pattern);
+    return suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1$2<\/strong>');
   };
 
   $.post("/gtic/public/get_services_suggestions")
@@ -369,17 +267,17 @@ autosize($('textarea[name=descricao]'));
     servicos = data;
     $('form[name=solicitar_chamado] input[name=servico]').prop("readonly", false);
     $('form[name=solicitar_chamado] input[name=servico]').autocomplete({
-        minChars: 0,
-        lookup: servicos,
-        groupBy: 'category',
-        showNoSuggestionNotice: true,
-        noSuggestionNotice: "Serviço não encontrado no sistema",
-        lookupFilter: _autocompleteLookup,
-        formatResult: _autocompleteFormatResult,
-        onSelect: function (suggestion) {
-            checkFormValidity();
-            $('form[name=solicitar_chamado] input[id=id_servico]').val(suggestion.data.id_servico);
-        }
+      minChars: 0,
+      lookup: servicos,
+      groupBy: 'category',
+      showNoSuggestionNotice: true,
+      noSuggestionNotice: "Serviço não encontrado no sistema",
+      lookupFilter: _autocompleteLookup,
+      formatResult: _autocompleteFormatResult,
+      onSelect: function (suggestion) {
+        checkFormValidity();
+        $('form[name=solicitar_chamado] input[id=id_servico]').val(suggestion.data.id_servico);
+      }
     });
   })
   .fail(function() {
@@ -391,17 +289,17 @@ autosize($('textarea[name=descricao]'));
     locais = data;
     $('form[name=solicitar_chamado] input[name=local]').prop("readonly", false);
     $('form[name=solicitar_chamado] input[name=local]').autocomplete({
-        minChars: 0,
-        lookup: locais,
-        groupBy: 'category',
-        showNoSuggestionNotice: true,
-        noSuggestionNotice: "Local não reconhecido pelo sistema",
-        lookupFilter: _autocompleteLookup,
-        formatResult: _autocompleteFormatResult,
-        onSelect: function (suggestion) {
-            checkFormValidity();
-            $('form[name=solicitar_chamado] input[id=id_local]').val(suggestion.data.id_local);
-        }
+      minChars: 0,
+      lookup: locais,
+      groupBy: 'category',
+      showNoSuggestionNotice: true,
+      noSuggestionNotice: "Local não reconhecido pelo sistema",
+      lookupFilter: _autocompleteLookup,
+      formatResult: _autocompleteFormatResult,
+      onSelect: function (suggestion) {
+        checkFormValidity();
+        $('form[name=solicitar_chamado] input[id=id_local]').val(suggestion.data.id_local);
+      }
     });
   })
   .fail(function() {
@@ -409,34 +307,33 @@ autosize($('textarea[name=descricao]'));
   });
 </script>
 
-<!-- starrr -->
-<script src="../../App/View/js/starrr.js"></script>
 <!-- Custom Theme Scripts -->
 <script src="../../App/View/js/custom.min.js"></script>
 
 <!-- Request modal settings -->
 <script src="../../App/View/js/request-modals.js"></script>
 <script>
-$('#call-request-list tr').on('click', function(e) {
-  if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
-    var request_id = getRowId(e);
-    if (request_id) {
-      modal_config = {
-        title: "Detalhes da solicitação",
-        visible_fields: {
-          id_solicitacao_field: true,
-          cliente_field: true,
-          local_field: true,
-          solicitacao_chamado_status_field: true,
-          servico_field: true,
-          data_solicitacao_field: true,
-          descricao_field: true
-        }
-      };
-      defineSimpleModal(modal_config, "call-request-type", request_id);
+  function clickRequestRow(e) {
+    if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
+      let requestId = getRowId(e);
+      if (requestId) {
+        modalConfig = {
+          title: "Detalhes da solicitação",
+          visible_fields: {
+            id_solicitacao_field: true,
+            cliente_field: true,
+            local_field: true,
+            status_field: true,
+            servico_field: true,
+            data_solicitacao_field: true,
+            descricao_field: true
+          }
+        };
+        let requestData = activeTicketRequests.find(r => r.id_solicitacao === requestId);
+        defineSimpleModal(modalConfig, requestData);
+      }
     }
   }
-});
 </script>
 
 <!-- Simple message modal -->
@@ -458,67 +355,86 @@ $('#call-request-list tr').on('click', function(e) {
   </div>
 </div>
 <script>
-function setSimpleModalContent(title, body, primaryButtonAction, primaryButtonText = "Confirmar", secondaryButtonText = "Cancelar") {
-  $('#simple-modal-title')[0].innerHTML = title;
-  $('#simple-modal-body')[0].innerHTML = body;
-  $('#simple-modal-primary-button')[0].innerHTML = primaryButtonText;
-  $('#simple-modal-primary-button').off('click');
-  $('#simple-modal-primary-button').on('click', primaryButtonAction);
-  $('#simple-modal-secondary-button')[0].innerHTML = secondaryButtonText;
-}
+  function setSimpleModalContent(title, body, primaryButtonAction, primaryButtonText = "Confirmar", secondaryButtonText = "Cancelar") {
+    $('#simple-modal-title')[0].innerHTML = title;
+    $('#simple-modal-body')[0].innerHTML = body;
+    $('#simple-modal-primary-button')[0].innerHTML = primaryButtonText;
+    $('#simple-modal-primary-button').off('click');
+    $('#simple-modal-primary-button').on('click', primaryButtonAction);
+    $('#simple-modal-secondary-button')[0].innerHTML = secondaryButtonText;
+  }
 </script>
 
 <!-- Archive request confirmation -->
 <script>
-$('#call-request-list button[name=btnCancelarSolicitacao]').on('click', function(e) {
-  var request_id = [e.target.value];
-  var confirm_action = function () {
+  const cancelRequest = (requestId) => {
+    // Block the page
+    $("html").css("cursor", "wait");
+    $("body").css("pointer-events", "none");
+
     $.post("/gtic/public/cliente/client_cancel_call_request", {
-      "request_id_list": request_id,
+      "request_id": requestId,
       "requestType": "pending_acceptance"
     })
-    .done(function() {
-      $('#simple-modal').modal('hide');
-      document.location.reload(true);
+    .done(function(response) {
+      // Unblock the page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      if (response && response.event === "success") {
+        if (response.type && response.type === "cancelled_ticket_request") {
+          if (response.request){
+            let ticketRequest = response.request;
+            // Remove the ticket request from the local list
+            window.activeTicketRequests = window.activeTicketRequests.filter(
+              r => r.id_solicitacao !== ticketRequest.id_solicitacao
+            );
+
+            // Remove the ticket request from the table
+            $('form[name=solicitacoes_chamado]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+
+            // Hide the modal
+            $('#simple-modal').modal('hide');
+            return true;
+          }
+        }
+      }
+      window.location.reload(true);
     })
-    .fail(function() {
-      alert("Não foi possível realizar a operação");
+    .fail(function(data) {
+      // Unblock the page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      if (data && data.responseJSON) {
+        response = data.responseJSON;
+        if (response.event && response.type) {
+          if (response.event === "error") {
+            if (response.type === "missing_data") {
+              alert("Há dados fazendo falta");
+              $('#simple-modal').modal('hide');
+              return false;
+            }
+          }
+        }
+      }
+      alert("Houve uma falha não identificada");
+      window.location.reload(true);
     });
+  }
+  const cancelTicketRequestBtnClick = (e) => {
+    let requestId = e.target.value;
+    setSimpleModalContent("Cancelar solicitação?", "<h4>Tem certeza que deseja cancelar a solicitação de chamado?</h4>", cancelRequest.bind(null, requestId), "Cancelar solicitação", "Voltar");
+    $('#simple-modal').modal('show');
   };
-  setSimpleModalContent("Cancelar solicitação?", "<h4>Tem certeza que deseja cancelar a solicitação de chamado?</h4>", confirm_action, "Cancelar solicitação", "Voltar");
-  $('#simple-modal').modal('show');
-});
-$('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]').on('click', function(e) {
-  var id_array = [];
-  $('form[name=solicitacoes_chamado]').find('input[type=checkbox]').each(function(){
-    if (this.checked) {
-      id_array.push(this.value);
-    }
-  });
-  var confirm_action = function () {
-    $.post("/gtic/public/cliente/client_cancel_call_request", {
-      "request_id_list": id_array,
-      "requestType": "pending_acceptance"
-    })
-    .done(function() {
-      $('#simple-modal').modal('hide');
-      document.location.reload(true);
-    })
-    .fail(function() {
-      alert("Não foi possível realizar a operação");
-    });
-  };
-  setSimpleModalContent("Cancelar solicitações selecionadas?", "<h4>Tem certeza que deseja cancelar as solicitações de chamado selecionadas?</h4>", confirm_action, "Cancelar solicitações selecionadas", "Voltar");
-  $('#simple-modal').modal('show');
-});
 </script>
 
 <!-- Check if request form can be submitted or reset -->
 <script>
-function checkFormValidity() {
-    var servico = $('form[name=solicitar_chamado] input[name=servico]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
-    var local = $('form[name=solicitar_chamado] input[name=local]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
-    var descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+  function checkFormValidity() {
+    let servico = $('form[name=solicitar_chamado] input[name=servico]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    let local = $('form[name=solicitar_chamado] input[name=local]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    let descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
 
     // If at least one is not empty, enable reset button
     if (!servico.match(/^\s*$/) || !local.match(/^\s*$/) || !descricao.match(/^\s*$/)) {
@@ -529,88 +445,182 @@ function checkFormValidity() {
 
     // If all inputs are filled, enable submit button
     if (!servico.match(/^\s*$/) && !local.match(/^\s*$/) && !descricao.match(/^\s*$/)) {
-      enableButton($('form[name=solicitar_chamado] button[type=submit]'));
+      enableButton($('form[name=solicitar_chamado] button[id=submit-btn]'));
     } else {
-      disableButton($('form[name=solicitar_chamado] button[type=submit]'));
+      disableButton($('form[name=solicitar_chamado] button[id=submit-btn]'));
     }
-}
+  }
+  function ticketRequestFormSubmit() {
+    // Remove white space excess if any
+    let textareaInput = $('form[name=solicitar_chamado] textarea[name=descricao]');
+    let descricao = textareaInput.val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    textareaInput.val(descricao);
 
-$("input[name=servico], textarea[name=descricao], input[name=local]").on("input", function() {
-    checkFormValidity();
-});
-$('form button[type=reset]').on('click', function() {
-  disableButton($('form[name=solicitar_chamado] button[type=reset]'));
-  disableButton($('form[name=solicitar_chamado] button[type=submit]'));
-});
+    // Check if service is valid
+    let serviceInput = $("input[name=servico]");
+    let service = serviceInput.val();
+    let isServiceListed = ((servicos.filter(x => x.value === service)).length > 0);
+    if (!isServiceListed) {
+      alert("É preciso selecionar uma opção da lista de serviços");
+      return false;
+    }
+    let serviceObj = servicos.find(x => x.value === service);
+    let idServico = serviceObj.data.id_servico;
 
-function enableButton(button) {
-  button.removeClass("btn-default");
-  button.addClass("btn-primary");
-  button.prop("disabled", false);
-}
+    // Check if locale is valid
+    let local = $("input[name=local]").val();
+    let isLocaleListed = ((locais.filter(x => x.value === local)).length > 0);
+    if (!isLocaleListed) {
+      alert("É preciso selecionar uma opção da lista de locais");
+      return false;
+    }
+    let locationObj = locais.find(x => x.value === local);
+    let idLocal = locationObj.data.id_local;
 
-function disableButton(button) {
-  button.addClass("btn-default");
-  button.removeClass("btn-primary");
-  button.prop("disabled", true);
-}
+    // Remember the location in the browser
+    localStorage.setItem("lastLocation", local);
 
-$('form[name=solicitar_chamado]').submit(function() {
-  // Remove white space excess if any
-  var descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
-  $('form[name=solicitar_chamado] textarea[name=descricao]').val(descricao);
+    $("html").css("cursor", "wait");
+    $("body").css("pointer-events", "none");
 
-  // Check if service is valid
-  var service = $("input[name=servico]").val();
-  var isServiceListed = ((servicos.filter(x => x.value === service)).length > 0);
-  if (!isServiceListed) {
-    alert("É preciso selecionar uma opção da lista de serviços");
-    return false;
+    $.post("/gtic/public/cliente/client_register_call_request",
+    {
+      "id_servico": idServico,
+      "id_local": idLocal,
+      "descricao": descricao
+    })
+    .done(function(response) {
+      // Unblock page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      // Reset the form
+      serviceInput.val("");
+      textareaInput.val("");
+
+      // Insert the request in the table
+      if (response) {
+        if (response.request) {
+          window.activeTicketRequests.push(response.request);
+          insertInActiveTicketRequestsTable(response.request);
+        } else {
+          window.reload(true);
+        }
+      }
+    })
+    .fail(function(data) {
+      // Unblock page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      // Notify the error
+      if (data && data.responseJSON) {
+        let response = data.responseJSON;
+        if (response.event === "error") {
+          if (response.type === "insuficient_data") {
+            alert("Preencha todos os campos do formulário");
+        } else if (response.type === "db_op_failed") {
+            alert("A requisição não pôde ser armazenada no banco de dados");
+          } else {
+            alert("Houve um erro não identificado");
+          }
+        } else {
+          alert("Houve um erro não identificado");
+        }
+      } else {
+        alert("Houve uma falha não identificada");
+      }
+    });
+  }
+  function enableButton(button) {
+    button.removeClass("btn-default").addClass("btn-primary");
+    button.prop("disabled", false);
+  }
+  function disableButton(button) {
+    button.removeClass("btn-primary").addClass("btn-default");
+    button.prop("disabled", true);
   }
 
-  // Check if locale is valid
-  var local = $("input[name=local]").val();
-  var isLocaleListed = ((locais.filter(x => x.value === local)).length > 0);
-  if (!isLocaleListed) {
-    alert("É preciso selecionar uma opção da lista de locais");
-    return false;
-  }
-
-  // Remember the location in the browser
-  localStorage.setItem("lastLocation", local);
-
-  $("html").css("cursor", "wait");
-  $("body").css("pointer-events", "none");
-  return true;
-});
+  $('form button[type=reset]').on('click', function() {
+    disableButton($('form[name=solicitar_chamado] button[type=reset]'));
+    disableButton($('form[name=solicitar_chamado] button[id=submit-btn]'));
+  });
+  $('form button[id=submit-btn]').on('click', ticketRequestFormSubmit);
+  $("input[name=servico], textarea[name=descricao], input[name=local]").on('input', checkFormValidity);
 </script>
 
-<!-- Check if there's request checked -->
+<!-- Table handling -->
 <script>
+  function insertInActiveTicketRequestsTable(request) {
+    let activeTicketRequestsTable = $('#call-request-list');
 
-var btn_del_request = $('form[name=solicitacoes_chamado] > button[name=cancel-selected-requests]');
+    // Row structure
+    let newRow = $("<tr>").attr("data-request-id", request.id_solicitacao);
 
-$('form[name=solicitacoes_chamado] input').on('ifChecked', function(event) {
-  if (btn_del_request.hasClass('btn-default')) {
-    btn_del_request.toggleClass('btn-default btn-primary');
-    btn_del_request.prop('disabled', function(i, v) { return !v; });
+    // Request row info
+    let cols = "";
+    let date = moment(
+      request.data_solicitacao,
+      'YYYY-MM-DD HH:mm:ss')
+      .format("DD/MM/YYYY");
+    cols += `<td>${date}</td>`;
+    cols += `<td>${request.servico}</td>`;
+    cols += `<td>${request.status}</td>`;
+    newRow.append(cols);
+
+    // Cancel request button
+    let btnCancelRequest = $(
+      `<button type="button"\
+      class="btn btn-primary"\
+      name="btnCancelarSolicitacao"\
+      value="${request.id_solicitacao}">Cancelar</button>`);
+    newRow.append($("<td>").append(btnCancelRequest));
+
+    // Events
+    $(newRow).on('click', clickRequestRow);
+    $(btnCancelRequest).on('click', cancelTicketRequestBtnClick);
+
+    // Add the row to the table
+    activeTicketRequestsTable.append(newRow);
   }
-});
+</script>
 
-$('form[name=solicitacoes_chamado] input').on('ifUnchecked', function(event) {
-  var all_unchecked = true;
-  var form_inputs = $('form[name=solicitacoes_chamado] input[type=checkbox]');
-
-  form_inputs.each(function() {
-    if (this.checked) {
-      all_unchecked = false;
+<!-- Ready -->
+<script>
+  const resumeUserTour = () => {
+    if (localStorage.getItem('tour_current_step') == "5") {
+      tour.init();
+      tour.start();
+      tour.next();
     }
-  });
+  };
+  const recallLastPlace = () => {
+    let lastLocation = localStorage.getItem("lastLocation");
+    if (lastLocation != null) {
+      $("input[name=local]").val(lastLocation);
+    }
+  };
+  const populateactiveTicketRequestsTable = () => {
+    // Take only the requests still unopened (status "AGUARDANDO")
+    let pendingAcceptance = activeTicketRequests.filter(r => r.status === "AGUARDANDO");
+    for (request of pendingAcceptance) {
+      insertInActiveTicketRequestsTable(request);
+    }
+  };
 
-  if (all_unchecked) {
-    btn_del_request.toggleClass('btn-default btn-primary');
-    btn_del_request.prop('disabled', function(i, v) { return !v; });
-  }
-});
+  $(document).ready(function() {
+    // If user is on tour
+    resumeUserTour();
+
+    // Get the last place to which the request was done
+    // and set it in the form field
+    recallLastPlace();
+
+    // Load the requests for the page
+    window.activeTicketRequests = <?php echo json_encode($this->view->activeTicketRequests) ?>;
+
+    // Fill up unopen requests table
+    populateactiveTicketRequestsTable();
+  });
 </script>
 </body>

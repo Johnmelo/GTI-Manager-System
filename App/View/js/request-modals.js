@@ -1,54 +1,3 @@
-$('button[name=btnJoin]').on('click', function(e) {
-    if (e.target.nodeName == "BUTTON") {
-        var request_id = getRowId(e);
-        var modal_config = {
-            title: "Assumir chamado",
-            visible_fields: {
-                id_chamado_field: true,
-                cliente_field: true,
-                servico_field: true,
-                descricao_field: true,
-                data_solicitacao_field: true,
-                data_abertura_field: true,
-                prazo_field: false
-            },
-            footer_config: [
-                {
-                    btnContent: "Assumir chamado",
-                    class: "btn btn-primary",
-                    callback: acquireRequest.bind(null, $(e.target).parents('tr'))
-                }
-            ]
-        };
-        defineSimpleModal(modal_config, "open-request-type", request_id);
-    }
-});
-
-$('button[name=btnFinalizarChamado]').on('click', function(e) {
-    if (e.target.nodeName == "BUTTON") {
-        var request_id = getRowId(e);
-        var modal_config = {
-            title: "Finalizar chamado",
-            visible_fields: {
-                id_chamado_field: true,
-                servico_field: true,
-                data_abertura_field: true,
-                prazo_field: true,
-                descricao_field: true,
-                parecer_tecnico_field: false
-            },
-            footer_config: [
-                {
-                    btnContent:"Finalizar",
-                    class: "btn btn-primary",
-                    callback: finalizeRequest.bind(null, $(e.target).parents('tr'))
-                }
-            ]
-        };
-        defineSimpleModal(modal_config, "open-request-type", request_id);
-    }
-});
-
 function getRowId(e) {
     if (e.target.nodeName == "TR") {
         return $(e.target).get(0).dataset.requestId;
@@ -109,13 +58,13 @@ function defineModal(modalConfig) {
     }
 }
 
-function defineSimpleModal(modalConfig, typeRequest, requestId) {
-    var visibleFields = [];
+function defineSimpleModal(modalConfig, requestData) {
+    let visibleFields = [];
     for (key in modalConfig.visible_fields) {
         visibleFields.push(key)
     }
     defineModal(modalConfig);
-    fillUpRequestModal(typeRequest, requestId, visibleFields);
+    fillUpRequestModal(requestData, visibleFields);
     showRequestModal();
 }
 
@@ -124,175 +73,288 @@ function showRequestModal() {
     $('.request-modal').modal('toggle');
 }
 
-function fillUpRequestModal(typeRequest, requestId, fieldList) {
+function fillUpRequestModal(requestData, visibleFields) {
+    // Get the desired modal input fields
+    let modalFields = Array.from(
+        $('.request-modal-form')[0].elements
+    ).filter(i => visibleFields.indexOf(i.id) != -1);
 
-    var id;
-    if (typeRequest == "call-request-type") {
-        id = {"call_request_id": requestId};
-    } else if (typeRequest == "open-request-type") {
-        id = {"request_id": requestId};
-    }
+    // Fill up the modal fields
+    for (field of modalFields) {
+        let fieldTitle = field.id.replace("_field", "");
 
-    $.post("/gtic/public/get_request_info", id)
-    .done(function(data) {
-        var request = JSON.parse(data);
-        for (field of fieldList) {
-            if (field === "prazo_field") {
-                if (request.hasOwnProperty("prazo_field")) {
-                    var date = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("DD/MM/YYYY");
-                    var time = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("HH:mm");
-                    $('.request-modal-form')[0].elements[field].value = date + " às " + time;
-                } else {
-                    var date = moment().add(2, 'days').format("DD/MM/YYYY");
-                    var time = moment().format("HH:mm");
-                    $('.request-modal-form')[0].elements[field].value = date + " às " + time;
-                }
-            } else if (field === "data_abertura_field" || field === "data_solicitacao_field" || field === "data_finalizado_field") {
-                var date = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("DD/MM/YYYY");
-                var time = moment(request[field], 'DD/MM/YYYY HH:mm:ss').format("HH:mm");
-                $('.request-modal-form')[0].elements[field].value = date + " às " + time;
+        // When datetime field, put it in the proper format
+        if (field.id === "prazo_field") {
+            // If deadline info is included, just format the value
+            if (requestData.hasOwnProperty("prazo")) {
+                let datetime = moment(
+                    requestData[fieldTitle],
+                    'YYYY-MM-DD HH:mm:ss'
+                ).format("DD/MM/YYYY [às] HH:mm");
+                field.value = datetime;
             } else {
-                $('.request-modal-form')[0].elements[field].value = request[field];
+                // Otherwise, create the deadline with the 2 days default
+                let datetime = moment()
+                .add(2, 'days')
+                .format("DD/MM/YYYY [às] HH:mm");
+                field.value = datetime;
             }
+        } else if (
+            field.id === "data_solicitacao_field" ||
+            field.id === "data_abertura_field" ||
+            field.id === "data_assumido_field" ||
+            field.id === "data_finalizado_field") {
+                // If datetime, just format it
+                let datetime = moment(
+                    requestData[fieldTitle],
+                    'YYYY-MM-DD HH:mm:ss'
+                ).format("DD/MM/YYYY [às] HH:mm");
+                field.value = datetime;
+        } else {
+            // Other values except dates, just put it in the input field
+            field.value = requestData[fieldTitle];
         }
-    })
-    .fail(function() {
-        alert("Não foi possível realizar a ação");
-    });
-}
-
-function acceptRequest(tableRow) {
-    var request_id = tableRow.find('button[name="request-acceptance"]').val();
-    var data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
-
-    // Check if inserted deadline is in valid format
-    if (data_prazo.match(/\d{2}\/\d{2}\/\d{4} [aà]s \d{2}:\d{2}/)) {
-        // Convert the deadline info into the format accepted by the DB
-        data_prazo = data_prazo.replace(/[aà]s /g, "");
-        data_prazo += ":00";
-        var datetime = data_prazo.split(" ");
-        var date = datetime[0].split("/");
-        var time = datetime[1];
-        datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
-        $.post("/gtic/public/admin/open_call_request",
-        {
-            "call_request_id": request_id,
-            "deadline_value": datetime
-        })
-        .done(function() {
-            tableRow.remove();
-            $('.request-modal').modal('toggle');
-            setTimeout(function() {
-                document.location.reload(true);
-            }, 500);
-        })
-        .fail(function(data) {
-            if (data.hasOwnProperty("responseJSON")) {
-                response = data.responseJSON;
-                if (response.hasOwnProperty("event") && response.event === "error") {
-                    if (response.hasOwnProperty("type") && response.type === "deadline_wrong_format") {
-                        alert("O prazo foi informado em um formato não reconhecido");
-                    } else {
-                        alert("Houve um problema não previsto");
-                    }
-                } else {
-                    alert("Houve um problema não previsto");
-                }
-            } else {
-                alert("Houve um problema não previsto");
-            }
-        });
-    } else {
-        alert("O prazo foi informado em um formato não reconhecido");
     }
 }
 
-function finalizeRequest(tableRow) {
-    var request_id = $('.request-modal-form')[0].elements["id_chamado_field"].value;
-    var parecer_tecnico = $('.request-modal-form')[0].elements["parecer_tecnico_field"].value;
+function acceptRequest(requestId) {
+  var data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
 
-    $.post("/gtic/public/admin/finalize_request",
+  // Check if inserted deadline is in valid format
+  if (data_prazo.match(/\d{2}\/\d{2}\/\d{4} [aà]s \d{2}:\d{2}/)) {
+    // Convert the deadline info into the format accepted by the DB
+    data_prazo = data_prazo.replace(/[aà]s /g, "");
+    data_prazo += ":00";
+    var datetime = data_prazo.split(" ");
+    var date = datetime[0].split("/");
+    var time = datetime[1];
+    datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
+
+    $("html").css("cursor", "wait");
+    $("body").css("pointer-events", "none");
+    $.post("/gtic/public/admin/open_call_request",
     {
-        "request_id": request_id,
-        "technical_opinion": parecer_tecnico
+      "call_request_id": requestId,
+      "deadline_value": datetime
     })
-    .done(function() {
-        tableRow.remove();
-        $('.request-modal').modal('toggle');
-        setTimeout(function() {
-            document.location.reload(true);
-        }, 500);
+    .done(function(response) {
+      // Unblock page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      if (response && response.event === "success") {
+        if (response.type && response.type === "new_ticket") {
+          if (response.ticket) {
+            ticketRequestAccepted(response.ticket);
+            $('.request-modal').modal('hide');
+            return true;
+          }
+        }
+      }
+      window.location.reload(true);
     })
-    .fail(function() {
-        alert("Não foi possível realizar a ação");
-    });
-}
+    .fail(function(data) {
+      // Unblock page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
 
-function acquireRequest(tableRow) {
-    var request_id = tableRow.find('button[name="btnJoin"]').val();
-    var data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
-
-    // Check if inserted deadline is in valid format
-    if (data_prazo.match(/\d{2}\/\d{2}\/\d{4} [aà]s \d{2}:\d{2}/)) {
-        // Convert the deadline info into the format accepted by the DB
-        data_prazo = data_prazo.replace(/[aà]s /g, "");
-        data_prazo += ":00";
-        var datetime = data_prazo.split(" ");
-        var date = datetime[0].split("/");
-        var time = datetime[1];
-        datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
-        $.post("/gtic/public/technician_select_request",
-        {
-            "call_request_id": request_id,
-            "deadline_value": datetime
-        })
-        .done(function() {
-            tableRow.remove();
-            $('.request-modal').modal('toggle');
-            setTimeout(function() {
-                document.location.reload(true);
-            }, 500);
-        })
-        .fail(function(data) {
-            if (data.hasOwnProperty("responseJSON")) {
-                response = data.responseJSON;
-                if (response.hasOwnProperty("event") && response.event === "error") {
-                    if (response.hasOwnProperty("type") && response.type === "deadline_wrong_format") {
-                        alert("O prazo foi informado em um formato não reconhecido");
-                    } else {
-                        alert("Houve um problema não previsto");
-                    }
-                } else {
-                    alert("Houve um problema não previsto");
-                }
-            } else {
-                alert("Houve um problema não previsto");
+      if (data && data.responseJSON) {
+        response = data.responseJSON;
+        if (response.event && response.event === "error") {
+          if (response.type) {
+            if(response.type === "deadline_wrong_format") {
+              alert("O prazo foi informado em um formato não reconhecido");
+              return false;
+            } else if (response.type === "missing_data") {
+              alert("Há dados fazendo falta");
+              return false;
+            } else if (response.type === "db_op_failed") {
+              alert("O chamado não pôde ser armazenado no banco");
+              return false;
             }
-        });
-    } else {
-        alert("O prazo foi informado em um formato não reconhecido");
-    }
+          }
+        }
+      }
+      alert("Houve uma falha não identificada");
+    });
+  } else {
+    alert(
+      "O prazo foi informado em um formato não reconhecido.\
+      \nO formato esperado é o seguinte:\
+      \nDD/MM/YYYY às HH:mm"
+    );
+  }
 }
 
-function refuseRequest(tableRow) {
-    var request_id = tableRow.get(0).dataset.requestId;
-    var refusal_reason = $('.request-modal-form')[0].elements["motivo_recusa_field"].value;
+function finalizeRequest(requestId) {
+  let parecerTecnico = $('.request-modal-form')[0].elements["parecer_tecnico_field"].value;
+  parecerTecnico = parecerTecnico.replace(/^\s+/g, '').replace(/\s+$/g, '');
 
-    $.post("/gtic/public/tecnico/refuse_support_request",
+  if (parecerTecnico.match(/^\s*$/)) {
+    alert("Insira o parecer técnico");
+    return false;
+  }
+
+  $("html").css("cursor", "wait");
+  $("body").css("pointer-events", "none");
+  $.post("/gtic/public/admin/finalize_request",
+  {
+    "request_id": requestId,
+    "technical_opinion": parecerTecnico
+  })
+  .done(function(response) {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+
+    if (response && response.event === "success") {
+      if (response.type && response.type === "finalized_ticket") {
+        if (response.ticket){
+          ticketClosed(response.ticket);
+          $('.request-modal').modal('hide');
+          return true;
+        }
+      }
+    }
+    window.location.reload(true);
+  })
+  .fail(function(data) {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+
+    if (data && data.responseJSON) {
+      response = data.responseJSON;
+      if (response.event && response.type) {
+        if (response.event === "error") {
+          if (response.type === "missing_data") {
+            alert("Há dados fazendo falta");
+            return false;
+          }
+        }
+      }
+    }
+    alert("Houve uma falha não identificada");
+  });
+}
+
+function acquireRequest(ticketID) {
+  let data_prazo = $('.request-modal-form')[0].elements["prazo_field"].value;
+
+  // Check if inserted deadline is in valid format
+  if (data_prazo.match(/\d{2}\/\d{2}\/\d{4} [aà]s \d{2}:\d{2}/)) {
+    // Convert the deadline info into the format accepted by the DB
+    data_prazo = data_prazo.replace(/[aà]s /g, "");
+    data_prazo += ":00";
+    let datetime = data_prazo.split(" ");
+    let date = datetime[0].split("/");
+    let time = datetime[1];
+    datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
+
+    $("html").css("cursor", "wait");
+    $("body").css("pointer-events", "none");
+    $.post("/gtic/public/technician_select_request",
     {
-        "request_id": request_id,
-        "refusal_reason": refusal_reason
+      "ticket_id": ticketID,
+      "deadline_value": datetime
     })
-    .done(function() {
-        tableRow.remove();
-        $('.request-modal').modal('toggle');
-        setTimeout(function() {
-            document.location.reload(true);
-        }, 500);
+    .done(function(response) {
+      // Unblock page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      if (response && response.event === "success") {
+        if (response.type && response.type === "acquired_ticket") {
+          if (response.ticket){
+            ticketAcquired(response.ticket);
+            $('.request-modal').modal('hide');
+            return true;
+          }
+        }
+      }
+      window.location.reload(true);
     })
-    .fail(function() {
-        alert("Não foi possível realizar a ação");
+    .fail(function(data) {
+      // Unblock page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+
+      if (data && data.responseJSON) {
+        response = data.responseJSON;
+        if (response.event && response.type) {
+          if (response.event === "error") {
+            if (response.type === "missing_data") {
+              alert("Há dados fazendo falta");
+              return false;
+            } else if (response.type === "deadline_wrong_format") {
+              alert("O prazo foi informado em um formato não reconhecido");
+              return false;
+            }
+          }
+        }
+      }
+      alert("Houve uma falha não identificada");
     });
+  } else {
+    alert(
+      "O prazo foi informado em um formato não reconhecido.\
+      \nO formato esperado é o seguinte:\
+      \nDD/MM/YYYY às HH:mm"
+    );
+  }
+}
+
+function refuseRequest(requestId) {
+  let refusalReason = $('.request-modal-form')[0].elements["motivo_recusa_field"].value;
+  refusalReason = refusalReason.replace(/^\s+/g, '').replace(/\s+$/g, '');
+
+  if (refusalReason.match(/^\s*$/)) {
+    alert("Insira o motivo da recusa");
+    return false;
+  }
+
+  $("html").css("cursor", "wait");
+  $("body").css("pointer-events", "none");
+
+  $.post("/gtic/public/tecnico/refuse_support_request",
+  {
+    "request_id": requestId,
+    "refusal_reason": refusalReason
+  })
+  .done(function(response) {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+
+    if (response && response.event === "success") {
+      if (response.type && response.type === "ticket_request_refused") {
+        if (response.request) {
+          ticketRequestRefused(response.request);
+          $('.request-modal').modal('hide');
+          return true;
+        }
+      }
+    }
+    window.location.reload(true);
+  })
+  .fail(function(data) {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+
+    if (data && data.responseJSON) {
+      response = data.responseJSON;
+      if (response.event && response.event === "error") {
+        if (response.type) {
+          if (response.type === "missing_data") {
+            alert("Há dados fazendo falta");
+            return false;
+          }
+        }
+      }
+    }
+    alert("Houve uma falha não identificada");
+  });
 }
 
 // Inserting HTML structure into modal tag
@@ -331,15 +393,9 @@ $(document).ready(function() {
               </div>\
             </div>\
             <div class="form-group" style="display: none;">\
-              <label for="solicitacao_chamado_status_field" class="col-sm-4 control-label">Status</label>\
+              <label for="status_field" class="col-sm-4 control-label">Status</label>\
               <div class="col-sm-8">\
-                <input type="text" class="form-control" id="solicitacao_chamado_status_field" readonly>\
-              </div>\
-            </div>\
-            <div class="form-group" style="display: none;">\
-              <label for="chamado_status_field" class="col-sm-4 control-label">Status</label>\
-              <div class="col-sm-8">\
-                <input type="text" class="form-control" id="chamado_status_field" readonly>\
+                <input type="text" class="form-control" id="status_field" readonly>\
               </div>\
             </div>\
             <div class="form-group" style="display: none;">\
@@ -358,6 +414,12 @@ $(document).ready(function() {
               <label for="data_abertura_field" class="col-sm-4 control-label">Data de abertura</label>\
               <div class="col-sm-8">\
                 <input type="text" class="form-control" id="data_abertura_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="data_assumido_field" class="col-sm-4 control-label">Data de assunção</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="data_assumido_field" readonly>\
               </div>\
             </div>\
             <div class="form-group" style="display: none;">\
