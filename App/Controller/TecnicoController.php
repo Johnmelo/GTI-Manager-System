@@ -3,11 +3,15 @@ namespace App\Controller;
 use SON\Controller\Action;
 use \SON\Di\Container;
 use \App\Model\PasswordUtil;
+use \App\Model\Token;
 
 class TecnicoController extends Action{
   public function index(){
     session_start();
     if($_SESSION['user_role'] === "TECNICO"){
+        // Get the token for WebSocket
+        $token = new Token($_SESSION['user_id']);
+
         $SolicitarChamado = Container::getClass("SolicitarChamado");
         $activeTicketRequests = $SolicitarChamado->getActiveTicketRequests();
 
@@ -30,6 +34,7 @@ class TecnicoController extends Action{
             return ($inProcess && $otherTechniciansTicket);
         });
 
+        $this->view->token = \json_encode($token->data);
         $this->view->activeTicketRequests = $activeTicketRequests;
         $this->view->inQueueTickets = $inQueueTickets;
         $this->view->techniciansInProcessTickets = \array_values($techniciansInProcessTickets);
