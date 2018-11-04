@@ -214,7 +214,7 @@
   let token = <?php echo $this->view->token ?>;
 
   // Connect to the WebSocket server
-  let socket = io(`ws://${window.location.host}:5530`);
+  let socket = io(`wss://${window.location.host}:5530`);
 
   // Try to resolve the challenge in order to stay connected to the WS server
   socket.on('connecting', ({challenge}) => {
