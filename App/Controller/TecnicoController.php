@@ -99,6 +99,9 @@ class TecnicoController extends Action{
   public function solicitar_atendimento() {
       session_start();
       if($_SESSION['user_role'] == "TECNICO") {
+        // Get the token for WebSocket
+        $token = new Token($_SESSION['user_id']);
+        $this->view->token = \json_encode($token->data);
         $this->render('solicitar_atendimento');
       } else {
         $this->forbidenAccess();
@@ -128,7 +131,13 @@ class TecnicoController extends Action{
             // Save the service request as accepted by saving its data
             // in the accepted requests table
             $Chamado = Container::getClass("Chamado");
-            $Chamado->save($service_id, $place_id, $open_request_id, $_SESSION['user_id'], $client_id, $deadline_db, $description);
+            $ticketID = $Chamado->save($service_id, $place_id, $open_request_id, $_SESSION['user_id'], $client_id, $deadline_db, $description);
+            if ($ticketID !== false) {
+              // Return the ticket data
+              $ticket = $Chamado->getTicketById($ticketID);
+              header('Content-Type: application/json; charset=UTF-8');
+              echo json_encode(array('event' => 'success', 'type' => 'new_ticket', 'ticket' => $ticket));
+            }
           } else {
             header('Content-Type: application/json; charset=UTF-8');
             header('HTTP/1.1 400');

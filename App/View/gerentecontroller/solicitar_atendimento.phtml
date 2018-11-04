@@ -222,6 +222,27 @@
 
 <!-- moment.js -->
 <script src="../../App/View/js/moment.min.js"></script>
+<!-- forge-sha256 -->
+<script src="../../App/View/js/forge-sha256.min.js"></script>
+
+<!-- Socket.IO -->
+<script src="../../App/View/js/socket.io.js"></script>
+<script>
+  let token = <?php echo $this->view->token ?>;
+
+  // Connect to the WebSocket server
+  let socket = io(`ws://${window.location.host}:5530`);
+
+  // Try to resolve the challenge in order to stay connected to the WS server
+  socket.on('connecting', ({challenge}) => {
+    let solution = `${challenge}${token.last_login_date}`;
+    let tokenData = {
+      "username": token.username,
+      "challengeSolution": forge_sha256(solution)
+    };
+    socket.emit('challenge solution', tokenData);
+  });
+</script>
 
 <!-- Default deadline  -->
 <script>
@@ -479,10 +500,22 @@
       "prazo": datetime,
       "descricao": descricao
     })
-    .done(function(data) {
+    .done(function(response) {
+      // If successfully got the opened ticket, send it to the WS server
+      if (response && response.event === "success") {
+        if (response.type && response.type === "new_ticket") {
+          if (response.ticket) {
+            // Send the ticket request to connected support users and to the requester client
+            socket.emit('from support', 'support created ticket', response.ticket);
+          }
+        }
+      }
+
+      // Unblock page
       $("html").css("cursor", "auto");
       $("body").css("pointer-events", "auto");
 
+      // Notify success and reset the form
       alert("Chamado aberto com sucesso");
       $("form[name=solicitar_chamado]").trigger("reset");
     })
@@ -491,19 +524,19 @@
       $("body").css("pointer-events", "auto");
 
       if (data.hasOwnProperty("responseJSON")) {
-        var response = data.responseJSON;
+        let response = data.responseJSON;
         if (response.hasOwnProperty("event") && response.event === "error") {
-          if (response.hasOwnProperty("type") && response.type === "deadline_wrong_format") {
-            alert("O prazo foi informado em um formato não reconhecido");
-          } else {
-            alert("Houve um problema não previsto");
+          if (response.type === "deadline_wrong_format") {
+            alert("Prazo não está no formato esperado.\nExemplo de resposta esperada:\nDD/MM/AAAA às HH:mm");
+            return false;
+          } else if (response.type === "missing_data") {
+            alert("Preencha todos os campos do formulário");
+            return false;
           }
-        } else {
-          alert("Houve um problema não previsto");
         }
-      } else {
-        alert("Houve um problema não previsto");
       }
+      alert("Houve uma falha não identificada");
+      return false;
     });
     return false;
   });

@@ -408,6 +408,9 @@ class GerenteController extends Action{
   public function solicitar_atendimento() {
       session_start();
       if($_SESSION['user_role'] == "GERENTE") {
+        // Get the token for WebSocket
+        $token = new Token($_SESSION['user_id']);
+        $this->view->token = \json_encode($token->data);
         $this->render('solicitar_atendimento');
       } else {
         $this->forbidenAccess();

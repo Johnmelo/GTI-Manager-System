@@ -307,6 +307,12 @@
     socket.emit('challenge solution', tokenData);
   });
 
+  // When the support creates a ticket directly
+  socket.on('support created ticket', ticket => {
+    window.inQueueTickets.push(ticket);
+    insertInInQueueTicketsTable(ticket);
+  });
+
   // When a client makes a ticket request
   socket.on('client requested ticket', ticketRequest => {
     // Insert the ticket request in the page
