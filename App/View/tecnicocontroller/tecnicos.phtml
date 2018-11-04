@@ -308,8 +308,72 @@
   });
 
   // When a client makes a ticket request
-  socket.on('new ticket request', ticketRequest => {
-    console.info(ticketRequest);
+  socket.on('client requested ticket', ticketRequest => {
+    // Insert the ticket request in the page
+    window.activeTicketRequests.push(ticketRequest);
+    insertInActiveTicketRequestsTable(ticketRequest)
+  });
+
+  // When a client cancels a ticket request
+  socket.on('client cancelled ticket request', ticketRequest => {
+    // Remove the ticket request from the ticket requests list and table
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticketRequest.id_solicitacao
+    );
+
+    // Remove the ticket request from the table
+    $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+  });
+
+  // When a client cancels a ticket
+  socket.on('client cancelled ticket', ticket => {
+    // Remove the ticket from the "in queue" list and table
+    window.inQueueTickets = window.inQueueTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+  });
+
+  // When the support refuses a ticket request
+  socket.on('support refused ticket request', ticketRequest => {
+    // Remove the ticket request from the ticket requests list and table
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticketRequest.id_solicitacao
+    );
+    $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+  });
+
+  // When other technicians accept a ticket request
+  socket.on('support accepted ticket request', ticket => {
+    // Remove the ticket request from the ticket requests list and table
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticket.id_solicitacao
+    );
+    $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
+    // Insert into the "in queue" list and table
+    window.inQueueTickets.push(ticket);
+    insertInInQueueTicketsTable(ticket);
+  });
+
+  // When other technicians acquire a ticket
+  socket.on('technician acquired ticket', ticket => {
+    // Remove the ticket from the "in queue" list and table
+    window.inQueueTickets = window.inQueueTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+    // Insert into the "other technicians in process tickets" list and table
+    window.otherTechniciansInProcessTickets.push(ticket);
+    insertInInProcessTicketsTable(ticket);
+  });
+
+  // When other technicians finalize a ticket
+  socket.on('technician finalized ticket', ticket => {
+    // Remove from "other technicians in process tickets" list and table
+    window.otherTechniciansInProcessTickets = window.otherTechniciansInProcessTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
   });
 </script>
 
