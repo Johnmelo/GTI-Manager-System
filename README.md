@@ -24,20 +24,33 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 RestartSec=1
-User=user
 ExecStart=/usr/bin/env php /path/to/project/dir/App/SocketServer.php start
 
 [Install]
 WantedBy=multi-user.target
 ```
-Update the "User" and "ExecStart" lines accordingly.
-Make sure the port 5530 is available to be used by the socket server. If it isn't, search for all occurrences of the code ``io(`wss://${window.location.host}:5530`)`` in the project and replace the port for one which is available, as well as the line `$io = new SocketIO(5530)` in the file `App/SocketServer.php`.
+Update the "ExecStart" line accordingly.
+Make sure the port 5530 is available to be used by the socket server and it isn't blocked by the firewall. If it's necessary to change the port, search for all occurrences of the code ``io(`wss://${window.location.host}:5530`)`` in the project and replace the port for one which is available, as well as the line `$io = new SocketIO(5530, $context);` in the file `App/SocketServer.php`.
 Then start the service and make it automatically start at boot with respectively:
 ```
 systemctl start gtic-socket-server
 systemctl enable gtic-socket-server
 ```
-6. Notice that the connection to the websocket server is made through HTTPS by default. In cases where this is not possible (such as when running the software locally), it's necessary to find all occurrences of ``io(`wss://${window.location.host}`` and replace `wss` with `ws`.
+6. Notice that the connection to the websocket server is made through HTTPS by default. It's necessary to edit the file `App/SocketServer.php` to include the location of the certificate and key files:
+```
+// SSL context
+$context = [
+    'ssl' => [
+        'local_cert' => '/path/to/cert.pem',
+        'local_pk' => '/path/to/key.pem',
+        'verify_peer' => false
+    ]
+];
+
+// Set the websocket port
+$io = new SocketIO(5530, $context);
+```
+In cases where this is not possible (such as when running the software locally), it's necessary to find all occurrences of ``io(`wss://${window.location.host}`` and replace `wss` with `ws`. Also, replace all the code in the code block above with only: `$io = new SocketIO(5530);`
 
 ### Setup
 
