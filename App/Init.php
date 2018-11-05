@@ -11,7 +11,6 @@ class Init extends Bootstrap{
     $ar['solicitar_acesso'] = array('route' => '/gtic/public/solicitar_acesso' , 'controller' => 'indexController', 'action' => 'solicitar_acesso');
     $ar['index_logar'] = array('route' => '/gtic/public/logar' , 'controller' => 'indexController', 'action' => 'logar');
     $ar['index_logout'] = array('route' => '/gtic/public/logout' , 'controller' => 'indexController', 'action' => 'logout');
-    $ar['get_request_info'] = array('route' => '/gtic/public/get_request_info', 'controller' => 'indexController', 'action' => 'get_request_info');
     $ar['get_services_suggestions'] = array('route' => '/gtic/public/get_services_suggestions' , 'controller' => 'indexController', 'action' => 'get_services_suggestions');
     $ar['get_locales_suggestions'] = array('route' => '/gtic/public/get_locales_suggestions' , 'controller' => 'indexController', 'action' => 'get_locales_suggestions');
     $ar['get_users_suggestions'] = array('route' => '/gtic/public/get_users_suggestions' , 'controller' => 'indexController', 'action' => 'get_users_suggestions');
