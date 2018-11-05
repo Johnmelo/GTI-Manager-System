@@ -165,16 +165,16 @@
               <button id="archive-selection" class="btn btn-default" disabled>Arquivar selecionados</button>
             </div>
             <div id="request-list-wrapper" class="row">
-              <?php foreach ($this->view->requisicoes as $requisicao):?>
+              <?php foreach ($this->view->unreviewedAccountRequests as $request):?>
               <div class="col-xs-12 col-lg-6">
                 <div class="x_panel">
-                    <div class="x_title" data-id-solicitacao="<?php echo $requisicao['id'];?>" data-nome="<?php echo $requisicao['nome'];?>" data-usuario="<?php echo $requisicao['login'];?>" data-email="<?php echo $requisicao['email'];?>" data-setor="<?php echo $requisicao['setor'];?>" data-matricula="<?php echo $requisicao['matricula'];?>">
-                        <input type="checkbox" value="<?php echo $requisicao['id'];?>" name="selections[]" id="r_client_role_<?php echo $requisicao['id'];?>" />
-                        <label for="r_client_role_<?php echo $requisicao['id'];?>"><h2><?php echo $requisicao['nome'];?></h2></label>
+                    <div class="x_title" data-id-solicitacao="<?php echo $request['id'];?>" data-nome="<?php echo $request['nome'];?>" data-usuario="<?php echo $request['login'];?>" data-email="<?php echo $request['email'];?>" data-setor="<?php echo $request['setor'];?>" data-matricula="<?php echo $request['matricula'];?>">
+                        <input type="checkbox" value="<?php echo $request['id'];?>" name="selections[]" id="r_client_role_<?php echo $request['id'];?>" />
+                        <label for="r_client_role_<?php echo $request['id'];?>"><h2><?php echo $request['nome'];?></h2></label>
                         <ul class="nav navbar-right panel_toolbox">
-                            <li><button type="button" class="btn btn-primary btn-edit-request" title="Editar dados" value="<?php echo $requisicao['id'];?>"><i class="fas fa-pencil-alt"></i></button></li>
-                            <li><button type="button" class="btn btn-primary btn-refuse-request" title="Recusar solicitação" value="<?php echo $requisicao['id'];?>"><i class="fas fa-times"></i></button></li>
-                            <li><button type="button" class="btn btn-primary btn-accept-request" title="Cadastrar usuário" value="<?php echo $requisicao['id'];?>"><i class="fas fa-check"></i> Cadastrar</button></li>
+                            <li><button type="button" class="btn btn-primary btn-edit-request" title="Editar dados" value="<?php echo $request['id'];?>"><i class="fas fa-pencil-alt"></i></button></li>
+                            <li><button type="button" class="btn btn-primary btn-refuse-request" title="Recusar solicitação" value="<?php echo $request['id'];?>"><i class="fas fa-times"></i></button></li>
+                            <li><button type="button" class="btn btn-primary btn-accept-request" title="Cadastrar usuário" value="<?php echo $request['id'];?>"><i class="fas fa-check"></i> Cadastrar</button></li>
                         </ul>
                         <div class="clearfix">
                         </div>
@@ -188,10 +188,10 @@
                                 <h4>Matrícula</h4>
                             </div>
                             <div class="value-column">
-                                <h4><?php echo $requisicao['login'];?></h4>
-                                <h4><?php echo $requisicao['email'];?></h4>
-                                <h4><?php echo $requisicao['setor'];?></h4>
-                                <h4><?php echo $requisicao['matricula'];?></h4>
+                                <h4><?php echo $request['login'];?></h4>
+                                <h4><?php echo $request['email'];?></h4>
+                                <h4><?php echo $request['setor'];?></h4>
+                                <h4><?php echo $request['matricula'];?></h4>
                             </div>
                         </div>
                     </div>
@@ -357,18 +357,14 @@ var btn_cadastrar = $('div#request-list-wrapper input[type=submit]');
 
 function toggleOptionsButtons () {
   if ($('div#request-list-wrapper input[type=checkbox]:checked').length > 0) {
-    $('button#accept-selection').removeClass("btn-default");
-    $('button#accept-selection').addClass("btn-primary");
+    $('button#accept-selection').removeClass("btn-default").addClass("btn-primary");
     $('button#accept-selection').prop("disabled", false);
-    $('button#archive-selection').removeClass("btn-default");
-    $('button#archive-selection').addClass("btn-primary");
+    $('button#archive-selection').removeClass("btn-default").addClass("btn-primary");
     $('button#archive-selection').prop("disabled", false);
   } else {
-    $('button#accept-selection').addClass("btn-default");
-    $('button#accept-selection').removeClass("btn-primary");
+    $('button#accept-selection').removeClass("btn-primary").addClass("btn-default");
     $('button#accept-selection').prop("disabled", true);
-    $('button#archive-selection').addClass("btn-default");
-    $('button#archive-selection').removeClass("btn-primary");
+    $('button#archive-selection').removeClass("btn-primary").addClass("btn-default");
     $('button#archive-selection').prop("disabled", true);
   }
 }

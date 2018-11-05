@@ -69,24 +69,6 @@
             </div>
 
           </div>
-          <!-- /sidebar menu -->
-
-          <!-- /menu footer buttons -->
-          <!--<div class="sidebar-footer hidden-small">
-            <a data-toggle="tooltip" data-placement="top" title="Settings">
-              <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-            </a>
-            <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-              <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-            </a>
-            <a data-toggle="tooltip" data-placement="top" title="Lock">
-              <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-            </a>
-            <a data-toggle="tooltip" data-placement="top" title="Logout" href="logout">
-              <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-            </a>
-          </div>-->
-          <!-- /menu footer buttons -->
         </div>
       </div>
 
@@ -145,25 +127,12 @@
                         <th>ID</th>
                         <th>Local</th>
                         <th>Serviço</th>
-                        <th>Status</th>
                         <th>Técnico Responsável</th>
                         <th>Técnico Abertura</th>
+                        <th>Status</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <?php foreach ($this->view->requests as $callrequest):?>
-                        <tr data-request-id="<?php echo $callrequest['id'];?>">
-                          <a href="view_request">
-                            <td><?php echo $callrequest['id']; ?></td>
-                            <td><?php echo $this->view->locais[$callrequest['id_local']]['nome'] ?></td>
-                            <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
-                            <td><?php echo $callrequest['status']; ?></td>
-                            <td><?php echo $this->view->user_info[$callrequest['id_tecnico_responsavel']]['nome'];?></td>
-                            <td><?php echo $this->view->user_info[$callrequest['id_tecnico_abertura']]['nome'];?></td>
-                          </a>
-                        </tr>
-                      <?php endforeach;?>
-                    </tbody>
+                    <tbody></tbody>
                   </table>
                 </form>
                 </div>
@@ -202,30 +171,76 @@
   <!-- Request modal settings -->
   <script src="../../App/View/js/request-modals.js"></script>
   <script>
-  $('#closed-requests tr').on('click', function(e) {
-    if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
-      var request_id = getRowId(e);
-      if (request_id) {
-        modal_config = {
-          title: "Detalhes do chamado",
-          visible_fields: {
-            id_chamado_field: true,
-            chamado_status_field: true,
-            cliente_field: true,
-            local_field: true,
-            servico_field: true,
-            data_abertura_field: true,
-            data_finalizado_field: true,
-            tecnico_abertura_field: true,
-            descricao_field: true,
-            prazo_field: true,
-            parecer_tecnico_field: true,
-            tecnico_responsavel_field: true
-          }
-        };
-        defineSimpleModal(modal_config, "open-request-type", request_id);
+    function clickRequestRow(e) {
+      if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
+        var requestId = getRowId(e);
+        if (requestId) {
+          modalConfig = {
+            title: "Detalhes do chamado",
+            visible_fields: {
+              id_chamado_field: true,
+              status_field: true,
+              cliente_field: true,
+              local_field: true,
+              servico_field: true,
+              data_abertura_field: true,
+              data_assumido_field: true,
+              data_finalizado_field: true,
+              tecnico_abertura_field: true,
+              descricao_field: true,
+              prazo_field: true,
+              parecer_tecnico_field: true,
+              tecnico_responsavel_field: true
+            }
+          };
+          let requestData = inactiveTickets.find(r => r.id_chamado === requestId);
+          defineSimpleModal(modalConfig, requestData);
+        }
       }
     }
-  });
+  </script>
+
+  <!-- Table handling -->
+  <script>
+    function insertInInactiveTicketsTable(request) {
+      let pastRequestsTable = $('#closed-requests');
+
+      // Row structure
+      let newRow = $("<tr>").attr("data-request-id", request.id_chamado);
+      let cols = "";
+      cols += `<td>${request.id_chamado}</td>`;
+      cols += `<td>${request.local}</td>`;
+      cols += `<td>${request.servico}</td>`;
+      cols += `<td>${request.tecnico_responsavel}</td>`;
+      cols += `<td>${request.tecnico_abertura}</td>`;
+      cols += `<td>${request.status}</td>`;
+      newRow.append(cols);
+
+      // Events
+      $(newRow).on('click', clickRequestRow);
+
+      // Add the row to the table
+      pastRequestsTable.prepend(newRow);
+    }
+  </script>
+
+  <!-- Ready -->
+  <script>
+    const populateInactiveTicketsTable = () => {
+      // Take only the requests already resolved (all status except "AGUARDANDO" and "ATENDIMENTO")
+      let pastRequests = inactiveTickets.filter(r =>
+        r.status !== "AGUARDANDO" && r.status !== "ATENDIMENTO");
+      for (request of pastRequests) {
+        insertInInactiveTicketsTable(request);
+      }
+    };
+
+    $(document).ready(function() {
+      // Load the requests for the page
+      window.inactiveTickets = <?php echo json_encode($this->view->inactiveTickets) ?>;
+
+      // Fill up unopen requests table
+      populateInactiveTicketsTable();
+    });
   </script>
 </body>

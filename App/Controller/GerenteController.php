@@ -3,72 +3,29 @@ namespace App\Controller;
 use SON\Controller\Action;
 use \SON\Di\Container;
 use \App\Model\Email;
+use \App\Model\Token;
 
 class GerenteController extends Action{
   public function index(){
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
+      // Get the token for WebSocket
+      $token = new Token($_SESSION['user_id']);
 
-      $requisicao_acesso = Container::getClass("SolicitarAcesso");
-      $requisicoes = $requisicao_acesso->fetchAll();
-      $requisicoes_acesso_aguardando = [];
-      foreach ($requisicoes as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $requisicoes_acesso_aguardando[] = $request;
-        }
-      }
+      $SolicitarAcesso = Container::getClass("SolicitarAcesso");
+      $SolicitarChamado = Container::getClass("SolicitarChamado");
+      $Chamado = Container::getClass("Chamado");
 
-      $chamado = Container::getClass("Chamado");
-      $chamados = $chamado->fetchAll();
-      $chamados_abertos = $chamado->getChamadosByStatus("AGUARDANDO");
-      $chamados_atendimentos = $chamado->getChamadosByStatus("ATENDIMENTO");
-      $chamados_finalizados = $chamado->getChamadosByStatus("FINALIZADO");
-      $count = count($chamados);
+      $unreviewedAccountRequests = $SolicitarAcesso->getUnreviewedRequests();
+      $activeTicketRequests = $SolicitarChamado->getActiveTicketRequests();
+      $inQueueTickets = $Chamado->getInQueueTickets();
+      $inProcessTickets = $Chamado->getInProcessTickets();
 
-      $servico = Container::getClass("Servico");
-      $servicos = $servico->fetchAll();
-      $array_servicos_names = [];
-      foreach ($servicos as $service) {
-        $array_servicos_names[$service['id']] = $service['nome'];
-      }
-
-      $requisicao_atendendimento = Container::getClass("SolicitarChamado");
-      $requisicoes_atendimento = $requisicao_atendendimento->fetchAll();
-      $requisicoes_atendimento_aguardando = [];
-      foreach ($requisicoes_atendimento as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $requisicoes_atendimento_aguardando[] = $request;
-        }
-      }
-
-      $cliente = Container::getClass("Usuario");
-      $clientes = $cliente->fetchAll();
-      $array_clients_names = [];
-      foreach ($clientes as $client) {
-        $array_clients_names[$client['id']]['nome'] = $client['nome'];
-        $array_clients_names[$client['id']]['setor'] = $client['setor'];
-      }
-
-      $local = Container::getClass("Local");
-      $locais = $local->fetchAll();
-      $array_locais = [];
-      foreach ($locais as $local) {
-          $array_locais[$local['id']]['nome'] = $local['nome'];
-          $array_locais[$local['id']]['tipo'] = $local['tipo'];
-          $array_locais[$local['id']]['ativo'] = $local['ativo'];
-      }
-
-      //atribuindo para a view
-      $this->view->clients_names = $array_clients_names;
-      $this->view->service_names = $array_servicos_names;
-      $this->view->requisicoes_atendimento = $requisicoes_atendimento_aguardando;
-      $this->view->requisicoes = $requisicoes_acesso_aguardando;
-      $this->view->chamados = $chamados;
-      $this->view->chamados_abertos = $chamados_abertos;
-      $this->view->chamados_atendimentos = $chamados_atendimentos;
-      $this->view->chamados_finalizados = $chamados_finalizados;
-      $this->view->locais = $array_locais;
-      $this->view->count = $count - 1;
+      $this->view->token = \json_encode($token->data);
+      $this->view->unreviewedAccountRequests = $unreviewedAccountRequests;
+      $this->view->activeTicketRequests = $activeTicketRequests;
+      $this->view->inQueueTickets = $inQueueTickets;
+      $this->view->inProcessTickets = $inProcessTickets;
       $this->render('gerentes');
     }else{
       $this->forbidenAccess();
@@ -80,16 +37,8 @@ class GerenteController extends Action{
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
       $requisicao_acesso = Container::getClass("SolicitarAcesso");
-      $requisicoes = $requisicao_acesso->fetchAll();
-      $requisicoes_aguardando = [];
-
-      foreach ($requisicoes as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $requisicoes_aguardando[] = $request;
-        }
-      }
-
-      $this->view->requisicoes = $requisicoes_aguardando;
+      $unreviewedAccountRequests = $requisicao_acesso->getUnreviewedRequests();
+      $this->view->unreviewedAccountRequests = $unreviewedAccountRequests;
       $this->render('cadastro_usuario_index');
     }else{
       $this->forbidenAccess();
@@ -330,7 +279,7 @@ class GerenteController extends Action{
     session_start();
     if($_SESSION['user_role'] == "GERENTE"){
       if (isset($_POST['reason']) && isset($_POST['request_list']) && isset($_POST['send_email'])) {
-        if ($_POST['send_email'] == "true" && (!isset($_POST['email_message']) || preg_match('/^\s*$/', $_POST['email_message']))) {
+        if ($_POST['send_email'] == "true" && (!isset($_POST['email_message']) || !preg_match('/^\s*$/', $_POST['email_message']))) {
           header('Content-Type: application/json; charset=UTF-8');
           header('HTTP/1.1 400');
           die(json_encode(array('event' => 'error', 'type' => 'insuficient_email_data')));
@@ -381,17 +330,32 @@ class GerenteController extends Action{
   public function finalize_request(){
     session_start();
     if(($_SESSION['user_role'] == "GERENTE")||($_SESSION['user_role'] == "TECNICO")){
-      if((isset($_POST['technical_opinion']))&&(isset($_POST['request_id']))){
-        $id = $_POST['request_id'];
+      if(
+          isset($_POST['request_id']) &&
+          isset($_POST['technical_opinion']) &&
+          !preg_match('/^\s*$/', $_POST['technical_opinion'])
+      ){
+        $ticketID = $_POST['request_id'];
         $parecer = $_POST['technical_opinion'];
         $status = "FINALIZADO";
         $date = new \DateTime("now", new \DateTimeZone("America/Recife"));
         $date->setTimestamp(time());
         $data_finalizado = $date->format("Y-m-d H:i:s");
-        $chamadoDb = Container::getClass("Chamado");
-        $chamadoDb->updateColumnById("status",$status,$id);
-        $chamadoDb->updateColumnById("parecer_tecnico",$parecer,$id);
-        $chamadoDb->updateColumnById("data_finalizado",$data_finalizado,$id);
+        $Chamado = Container::getClass("Chamado");
+        $Chamado->updateColumnById("status", $status, $ticketID);
+        $Chamado->updateColumnById("parecer_tecnico", $parecer, $ticketID);
+        $Chamado->updateColumnById("data_finalizado", $data_finalizado, $ticketID);
+
+        // Return the ticket with updated data
+        $ticket = $Chamado->getTicketById($ticketID);
+        if ($ticket) {
+          header('Content-Type: application/json; charset=UTF-8');
+          echo json_encode(array('event' => 'success', 'type' => 'finalized_ticket', 'ticket' => $ticket));
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
       }
     }
   }
@@ -414,7 +378,18 @@ class GerenteController extends Action{
           $date = new \DateTime($_POST['deadline_value'], new \DateTimeZone("America/Recife"));
           $prazo = $date->format("Y-m-d H:i:s");
           $chamadoDb = Container::getClass("Chamado");
-          $chamadoDb->save($requisicao['id_servico'],$requisicao['id_local'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$prazo,$requisicao['descricao']);
+          $ticketId = $chamadoDb->save($requisicao['id_servico'],$requisicao['id_local'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$prazo,$requisicao['descricao']);
+
+          if ($ticketId !== false) {
+            // Return the new ticket data
+            $ticket = $chamadoDb->getTicketById($ticketId);
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(array('event' => 'success', 'type' => 'new_ticket', 'ticket' => $ticket));
+          } else {
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 400');
+            die(json_encode(array('event' => 'error', 'type' => 'db_op_failed')));
+          }
         } else {
           header('Content-Type: application/json; charset=UTF-8');
           header('HTTP/1.1 400');
@@ -433,6 +408,9 @@ class GerenteController extends Action{
   public function solicitar_atendimento() {
       session_start();
       if($_SESSION['user_role'] == "GERENTE") {
+        // Get the token for WebSocket
+        $token = new Token($_SESSION['user_id']);
+        $this->view->token = \json_encode($token->data);
         $this->render('solicitar_atendimento');
       } else {
         $this->forbidenAccess();

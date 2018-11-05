@@ -73,24 +73,6 @@
             </div>
 
           </div>
-          <!-- /sidebar menu -->
-
-          <!-- /menu footer buttons -->
-          <!--<div class="sidebar-footer hidden-small">
-            <a data-toggle="tooltip" data-placement="top" title="Settings">
-              <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-            </a>
-            <a data-toggle="tooltip" data-placement="top" title="FullScreen">
-              <span class="glyphicon glyphicon-fullscreen" aria-hidden="true"></span>
-            </a>
-            <a data-toggle="tooltip" data-placement="top" title="Lock">
-              <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
-            </a>
-            <a data-toggle="tooltip" data-placement="top" title="Logout" href="logout">
-              <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
-            </a>
-          </div>-->
-          <!-- /menu footer buttons -->
         </div>
       </div>
 
@@ -143,11 +125,6 @@
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
                     </li>
-                    <!--<li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
-                    </li>-->
-                    <!--<li><a class="close-link"><i class="fas fa-times"></i></a>
-                    </li>-->
                   </ul>
                   <div class="clearfix"></div>
                 </div>
@@ -157,40 +134,14 @@
                     <thead>
                       <tr>
                         <th>ID</th>
+                        <th>Prazo</th>
                         <th>Cliente</th>
                         <th>Local</th>
                         <th>Serviço</th>
-                        <th>Prazo</th>
                         <th>Ação</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <?php foreach ($this->view->myRequests as $callrequest):?>
-                        <tr data-request-id="<?php echo $callrequest['id'];?>">
-                          <a href="view_request">
-                            <td><?php echo $callrequest['id']; ?></td>
-                            <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
-                            <td><?php echo $this->view->locais[$callrequest['id_local']]['nome'];?></td>
-                            <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
-                            <td>
-                              <?php
-                              $current_date = new \DateTime("now", new \DateTimeZone('America/Fortaleza'));
-                              $deadline = new \DateTime($callrequest['prazo'], new \DateTimeZone('America/Fortaleza'));
-                              $diff = (array)$current_date->diff($deadline);
-                              if (isset($diff['d']) && $diff['d'] >= 1) {
-                                echo ($diff['d'] === 1) ? $diff['d']." dia" : $diff['d']." dias";
-                              } elseif (isset($diff['h']) && $diff['h'] >= 1) {
-                                echo ($diff['h'] === 1) ? $diff['h']." hora" : $diff['h']." horas";
-                              } elseif (isset($diff['i']) && $diff['i'] >= 1) {
-                                echo ($diff['i'] === 1) ? $diff['i']." minuto" : $diff['i']." minutos";
-                              }
-                              ?>
-                            </td>
-                            <td><button type="button" class="btn btn-primary" name="btnFinalizarChamado" value=<?php echo $callrequest['id'];?>>Finalizar</button></td>
-                          </a>
-                        </tr>
-                      <?php endforeach;?>
-                    </tbody>
+                    <tbody></tbody>
                   </table>
                 </form>
                 </div>
@@ -201,11 +152,6 @@
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
                     </li>
-                    <!--<li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
-                    </li>-->
-                    <!--<li><a class="close-link"><i class="fas fa-times"></i></a>
-                    </li>-->
                   </ul>
                   <div class="clearfix"></div>
                 </div>
@@ -215,10 +161,10 @@
                     <thead>
                       <tr>
                         <th>ID</th>
+                        <th>Prazo</th>
                         <th>Cliente</th>
                         <th>Local</th>
                         <th>Serviço</th>
-                        <th>Prazo</th>
                         <th>Técnico Responsável</th>
                       </tr>
                     </thead>
@@ -261,11 +207,6 @@
                   <ul class="nav navbar-right panel_toolbox">
                     <li><a class="collapse-link"><i class="fas fa-angle-up" data-fa-transform="grow-8"></i></a>
                     </li>
-                    <!--<li class="dropdown">
-                      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><i class="fas fa-cog"></i></a>
-                    </li>-->
-                    <!-- <li><a class="close-link"><i class="fas fa-times"></i></a> -->
-                    </li>
                   </ul>
                   <div class="clearfix"></div>
                 </div>
@@ -281,17 +222,7 @@
                         <th>Ação</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <?php foreach ($this->view->openRequests as $callrequest):?>
-                        <tr data-request-id="<?php echo $callrequest['id'];?>">
-                          <td><?php echo $callrequest['id']; ?></td>
-                          <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
-                          <td><?php echo $this->view->locais[$callrequest['id_local']]['nome'];?></td>
-                          <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
-                          <td><button type="button" class="btn btn-primary" name="btnJoin" value=<?php echo $callrequest['id'];?>>Assumir</button></td>
-                        </tr>
-                      <?php endforeach;?>
-                    </tbody>
+                    <tbody/>
                   </table>
                 </form>
                 </div>
@@ -316,17 +247,7 @@
                                         <th>Ação</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                  <?php foreach ($this->view->requisicoes_atendimento as $call_request): ?>
-                                    <tr data-request-id="<?php echo $call_request['id'];?>">
-                                        <td><?php echo $this->view->users_names[$call_request['id_cliente']]['nome'];?></td>
-                                        <td><?php echo $this->view->locais[$call_request['id_local']]['nome'];?></td>
-                                        <td><?php echo $this->view->service_names[$call_request['id_servico']];?></td>
-                                        <td><button class="btn btn-primary" type="button" value="<?php echo $call_request['id'];?>" name="request-acceptance">Aceitar</button></td>
-                                        <td><button class="btn btn-primary" type="button" value="<?php echo $call_request['id'];?>" name="request-refusal">Recusar</button></td>
-                                    </tr>
-                                  <?php endforeach; ?>
-                                </tbody>
+                                <tbody/>
                             </table>
                         </form>
                     </div>
@@ -359,24 +280,107 @@
 <script src="../App/View/js/jquery.min.js"></script>
 <!-- Bootstrap -->
 <script src="../App/View/js/bootstrap.min.js"></script>
-<!-- FastClick -->
-<script src="../App/View/js/fastclick.js"></script>
 <!-- NProgress -->
 <script src="../App/View/js/nprogress.js"></script>
 <!-- iCheck -->
 <script src="../App/View/js/icheck.min.js"></script>
-<script>
-$(document).ready(function(){
-   $('input').iCheck({
-     checkboxClass: 'icheckbox_square-blue',
-     radioClass: 'iradio_square'
-   });
- });
-</script>
 <!-- moment.js -->
-<script src="../App/View/js/moment-with-locales.min.js"></script>
+<script src="../App/View/js/moment.min.js"></script>
+<!-- forge-sha256 -->
+<script src="../App/View/js/forge-sha256.min.js"></script>
+
+<!-- Socket.IO -->
+<script src="../App/View/js/socket.io.js"></script>
 <script>
-moment.locale('pt-br');
+  let token = <?php echo $this->view->token ?>;
+
+  // Connect to the WebSocket server
+  let socket = io(`wss://${window.location.host}:5530`);
+
+  // Try to resolve the challenge in order to stay connected to the WS server
+  socket.on('connecting', ({challenge}) => {
+    let solution = `${challenge}${token.last_login_date}`;
+    let tokenData = {
+      "username": token.username,
+      "challengeSolution": forge_sha256(solution)
+    };
+    socket.emit('challenge solution', tokenData);
+  });
+
+  // When the support creates a ticket directly
+  socket.on('support created ticket', ticket => {
+    window.inQueueTickets.push(ticket);
+    insertInInQueueTicketsTable(ticket);
+  });
+
+  // When a client makes a ticket request
+  socket.on('client requested ticket', ticketRequest => {
+    // Insert the ticket request in the page
+    window.activeTicketRequests.push(ticketRequest);
+    insertInActiveTicketRequestsTable(ticketRequest)
+  });
+
+  // When a client cancels a ticket request
+  socket.on('client cancelled ticket request', ticketRequest => {
+    // Remove the ticket request from the ticket requests list and table
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticketRequest.id_solicitacao
+    );
+
+    // Remove the ticket request from the table
+    $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+  });
+
+  // When a client cancels a ticket
+  socket.on('client cancelled ticket', ticket => {
+    // Remove the ticket from the "in queue" list and table
+    window.inQueueTickets = window.inQueueTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+  });
+
+  // When the support refuses a ticket request
+  socket.on('support refused ticket request', ticketRequest => {
+    // Remove the ticket request from the ticket requests list and table
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticketRequest.id_solicitacao
+    );
+    $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+  });
+
+  // When other technicians accept a ticket request
+  socket.on('support accepted ticket request', ticket => {
+    // Remove the ticket request from the ticket requests list and table
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticket.id_solicitacao
+    );
+    $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
+    // Insert into the "in queue" list and table
+    window.inQueueTickets.push(ticket);
+    insertInInQueueTicketsTable(ticket);
+  });
+
+  // When other technicians acquire a ticket
+  socket.on('technician acquired ticket', ticket => {
+    // Remove the ticket from the "in queue" list and table
+    window.inQueueTickets = window.inQueueTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+    // Insert into the "other technicians in process tickets" list and table
+    window.otherTechniciansInProcessTickets.push(ticket);
+    insertInInProcessTicketsTable(ticket);
+  });
+
+  // When other technicians finalize a ticket
+  socket.on('technician finalized ticket', ticket => {
+    // Remove from "other technicians in process tickets" list and table
+    window.otherTechniciansInProcessTickets = window.otherTechniciansInProcessTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+  });
 </script>
 
 <!-- Custom Theme Scripts -->
@@ -385,128 +389,432 @@ moment.locale('pt-br');
 <!-- Request modal settings -->
 <script src="../App/View/js/request-modals.js"></script>
 <script>
-$('#processing-requests tr, #my-processing-requests tr').on('click', function(e) {
-  if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
-    var request_id = getRowId(e);
-    if (request_id) {
-      modal_config = {
-        title: "Detalhes do chamado",
-        visible_fields: {
-          id_chamado_field: true,
-          chamado_status_field: true,
-          cliente_field: true,
-          local_field: true,
-          servico_field: true,
-          data_abertura_field: true,
-          tecnico_abertura_field: true,
-          descricao_field: true,
-          prazo_field: true,
-          tecnico_responsavel_field: true
-        }
-      };
-      defineSimpleModal(modal_config, "open-request-type", request_id);
-    }
-  }
-});
-$('#call-requests tr').on('click', function(e) {
-  if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
-    var request_id = getRowId(e);
-    if (request_id) {
-      modal_config = {
-        title: "Detalhes do chamado",
-        visible_fields: {
-          id_solicitacao_field: true,
-          cliente_field: true,
-          local_field: true,
-          solicitacao_chamado_status_field: true,
-          servico_field: true,
-          data_solicitacao_field: true,
-          descricao_field: true
-        }
-      };
-      defineSimpleModal(modal_config, "call-request-type", request_id);
-    }
-  }
-});
-$('#open-requests tr').on('click', function(e) {
-  if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
-    var request_id = getRowId(e);
-    if (request_id) {
-      modal_config = {
-        title: "Detalhes da solicitação",
-        visible_fields: {
-          id_chamado_field: true,
-          chamado_status_field: true,
-          cliente_field: true,
-          local_field: true,
-          servico_field: true,
-          data_abertura_field: true,
-          tecnico_abertura_field: true,
-          descricao_field: true,
-          prazo_field: true
-        }
-      };
-      defineSimpleModal(modal_config, "open-request-type", request_id);
-    }
-  }
-});
-
-$('#call-requests button[name=request-acceptance]').on('click', function(e) {
+  function acquireTicketBtnClick(e) {
     if (e.target.nodeName == "BUTTON") {
-        var request_id = getRowId(e);
-        if (request_id) {
-          var modal_config = {
-              title: "Aceitar solicitação de chamado",
-              visible_fields: {
-                  id_solicitacao_field: true,
-                  cliente_field: true,
-                  servico_field: true,
-                  descricao_field: true,
-                  data_solicitacao_field: true,
-                  prazo_field: false
-              },
-              footer_config: [
-                  {
-                      btnContent: "Aceitar chamado",
-                      class: "btn btn-primary",
-                      callback: acceptRequest.bind(null, $(e.target).parents('tr'))
-                  }
-              ]
-          };
-          defineSimpleModal(modal_config, "call-request-type", request_id);
-        }
+      var requestId = getRowId(e);
+      var modalConfig = {
+        title: "Assumir chamado",
+        visible_fields: {
+          id_chamado_field: true,
+          cliente_field: true,
+          servico_field: true,
+          descricao_field: true,
+          data_solicitacao_field: true,
+          data_abertura_field: true,
+          prazo_field: false
+        },
+        footer_config: [
+          {
+            btnContent: "Assumir chamado",
+            class: "btn btn-primary",
+            callback: acquireRequest.bind(null, requestId)
+          }
+        ]
+      };
+      let requestData = inQueueTickets.find(r => r.id_chamado === requestId);
+      defineSimpleModal(modalConfig, requestData);
     }
-});
+  }
+  function acceptTicketRequestBtnClick(e) {
+    if (e.target.nodeName == "BUTTON") {
+      let requestId = getRowId(e);
+      if (requestId) {
+        let modalConfig = {
+          title: "Aceitar solicitação de chamado",
+          visible_fields: {
+            id_solicitacao_field: true,
+            cliente_field: true,
+            servico_field: true,
+            descricao_field: true,
+            data_solicitacao_field: true,
+            prazo_field: false
+          },
+          footer_config: [
+            {
+              btnContent: "Aceitar chamado",
+              class: "btn btn-primary",
+              callback: acceptRequest.bind(null, requestId)
+            }
+          ]
+        };
+        let requestData = activeTicketRequests.find(r => r.id_solicitacao === requestId);
+        defineSimpleModal(modalConfig, requestData);
+      }
+    }
+  }
+  function refuseTicketRequestBtnClick(e) {
+    if (e.target.nodeName == "BUTTON") {
+      var requestId = getRowId(e);
+      if (requestId) {
+        var modalConfig = {
+          title: "Recusar solicitação de chamado",
+          visible_fields: {
+            id_solicitacao_field: true,
+            cliente_field: true,
+            local_field: true,
+            servico_field: true,
+            data_solicitacao_field: true,
+            descricao_field: true,
+            motivo_recusa_field: false
+          },
+          footer_config: [
+            {
+              btnContent: "Recusar solicitação",
+              class: "btn btn-primary",
+              callback: refuseRequest.bind(null, requestId)
+            }
+          ]
+        };
+        let requestData = activeTicketRequests.find(r => r.id_solicitacao === requestId);
+        let filledFormFields = ["id_solicitacao_field", "cliente_field", "local_field", "servico_field", "data_solicitacao_field", "descricao_field"];
+        defineModal(modalConfig);
+        fillUpRequestModal(requestData, filledFormFields);
+        showRequestModal();
+      }
+    }
+  }
+  function closeTicketBtnClick(e) {
+    if (e.target.nodeName == "BUTTON") {
+      var requestId = getRowId(e);
+      var modalConfig = {
+        title: "Finalizar chamado",
+        visible_fields: {
+          id_chamado_field: true,
+          servico_field: true,
+          data_abertura_field: true,
+          prazo_field: true,
+          descricao_field: true,
+          parecer_tecnico_field: false
+        },
+        footer_config: [
+          {
+            btnContent:"Finalizar",
+            class: "btn btn-primary",
+            callback: finalizeRequest.bind(null, requestId)
+          }
+        ]
+      };
+      let requestData = techniciansInProcessTickets.find(r => r.id_chamado === requestId);
+      defineSimpleModal(modalConfig, requestData);
+    }
+  }
+  function activeTicketRequestTableRowClick(e) {
+    if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
+      let requestId = getRowId(e);
+      if (requestId) {
+        modalConfig = {
+          title: "Detalhes do chamado",
+          visible_fields: {
+            id_solicitacao_field: true,
+            cliente_field: true,
+            local_field: true,
+            status_field: true,
+            servico_field: true,
+            data_solicitacao_field: true,
+            descricao_field: true
+          }
+        };
+        let requestData = activeTicketRequests.find(r => r.id_solicitacao === requestId);
+        defineSimpleModal(modalConfig, requestData);
+      }
+    }
+  }
+  function inQueueTicketsTableRowClick(e) {
+    if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
+      let requestId = getRowId(e);
+      if (requestId) {
+        modalConfig = {
+          title: "Detalhes da solicitação",
+          visible_fields: {
+            id_chamado_field: true,
+            status_field: true,
+            cliente_field: true,
+            local_field: true,
+            servico_field: true,
+            data_abertura_field: true,
+            tecnico_abertura_field: true,
+            descricao_field: true,
+            prazo_field: true
+          }
+        };
+        let requestData = inQueueTickets.find(r => r.id_chamado === requestId);
+        defineSimpleModal(modalConfig, requestData);
+      }
+    }
+  }
+  function inProcessTicketsTableRowClick(e) {
+    if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
+      let requestId = getRowId(e);
+      if (requestId) {
+        modalConfig = {
+          title: "Detalhes do chamado",
+          visible_fields: {
+            id_chamado_field: true,
+            status_field: true,
+            cliente_field: true,
+            local_field: true,
+            servico_field: true,
+            data_abertura_field: true,
+            data_assumido_field: true,
+            tecnico_abertura_field: true,
+            descricao_field: true,
+            prazo_field: true,
+            tecnico_responsavel_field: true
+          }
+        };
+        let tableID = $(e.target).closest("table")[0].id;
+        let requestData;
+        if (tableID === "my-processing-requests") {
+          requestData = techniciansInProcessTickets.find(r => r.id_chamado === requestId);
+        } else {
+          requestData = otherTechniciansInProcessTickets.find(r => r.id_chamado === requestId);
+        }
+        defineSimpleModal(modalConfig, requestData);
+      }
+    }
+  }
+  function ticketRequestAccepted(ticket) {
+    // Send the ticket request to connected support users and to the requester client
+    socket.emit('from support', 'support accepted ticket request', ticket);
 
-$('#call-requests button[name=request-refusal]').on('click', function(e) {
-   if (e.target.nodeName == "BUTTON") {
-     var request_id = getRowId(e);
-     if (request_id) {
-       var modal_config = {
-         title: "Recusar solicitação de chamado",
-         visible_fields: {
-           id_solicitacao_field: true,
-           cliente_field: true,
-           local_field: true,
-           servico_field: true,
-           data_solicitacao_field: true,
-           descricao_field: true,
-           motivo_recusa_field: false
-         },
-         footer_config: [
-           {
-             btnContent: "Recusar solicitação",
-             class: "btn btn-primary",
-             callback: refuseRequest.bind(null, $(e.target).parents('tr'))
-           }
-         ]
-       };
-       var filled_form_fields = ["id_solicitacao_field", "cliente_field", "servico_field", "data_solicitacao_field", "descricao_field"];
-       defineModal(modal_config);
-       fillUpRequestModal("call-request-type", request_id, filled_form_fields);
-       showRequestModal();
-     }
-   }
- });
+    // Put the ticket in the local open tickets list
+    //  and remove from the active requests list
+    window.inQueueTickets.push(ticket);
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticket.id_solicitacao
+    );
+    // Insert the ticket in the table
+    insertInInQueueTicketsTable(ticket);
+    // Remove the ticket request from the table it were before
+    $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
+  }
+  function ticketRequestRefused(request) {
+    // Send the ticket request to connected support users and to the requester client
+    socket.emit('from support', 'support refused ticket request', request);
+
+    // Search for the request in the local list and delete it
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== request.id_solicitacao
+    );
+
+    // Remove the request from the table
+    $('form[name=solicitacoes_chamados]').find(`[data-request-id=${request.id_solicitacao}]`).remove();
+  }
+  function ticketAcquired(ticket) {
+    // Send the ticket to connected support users and to the requester client
+    socket.emit('from support', 'technician acquired ticket', ticket);
+
+    // Remove from the in queue tickets local list
+    window.inQueueTickets = window.inQueueTickets.filter(t => t.id_chamado !== ticket.id_chamado);
+    // Insert the ticket in the technician's in process tickets list
+    techniciansInProcessTickets.push(ticket);
+
+    // Remove the ticket from the In Queue table
+    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+
+    // Insert the ticket in the In Process table
+    insertInTechniciansTicketsTable(ticket);
+  }
+  function ticketClosed(ticket) {
+    // Send the ticket to connected support users and to the requester client
+    socket.emit('from support', 'technician finalized ticket', ticket);
+
+    // Remove the ticket from the local list
+    window.techniciansInProcessTickets = window.techniciansInProcessTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+
+    // Remove the ticket from the technician's tickets table
+    let techniciansTable = $('form[name=meus_servicos_atendimento_form]');
+    techniciansTable.find(`[data-request-id=${ticket.id_chamado}]`).remove();
+  }
+</script>
+
+<!-- Tables handling -->
+<script>
+  const calculateDeadlineMsg = (deadlineDatetime) => {
+    let a = moment();
+    let b = moment(deadlineDatetime, "YYYY-MM-DD HH:mm:ss");
+    let interval = b.diff(a, 'months');
+    let deadlineMsg = "";
+    if (interval >= 2 || interval <= -2) {
+      // Months of difference
+      deadlineMsg = (interval > 0) ? `Daqui a ${interval} meses` : `${Math.abs(interval)} meses atrasado`;
+    } else {
+      interval = b.diff(a, 'weeks');
+      if (interval >= 2 || interval <= -2) {
+        // Weeks of difference
+        deadlineMsg = (interval > 0) ? `Daqui a ${interval} semanas` : `${Math.abs(interval)} semanas atrasado`;
+      } else {
+        interval = b.diff(a, 'days');
+        if (interval >= 2 || interval <= -2) {
+          // Days of difference
+          deadlineMsg = (interval > 0) ? `Daqui a ${interval} dias` : `${Math.abs(interval)} dias atrasado`;
+        } else {
+          interval = b.diff(a, 'hours');
+          if (interval >= 24 || interval <= -24) {
+            deadlineMsg = (interval > 0) ? `Daqui a 2 dias` : `2 dias atrasado`;
+          } else if (a.format("YYYY-MM-DD") === b.format("YYYY-MM-DD")) {
+            deadlineMsg = "Hoje";
+          } else {
+            deadlineMsg = (interval > 0) ? `Daqui a 1 dia` : `1 dia atrasado`;
+          }
+        }
+      }
+    }
+    return deadlineMsg;
+  };
+
+  function insertInActiveTicketRequestsTable(request) {
+    let activeTicketRequestsTable = $('#call-requests');
+
+    // Row structure
+    let newRow = $("<tr>").attr("data-request-id", request.id_solicitacao);
+    let cols = "";
+    cols += `<td>${request.cliente}</td>`;
+    cols += `<td>${request.local}</td>`;
+    cols += `<td>${request.servico}</td>`;
+    newRow.append(cols);
+
+    // Accept ticket request button
+    let btnAcceptTicketRequest = $(
+      `<button type="button"\
+      class="btn btn-primary"\
+      name="request-acceptance"\
+      value="${request.id_solicitacao}">Aceitar</button>`);
+
+    // Reject ticket request button
+    let btnRejectTicketRequest = $(
+      `<button type="button"\
+      class="btn btn-primary"\
+      name="request-refusal"\
+      value="${request.id_solicitacao}">Recusar</button>`);
+
+    newRow.append(
+      $("<td>")
+      .append(btnAcceptTicketRequest)
+      .append(btnRejectTicketRequest));
+
+    // Events
+    $(newRow).on('click', activeTicketRequestTableRowClick);
+    $(btnAcceptTicketRequest).on('click', acceptTicketRequestBtnClick);
+    $(btnRejectTicketRequest).on('click', refuseTicketRequestBtnClick);
+
+    // Add the row to the table
+    activeTicketRequestsTable.append(newRow);
+  }
+  function insertInInQueueTicketsTable(request) {
+    let inQueueTicketsTable = $('#open-requests');
+
+    // Row structure
+    let newRow = $("<tr>").attr("data-request-id", request.id_chamado);
+    let cols = "";
+    cols += `<td>${request.id_chamado}</td>`;
+    cols += `<td>${request.cliente}</td>`;
+    cols += `<td>${request.local}</td>`;
+    cols += `<td>${request.servico}</td>`;
+    newRow.append(cols);
+
+    // Acquire ticket button
+    let btnAcquireTicket = $(
+      `<button type="button"\
+      class="btn btn-primary"\
+      name="btnJoin"\
+      value="${request.id_chamado}">Assumir</button>`);
+    newRow.append($("<td>").append(btnAcquireTicket));
+
+    // Events
+    $(newRow).on('click', inQueueTicketsTableRowClick);
+    $(btnAcquireTicket).on('click', acquireTicketBtnClick);
+
+    // Add the row to the table
+    inQueueTicketsTable.append(newRow);
+  }
+  function insertInTechniciansTicketsTable(request) {
+    let techniciansTicketsTable = $('#my-processing-requests');
+
+    // Row structure
+    let newRow = $("<tr>").attr("data-request-id", request.id_chamado);
+    let cols = "";
+    cols += `<td>${request.id_chamado}</td>`;
+    cols += `<td>${calculateDeadlineMsg(request.prazo)}</td>`;
+    cols += `<td>${request.cliente}</td>`;
+    cols += `<td>${request.local}</td>`;
+    cols += `<td>${request.servico}</td>`;
+    newRow.append(cols);
+
+    // Close ticket button
+    let btnCloseTicket = $(
+      `<button type="button"\
+      class="btn btn-primary"\
+      name="btnFinalizarChamado"\
+      value="${request.id_chamado}">Fechar</button>`);
+    newRow.append($("<td>").append(btnCloseTicket));
+
+    // Events
+    $(newRow).on('click', inProcessTicketsTableRowClick);
+    $(btnCloseTicket).on('click', closeTicketBtnClick);
+
+    // Add the row to the table
+    techniciansTicketsTable.append(newRow);
+  }
+  function insertInInProcessTicketsTable(request) {
+    let inProcessTicketsTable = $('#processing-requests');
+
+    // Row structure
+    let newRow = $("<tr>").attr("data-request-id", request.id_chamado);
+    let cols = "";
+    cols += `<td>${request.id_chamado}</td>`;
+    cols += `<td>${calculateDeadlineMsg(request.prazo)}</td>`;
+    cols += `<td>${request.cliente}</td>`;
+    cols += `<td>${request.local}</td>`;
+    cols += `<td>${request.servico}</td>`;
+    cols += `<td>${request.tecnico_responsavel}</td>`;
+    newRow.append(cols);
+
+    // Events
+    $(newRow).on('click', inProcessTicketsTableRowClick);
+
+    // Add the row to the table
+    inProcessTicketsTable.append(newRow);
+  }
+</script>
+
+<!-- Ready -->
+<script>
+  const populateActiveTicketRequestsTable = () => {
+    for (ticket of window.activeTicketRequests) {
+      insertInActiveTicketRequestsTable(ticket);
+    }
+  };
+  const populateInQueueTicketsTable = () => {
+    for (ticket of window.inQueueTickets) {
+      insertInInQueueTicketsTable(ticket);
+    }
+  };
+  const populateTechniciansTicketsTable = () => {
+    for (ticket of window.techniciansInProcessTickets) {
+      insertInTechniciansTicketsTable(ticket);
+    }
+  };
+  const populateInProcessTicketsTable = () => {
+    for (ticket of window.otherTechniciansInProcessTickets) {
+      insertInInProcessTicketsTable(ticket);
+    }
+  };
+
+  $(document).ready(function() {
+    // Load the requests for the page
+    window.activeTicketRequests = <?php echo json_encode($this->view->activeTicketRequests) ?>;
+    window.inQueueTickets = <?php echo json_encode($this->view->inQueueTickets) ?>;
+    window.techniciansInProcessTickets = <?php echo json_encode($this->view->techniciansInProcessTickets) ?>;
+    window.otherTechniciansInProcessTickets = <?php echo json_encode($this->view->otherTechniciansInProcessTickets) ?>;
+
+    // Populate the tables
+    populateActiveTicketRequestsTable();
+    populateInQueueTicketsTable();
+    populateTechniciansTicketsTable();
+    populateInProcessTicketsTable();
+  });
 </script>
 </body>

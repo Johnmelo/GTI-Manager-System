@@ -26,6 +26,7 @@ CREATE TABLE `chamados` (
   `id_solicitacao` int(10) NOT NULL,
   `data_abertura` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `data_finalizado` datetime DEFAULT NULL,
+  `data_assumido` datetime DEFAULT NULL,
   `prazo` datetime DEFAULT NULL,
   `id_tecnico_responsavel` int(10) DEFAULT NULL,
   `id_tecnico_abertura` int(10) NOT NULL,

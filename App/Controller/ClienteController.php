@@ -2,163 +2,81 @@
 namespace App\Controller;
 use SON\Controller\Action;
 use \SON\Di\Container;
+use \App\Model\Token;
 
 class ClienteController extends Action{
+
   public function index(){
     session_start();
     if($_SESSION['user_role'] === "CLIENTE"){
+      // Get the token for WebSocket
+      $token = new Token($_SESSION['user_id']);
 
-      //LOADING AND PREPARE INFORMATIONS ABOUT CLIENT REQUESTS
-      $chamado = Container::getClass("Chamado");
-      $chamados = $chamado->getChamadosByColumn("id_cliente_solicitante", $_SESSION['user_id']);
-      $chamados_abertos = [];
-      $chamados_atendimento = [];
-      foreach ($chamados as $request) {
-        if($request['status'] == "AGUARDANDO"){
-          $chamados_abertos[] = $request;
-        }elseif ($request['status'] == "ATENDIMENTO") {
-          $chamados_atendimento[] = $request;
-        }
-      }
-      //-------------------------------------------------------
-
-      //LOADING AND PREPARE INFORMATIONS ABOUT CLIENT SERVICES
-      $servico = Container::getClass("Servico");
-      $servicos = $servico->fetchAll();
-      $array_servicos_names = [];
-      foreach ($servicos as $service) {
-        $array_servicos_names[$service['id']] = $service['nome'];
-      }
-      //-------------------------------------------------------
-
-      //LOADING AND PREPARE INFORMATIONS ABOUT USERS TO IDENTIFY TECHNICIAN NAMES
-      $user = Container::getClass("Usuario");
-      $users = $user->fetchAll();
-      $array_users_names = [];
-      foreach ($users as $client) {
-        $array_users_names[$client['id']]['nome'] = $client['nome'];
-      }
-      $array_users_names['NULL']['nome'] = "-";
-      //--------------------------------------------------------
-
-      // LOAD AND PREPARE PLACES INFORMATION
-      $local = Container::getClass("Local");
-      $locais = $local->fetchAll();
-      $array_locais = [];
-      foreach ($locais as $local) {
-          $array_locais[$local['id']]['nome'] = $local['nome'];
-          $array_locais[$local['id']]['tipo'] = $local['tipo'];
-          $array_locais[$local['id']]['ativo'] = $local['ativo'];
-      }
-      //--------------------------------------------------------
-
-      //ATRIBUING VALUES TO THE VIEW CLIENT
-      $this->view->chamados_abertos = $chamados_abertos;
-      $this->view->chamados_atendimento = $chamados_atendimento;
-      $this->view->services_names = $array_servicos_names;
-      $this->view->users_names = $array_users_names;
-      $this->view->locais = $array_locais;
+      $Chamado = Container::getClass("Chamado");
+      $inQueueTickets = $Chamado->getUsersInQueueTickets($_SESSION['user_id']);
+      $inProcessTickets = $Chamado->getUsersInProcessTickets($_SESSION['user_id']);
+      $this->view->inQueueTickets = $inQueueTickets;
+      $this->view->inProcessTickets = $inProcessTickets;
+      $this->view->token = \json_encode($token->data);
       $this->render('clientes');
-      //--------------------------------------------------------
-
     }else{
       $this->forbidenAccess();
     }
-
   }
 
   public function solicitar_atendimento(){
     session_start();
     if($_SESSION['user_role'] == "CLIENTE"){
+      // Get the token for WebSocket
+      $token = new Token($_SESSION['user_id']);
 
-      $servico = Container::getClass("Servico");
-      $requisicao = Container::getClass("SolicitarChamado");
-      $servicos = $servico->fetchAll();
-      $requisicoes = $requisicao->fetchAll();
-
-      $array_servicos_names = [];
-      $myRequests =[];
-      foreach ($servicos as $service) {
-        $array_servicos_names[$service['id']] = $service['nome'];
-      }
-
-      foreach ($requisicoes as $request) {
-        if($request['id_cliente'] == $_SESSION['user_id']){
-          $myRequests[] = $request;
-        }
-      }
-
-      $servicos = $servico->fetchAll();
-      $this->view->requisicoes = $myRequests;
-      $this->view->servicos = $servicos;
-      $this->view->requests_services_names = $array_servicos_names;
-
+      $SolicitarChamado = Container::getClass("SolicitarChamado");
+      $activeTicketRequests = $SolicitarChamado->getUsersActiveTicketRequests($_SESSION['user_id']);
+      $this->view->activeTicketRequests = $activeTicketRequests;
+      $this->view->token = \json_encode($token->data);
       $this->render('cliente_chamado_request');
     }else{
       $this->forbidenAccess();
     }
-
   }
 
   public function client_register_call_request(){
-    $id_servico = $_POST['id_servico'];
-    $id_local = $_POST['id_local'];
-    $descricao = $_POST['descricao'];
+      if (
+          isset($_POST['id_servico']) &&
+          isset($_POST['id_local']) &&
+          (isset($_POST['descricao']) && !preg_match('/^\s*$/', $_POST['descricao']))
+      ){
+          $id_servico = $_POST['id_servico'];
+          $id_local = $_POST['id_local'];
+          $descricao = $_POST['descricao'];
 
-    session_start();
-    $id_usuario = $_SESSION['user_id'];
+          session_start();
+          $id_usuario = $_SESSION['user_id'];
 
-    $requisicao = Container::getClass("SolicitarChamado");
-    $requisicao->save($id_usuario,$id_servico,$id_local,$descricao);
-    header('Location: ./solicitar_atendimento');
-
+          $SolicitarChamado = Container::getClass("SolicitarChamado");
+          $requestId = $SolicitarChamado->save($id_usuario,$id_servico,$id_local,$descricao);
+          if ($requestId !== false) {
+            $request = $SolicitarChamado->getTicketRequestById($requestId);
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(array('event' => 'success', 'type' => 'new_ticket_request', 'request' => $request));
+          } else {
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 400');
+            die(json_encode(array('event' => 'error', 'type' => 'db_op_failed')));
+          }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'insuficient_data')));
+      }
   }
 
   public function client_request_history() {
       session_start();
       if($_SESSION['user_role'] === "CLIENTE") {
-        $requestDb = Container::getClass("Chamado");
-        $requests = $requestDb->fetchAll();
-        $myRequests = [];
-
-        foreach ($requests as $request) {
-          if($request['id_cliente_solicitante'] == $_SESSION['user_id']){
-            $myRequests[] = $request;
-          }
-        }
-
-        $userDb = Container::getClass("Usuario");
-        $users = $userDb->fetchAll();
-        $user_info=[];
-        foreach ($users as $user) {
-          $user_info[$user['id']]['nome'] = $user['nome'];
-          // $user_info[$user['id']]['setor'] = $user['setor'];
-        }
-
-        //LOADING AND PREPARE INFORMATIONS ABOUT SERVICES
-        $servico = Container::getClass("Servico");
-        $servicos = $servico->fetchAll();
-        $array_servicos_names = [];
-        foreach ($servicos as $service) {
-          $array_servicos_names[$service['id']] = $service['nome'];
-        }
-        //--------------------------------------------------------
-
-        // LOAD AND PREPARE PLACES INFORMATION
-        $local = Container::getClass("Local");
-        $locais = $local->fetchAll();
-        $array_locais = [];
-        foreach ($locais as $local) {
-            $array_locais[$local['id']]['nome'] = $local['nome'];
-            $array_locais[$local['id']]['tipo'] = $local['tipo'];
-            $array_locais[$local['id']]['ativo'] = $local['ativo'];
-        }
-        //--------------------------------------------------------
-
-        $this->view->requests = $myRequests;
-        $this->view->user_info = $user_info;
-        $this->view->service_names = $array_servicos_names;
-        $this->view->locais = $array_locais;
+        $Chamado = Container::getClass("Chamado");
+        $inactiveTickets = $Chamado->getUsersInactiveTickets($_SESSION['user_id']);
+        $this->view->inactiveTickets = $inactiveTickets;
         $this->render('cliente_historico');
       } else {
           $this->forbidenAccess();
@@ -193,19 +111,32 @@ class ClienteController extends Action{
   public function client_cancel_call_request() {
       session_start();
       if ($_SESSION['user_role'] === 'CLIENTE') {
-          if (isset($_POST['request_id_list']) && isset($_POST['requestType'])) {
+          if (isset($_POST['request_id']) && isset($_POST['requestType'])) {
               $solicitacao = ($_POST['requestType'] === "pending_acceptance") ? Container::getClass("SolicitarChamado") : Container::getClass("Chamado");
-              foreach ($_POST['request_id_list'] as $id) {
-                  $solicitacao->updateColumnById("status", "CANCELADA", $id);
+              $solicitacao->updateColumnById("status", "CANCELADA", $_POST['request_id']);
+
+              // Return the ticket or ticket request back'
+              if ($_POST['requestType'] === "open_request") {
+                  $ticket = $solicitacao->getTicketById($_POST['request_id']);
+                  if ($ticket) {
+                      header('Content-Type: application/json; charset=UTF-8');
+                      echo json_encode(array('event' => 'success', 'type' => 'cancelled_ticket', 'ticket' => $ticket));
+                  }
+              } else {
+                  $request = $solicitacao->getTicketRequestById($_POST['request_id']);
+                  if ($request) {
+                      header('Content-Type: application/json; charset=UTF-8');
+                      echo json_encode(array('event' => 'success', 'type' => 'cancelled_ticket_request', 'request' => $request));
+                  }
               }
           } else {
-              header("HTTP/1.1 400 Bad Request");
+              header('Content-Type: application/json; charset=UTF-8');
+              header('HTTP/1.1 400');
+              die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
           }
       } else {
           $this->forbidenAccess();
       }
   }
-
-
 }
 ?>
