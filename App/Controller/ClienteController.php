@@ -2,17 +2,22 @@
 namespace App\Controller;
 use SON\Controller\Action;
 use \SON\Di\Container;
+use \App\Model\Token;
 
 class ClienteController extends Action{
 
   public function index(){
     session_start();
     if($_SESSION['user_role'] === "CLIENTE"){
+      // Get the token for WebSocket
+      $token = new Token($_SESSION['user_id']);
+
       $Chamado = Container::getClass("Chamado");
       $inQueueTickets = $Chamado->getUsersInQueueTickets($_SESSION['user_id']);
       $inProcessTickets = $Chamado->getUsersInProcessTickets($_SESSION['user_id']);
       $this->view->inQueueTickets = $inQueueTickets;
       $this->view->inProcessTickets = $inProcessTickets;
+      $this->view->token = \json_encode($token->data);
       $this->render('clientes');
     }else{
       $this->forbidenAccess();
@@ -22,9 +27,13 @@ class ClienteController extends Action{
   public function solicitar_atendimento(){
     session_start();
     if($_SESSION['user_role'] == "CLIENTE"){
+      // Get the token for WebSocket
+      $token = new Token($_SESSION['user_id']);
+
       $SolicitarChamado = Container::getClass("SolicitarChamado");
       $activeTicketRequests = $SolicitarChamado->getUsersActiveTicketRequests($_SESSION['user_id']);
       $this->view->activeTicketRequests = $activeTicketRequests;
+      $this->view->token = \json_encode($token->data);
       $this->render('cliente_chamado_request');
     }else{
       $this->forbidenAccess();

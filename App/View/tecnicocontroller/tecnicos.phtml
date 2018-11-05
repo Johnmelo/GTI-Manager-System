@@ -286,6 +286,102 @@
 <script src="../App/View/js/icheck.min.js"></script>
 <!-- moment.js -->
 <script src="../App/View/js/moment.min.js"></script>
+<!-- forge-sha256 -->
+<script src="../App/View/js/forge-sha256.min.js"></script>
+
+<!-- Socket.IO -->
+<script src="../App/View/js/socket.io.js"></script>
+<script>
+  let token = <?php echo $this->view->token ?>;
+
+  // Connect to the WebSocket server
+  let socket = io(`wss://${window.location.host}:5530`);
+
+  // Try to resolve the challenge in order to stay connected to the WS server
+  socket.on('connecting', ({challenge}) => {
+    let solution = `${challenge}${token.last_login_date}`;
+    let tokenData = {
+      "username": token.username,
+      "challengeSolution": forge_sha256(solution)
+    };
+    socket.emit('challenge solution', tokenData);
+  });
+
+  // When the support creates a ticket directly
+  socket.on('support created ticket', ticket => {
+    window.inQueueTickets.push(ticket);
+    insertInInQueueTicketsTable(ticket);
+  });
+
+  // When a client makes a ticket request
+  socket.on('client requested ticket', ticketRequest => {
+    // Insert the ticket request in the page
+    window.activeTicketRequests.push(ticketRequest);
+    insertInActiveTicketRequestsTable(ticketRequest)
+  });
+
+  // When a client cancels a ticket request
+  socket.on('client cancelled ticket request', ticketRequest => {
+    // Remove the ticket request from the ticket requests list and table
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticketRequest.id_solicitacao
+    );
+
+    // Remove the ticket request from the table
+    $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+  });
+
+  // When a client cancels a ticket
+  socket.on('client cancelled ticket', ticket => {
+    // Remove the ticket from the "in queue" list and table
+    window.inQueueTickets = window.inQueueTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+  });
+
+  // When the support refuses a ticket request
+  socket.on('support refused ticket request', ticketRequest => {
+    // Remove the ticket request from the ticket requests list and table
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticketRequest.id_solicitacao
+    );
+    $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+  });
+
+  // When other technicians accept a ticket request
+  socket.on('support accepted ticket request', ticket => {
+    // Remove the ticket request from the ticket requests list and table
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticket.id_solicitacao
+    );
+    $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
+    // Insert into the "in queue" list and table
+    window.inQueueTickets.push(ticket);
+    insertInInQueueTicketsTable(ticket);
+  });
+
+  // When other technicians acquire a ticket
+  socket.on('technician acquired ticket', ticket => {
+    // Remove the ticket from the "in queue" list and table
+    window.inQueueTickets = window.inQueueTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+    // Insert into the "other technicians in process tickets" list and table
+    window.otherTechniciansInProcessTickets.push(ticket);
+    insertInInProcessTicketsTable(ticket);
+  });
+
+  // When other technicians finalize a ticket
+  socket.on('technician finalized ticket', ticket => {
+    // Remove from "other technicians in process tickets" list and table
+    window.otherTechniciansInProcessTickets = window.otherTechniciansInProcessTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+  });
+</script>
 
 <!-- Custom Theme Scripts -->
 <script src="../App/View/js/custom.min.js"></script>
@@ -478,6 +574,9 @@
     }
   }
   function ticketRequestAccepted(ticket) {
+    // Send the ticket request to connected support users and to the requester client
+    socket.emit('from support', 'support accepted ticket request', ticket);
+
     // Put the ticket in the local open tickets list
     //  and remove from the active requests list
     window.inQueueTickets.push(ticket);
@@ -490,6 +589,9 @@
     $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
   }
   function ticketRequestRefused(request) {
+    // Send the ticket request to connected support users and to the requester client
+    socket.emit('from support', 'support refused ticket request', request);
+
     // Search for the request in the local list and delete it
     window.activeTicketRequests = window.activeTicketRequests.filter(
       r => r.id_solicitacao !== request.id_solicitacao
@@ -499,6 +601,9 @@
     $('form[name=solicitacoes_chamados]').find(`[data-request-id=${request.id_solicitacao}]`).remove();
   }
   function ticketAcquired(ticket) {
+    // Send the ticket to connected support users and to the requester client
+    socket.emit('from support', 'technician acquired ticket', ticket);
+
     // Remove from the in queue tickets local list
     window.inQueueTickets = window.inQueueTickets.filter(t => t.id_chamado !== ticket.id_chamado);
     // Insert the ticket in the technician's in process tickets list
@@ -511,6 +616,9 @@
     insertInTechniciansTicketsTable(ticket);
   }
   function ticketClosed(ticket) {
+    // Send the ticket to connected support users and to the requester client
+    socket.emit('from support', 'technician finalized ticket', ticket);
+
     // Remove the ticket from the local list
     window.techniciansInProcessTickets = window.techniciansInProcessTickets.filter(
       r => r.id_chamado !== ticket.id_chamado

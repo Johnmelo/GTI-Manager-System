@@ -2,15 +2,42 @@
 
 ### Requirements
 
-* Composer (can be installed in the project directory, check the 2nd step of installation);
-* PHP >= 7.0.
+* Composer (can be installed in the project directory, check the 2nd step of installation)
+* PHP >= 7.0
 * MySQL >= 5.6
+* HTTPS (highly recommended, but if not possible check the 6th step of Installation)
 
 ### Instalation
 
 1. Clone the project to a directory which is available to be accessed via browser (don't forget to allow the use of .htaccess on the public folder, or include its directives directly in the VirtualHost configurations, and updating the "RewriteBase" line accordingly if necessary);
 2. If Composer is not installed in the system, follow [this tutorial](https://getcomposer.org/download/) while in the project directory;
 3. Create a database and run (import) the script vendor/SON/SQL/gtidb.sql (it contains a default admin account with "admin" as both login and password);
+4. Run `composer install` (or, if composer was installed locally in the project directory, `php composer.phar install`);
+5. The program uses a socket server to sync events and send notifications to logged in users. It can be run with nohup command or cron jobs, but we recommend creating a service for it. To do that, create the file `/lib/systemd/system/gtic-socket-server.service` with the following content:
+```
+[Unit]
+Description=GTI Chamados PHP Socket Server
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=user
+ExecStart=/usr/bin/env php /path/to/project/dir/App/SocketServer.php start
+
+[Install]
+WantedBy=multi-user.target
+```
+Update the "User" and "ExecStart" lines accordingly.
+Make sure the port 5530 is available to be used by the socket server. If it isn't, search for all occurrences of the code ``io(`wss://${window.location.host}:5530`)`` in the project and replace the port for one which is available, as well as the line `$io = new SocketIO(5530)` in the file `App/SocketServer.php`.
+Then start the service and make it automatically start at boot with respectively:
+```
+systemctl start gtic-socket-server
+systemctl enable gtic-socket-server
+```
+6. Notice that the connection to the websocket server is made through HTTPS by default. In cases where this is not possible (such as when running the software locally), it's necessary to find all occurrences of ``io(`wss://${window.location.host}`` and replace `wss` with `ws`.
 
 ### Setup
 

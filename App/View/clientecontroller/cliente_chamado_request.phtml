@@ -229,6 +229,49 @@
 <script>
   autosize($('textarea[name=descricao]'));
 </script>
+<!-- forge-sha256 -->
+<script src="../../App/View/js/forge-sha256.min.js"></script>
+
+<!-- Socket.IO -->
+<script src="../../App/View/js/socket.io.js"></script>
+<script>
+  let token = <?php echo $this->view->token ?>;
+
+  // Connect to the WebSocket server
+  let socket = io(`wss://${window.location.host}:5530`);
+
+  // Try to resolve the challenge in order to stay connected to the WS server
+  socket.on('connecting', ({challenge}) => {
+    let solution = `${challenge}${token.last_login_date}`;
+    let tokenData = {
+      "username": token.username,
+      "challengeSolution": forge_sha256(solution)
+    };
+    socket.emit('challenge solution', tokenData);
+  });
+
+  // When the support accepts a ticket request
+  socket.on('support accepted ticket request', ticketRequest => {
+    // Remove the ticket request from the local list
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticketRequest.id_solicitacao
+    );
+
+    // Remove the ticket request from the table
+    $('form[name=solicitacoes_chamado]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+  });
+
+  // When the support refuses a ticket request
+  socket.on('support refused ticket request', ticketRequest => {
+    // Remove the ticket request from the local list
+    window.activeTicketRequests = window.activeTicketRequests.filter(
+      r => r.id_solicitacao !== ticketRequest.id_solicitacao
+    );
+
+    // Remove the ticket request from the table
+    $('form[name=solicitacoes_chamado]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+  });
+</script>
 
 <!-- jQuery autocomplete -->
 <script src="../../App/View/js/jquery.autocomplete.min.js"></script>
@@ -385,6 +428,9 @@
         if (response.type && response.type === "cancelled_ticket_request") {
           if (response.request){
             let ticketRequest = response.request;
+            // Send the ticket request to connected support users
+            socket.emit('from client', 'client cancelled ticket request', ticketRequest);
+
             // Remove the ticket request from the local list
             window.activeTicketRequests = window.activeTicketRequests.filter(
               r => r.id_solicitacao !== ticketRequest.id_solicitacao
@@ -501,6 +547,10 @@
       // Insert the request in the table
       if (response) {
         if (response.request) {
+          // Send the ticket request to connected support users
+          socket.emit('from client', 'client requested ticket', response.request);
+
+          // Insert the ticket request in the page
           window.activeTicketRequests.push(response.request);
           insertInActiveTicketRequestsTable(response.request);
         } else {

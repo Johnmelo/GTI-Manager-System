@@ -6,8 +6,6 @@
 <script defer src="../App/View/js/fontawesome-all.min.js"></script>
 <!-- NProgress -->
 <link href="../App/View/css/nprogress.css" rel="stylesheet">
-<!-- iCheck -->
-<link href="../App/View/icheck/skins/square/blue.css" rel="stylesheet">
 <!-- Custom Theme Style -->
 <link href="../App/View/css/custom.min.css" rel="stylesheet">
 <link href="../App/View/css/base-style.css" rel="stylesheet">
@@ -256,14 +254,106 @@
   <script src="../App/View/js/jquery.min.js"></script>
   <!-- Bootstrap -->
   <script src="../App/View/js/bootstrap.min.js"></script>
-  <!-- FastClick -->
-  <script src="../App/View/js/fastclick.js"></script>
   <!-- NProgress -->
   <script src="../App/View/js/nprogress.js"></script>
   <!-- Moment.js -->
   <script src="../App/View/js/moment.min.js"></script>
-  <!-- iCheck -->
-  <script src="../App/View/js/icheck.min.js"></script>
+  <!-- forge-sha256 -->
+  <script src="../App/View/js/forge-sha256.min.js"></script>
+
+  <!-- Socket.IO -->
+  <script src="../App/View/js/socket.io.js"></script>
+  <script>
+    let token = <?php echo $this->view->token ?>;
+
+    // Connect to the WebSocket server
+    let socket = io(`wss://${window.location.host}:5530`);
+
+    // Try to resolve the challenge in order to stay connected to the WS server
+    socket.on('connecting', ({challenge}) => {
+      let solution = `${challenge}${token.last_login_date}`;
+      let tokenData = {
+        "username": token.username,
+        "challengeSolution": forge_sha256(solution)
+      };
+      socket.emit('challenge solution', tokenData);
+    });
+
+    // When the support creates a ticket directly
+    socket.on('support created ticket', ticket => {
+      window.inQueueTickets.push(ticket);
+      insertInInQueueTicketsTable(ticket);
+    });
+
+    // When a client makes a ticket request
+    socket.on('client requested ticket', ticketRequest => {
+      // Insert the ticket request in the page
+      window.activeTicketRequests.push(ticketRequest);
+      insertInActiveTicketRequestsTable(ticketRequest)
+    });
+
+    // When a client cancels a ticket request
+    socket.on('client cancelled ticket request', ticketRequest => {
+      // Remove the ticket request from the local list
+      window.activeTicketRequests = window.activeTicketRequests.filter(
+        r => r.id_solicitacao !== ticketRequest.id_solicitacao
+      );
+
+      // Remove the ticket request from the table
+      $('form[name=client_call_request]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+    });
+
+    // When a client cancels a ticket
+    socket.on('client cancelled ticket', ticket => {
+      // Remove the ticket from the "in queue" list and table
+      window.inQueueTickets = window.inQueueTickets.filter(
+        r => r.id_chamado !== ticket.id_chamado
+      );
+      $('table[id=not-processing-requests]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+    });
+
+    // When the support refuses a ticket request
+    socket.on('support refused ticket request', ticketRequest => {
+      // Remove the ticket request from the ticket requests list and table
+      window.activeTicketRequests = window.activeTicketRequests.filter(
+        r => r.id_solicitacao !== ticketRequest.id_solicitacao
+      );
+      $('form[name=client_call_request]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+    });
+
+    // When the support accepts a ticket request
+    socket.on('support accepted ticket request', ticket => {
+      // Remove the ticket request from the ticket requests list and table
+      window.activeTicketRequests = window.activeTicketRequests.filter(
+        r => r.id_solicitacao !== ticket.id_solicitacao
+      );
+      $('form[name=client_call_request]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
+      // Insert into the "in queue" list and table
+      window.inQueueTickets.push(ticket);
+      insertInInQueueTicketsTable(ticket);
+    });
+
+    // When technicians acquire a ticket
+    socket.on('technician acquired ticket', ticket => {
+      // Remove the ticket from the "in queue" list and table
+      window.inQueueTickets = window.inQueueTickets.filter(
+        r => r.id_chamado !== ticket.id_chamado
+      );
+      $('table[id=not-processing-requests]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+      // Insert into the "in process tickets" list and table
+      window.inProcessTickets.push(ticket);
+      insertInInProcessTicketsTable(ticket);
+    });
+
+    // When technicians finalize a ticket
+    socket.on('technician finalized ticket', ticket => {
+      // Remove from "in process tickets" list and table
+      window.inProcessTickets = window.inProcessTickets.filter(
+        r => r.id_chamado !== ticket.id_chamado
+      );
+      $('table[id=processing-requests]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+    });
+  </script>
   <!-- Custom Theme Scripts -->
   <script src="../App/View/js/custom.min.js"></script>
 
@@ -398,6 +488,9 @@
       }
     }
     function ticketRequestAccepted(ticket) {
+      // Send the ticket request to connected support users and to the requester client
+      socket.emit('from support', 'support accepted ticket request', ticket);
+
       // Put the ticket in the local open tickets list
       //  and remove from the active requests list
       window.inQueueTickets.push(ticket);
@@ -412,6 +505,9 @@
       insertInInQueueTicketsTable(ticket);
     }
     function ticketRequestRefused(request) {
+      // Send the ticket request to connected support users and to the requester client
+      socket.emit('from support', 'support refused ticket request', request);
+
       // Search for the request in the local list and delete it
       window.activeTicketRequests = window.activeTicketRequests.filter(
         r => r.id_solicitacao !== request.id_solicitacao

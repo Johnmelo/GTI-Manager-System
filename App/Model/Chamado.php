@@ -6,7 +6,7 @@ class Chamado extends Table{
 
   public function getTicketById($ticketId) {
     $stmt = $this->db->prepare(
-      "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`, ".
+      "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`, ".
       "`c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, ".
       "`c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_assumido`, `c`.`data_finalizado`, ".
       "`c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico` ".
@@ -44,7 +44,7 @@ class Chamado extends Table{
 
   public function getUsersOpenTickets($userId) {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
@@ -65,7 +65,7 @@ class Chamado extends Table{
 
   public function getUsersInQueueTickets($userId) {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
@@ -86,7 +86,7 @@ class Chamado extends Table{
 
   public function getUsersInProcessTickets($userId) {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
@@ -107,7 +107,7 @@ class Chamado extends Table{
 
   public function getUsersInactiveTickets($userId) {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
@@ -128,7 +128,7 @@ class Chamado extends Table{
 
   public function getTechniciansClosedTickets($technicianId) {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
@@ -149,7 +149,7 @@ class Chamado extends Table{
 
   public function getOpenTickets() {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
@@ -169,7 +169,7 @@ class Chamado extends Table{
 
   public function getInQueueTickets() {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
@@ -189,7 +189,7 @@ class Chamado extends Table{
 
   public function getInProcessTickets() {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
@@ -209,7 +209,7 @@ class Chamado extends Table{
 
   public function getInactiveTickets() {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
           ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
