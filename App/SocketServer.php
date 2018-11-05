@@ -4,8 +4,17 @@ use Workerman\Worker;
 use PHPSocketIO\SocketIO;
 use \SON\Di\Container;
 
+// SSL context
+$context = [
+    'ssl' => [
+        'local_cert' => '/path/to/cert.pem',
+        'local_pk' => '/path/to/key.pem',
+        'verify_peer' => false
+    ]
+];
+
 // Set the websocket port
-$io = new SocketIO(5530);
+$io = new SocketIO(5530, $context);
 
 // When a client is connected to the server
 $io->on('connection', function($socket)use($io) {
