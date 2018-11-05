@@ -157,6 +157,13 @@ class GerenteController extends Action{
                 $requisicao_acessoDb = Container::getClass("SolicitarAcesso");
                 $requisicao_acessoDb->updateColumnById("status","ATENDIDA",$request['idSolicitacao']);
 
+                // store the modifications
+                $requisicao_acessoDb->updateColumnById("nome", $request['nome'], $request['idSolicitacao']);
+                $requisicao_acessoDb->updateColumnById("email", $request['email'], $request['idSolicitacao']);
+                $requisicao_acessoDb->updateColumnById("login", $request['usuario'], $request['idSolicitacao']);
+                $requisicao_acessoDb->updateColumnById("setor", $request['setor'], $request['idSolicitacao']);
+                $requisicao_acessoDb->updateColumnById("matricula", $request['matricula'], $request['idSolicitacao']);
+
                 // role
                 $cliente_role = $clienteDb->findByLogin($request['usuario']);
                 $user_role =  Container::getClass("UsuarioRole");
