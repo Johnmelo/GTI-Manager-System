@@ -168,33 +168,7 @@
                         <th>Técnico Responsável</th>
                       </tr>
                     </thead>
-                    <tbody>
-                      <?php foreach ($this->view->requests_attendance as $callrequest):?>
-                        <tr data-request-id="<?php echo $callrequest['id'];?>">
-                          <a href="view_request">
-                            <td><?php echo $callrequest['id']; ?></td>
-                            <td><?php echo $this->view->users_names[$callrequest['id_cliente_solicitante']]['nome'];?></td>
-                            <td><?php echo $this->view->locais[$callrequest['id_local']]['nome'];?></td>
-                            <td><?php echo $this->view->service_names[$callrequest['id_servico']];?></td>
-                            <td>
-                              <?php
-                              $current_date = new \DateTime("now", new \DateTimeZone('America/Fortaleza'));
-                              $deadline = new \DateTime($callrequest['prazo'], new \DateTimeZone('America/Fortaleza'));
-                              $diff = (array)$current_date->diff($deadline);
-                              if (isset($diff['d']) && $diff['d'] >= 1) {
-                                echo ($diff['d'] === 1) ? $diff['d']." dia" : $diff['d']." dias";
-                              } elseif (isset($diff['h']) && $diff['h'] >= 1) {
-                                echo ($diff['h'] === 1) ? $diff['h']." hora" : $diff['h']." horas";
-                              } elseif (isset($diff['i']) && $diff['i'] >= 1) {
-                                echo ($diff['i'] === 1) ? $diff['i']." minuto" : $diff['i']." minutos";
-                              }
-                              ?>
-                            </td>
-                            <td><?php echo $this->view->users_names[$callrequest['id_tecnico_responsavel']]['nome'];?></td>
-                          </a>
-                        </tr>
-                      <?php endforeach;?>
-                    </tbody>
+                    <tbody></tbody>
                   </table>
                 </form>
                 </div>
