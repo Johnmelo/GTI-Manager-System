@@ -56,7 +56,7 @@ In cases where this is not possible (such as when running the software locally),
 
 #### Edit some settings
 
-1. Edit the file App/Init.php to edit the database host, name, user and password, in the getDb function;
+1. Edit the file vendor/SON/Db/DBConnector.php to edit the database connection settings;
 2. Edit the file App/Model/Email.php and set the values of the consts SMTP_HOST, FROM_EMAIL, FROM_NAME and PASSWORD (make sure port 465 is allowed to send emails, or if [SELinux could be preventing the PHP to send emails](https://github.com/PHPMailer/PHPMailer/wiki/Troubleshooting#selinux-blocking));
 
 #### Add places in the database
