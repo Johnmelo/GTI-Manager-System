@@ -34,7 +34,7 @@ CREATE TABLE `chamados` (
   `descricao` text COLLATE utf8mb4_unicode_ci,
   `parecer_tecnico` text COLLATE utf8mb4_unicode_ci,
   `status` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'AGUARDANDO'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -47,7 +47,7 @@ CREATE TABLE `locais` (
   `nome` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tipo` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ativo` bit(1) NOT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -60,7 +60,7 @@ CREATE TABLE `servicos` (
   `nome` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tipo` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `descricao` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `servicos`
@@ -97,7 +97,7 @@ CREATE TABLE `servicos_roles` (
   `id_servico` int(10) NOT NULL,
   `suporte` tinyint(1) DEFAULT NULL,
   `desenvolvimento` tinyint(1) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -117,7 +117,7 @@ CREATE TABLE `solicitacao_cadastro` (
   `data_recusado` datetime DEFAULT NULL,
   `id_recusante` int(11) DEFAULT NULL,
   `motivo_recusa` text COLLATE utf8mb4_unicode_ci
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -136,7 +136,7 @@ CREATE TABLE `solicitacao_chamado` (
   `data_recusado` datetime DEFAULT NULL,
   `id_recusante` int(11) DEFAULT NULL,
   `motivo_recusa` text COLLATE utf8mb4_unicode_ci
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -155,7 +155,7 @@ CREATE TABLE `usuarios` (
   `matricula` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
   `data_cadastro` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `data_ultimo_login` datetime DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Administrator user
@@ -176,7 +176,7 @@ CREATE TABLE `usuarios_roles` (
   `cliente` tinyint(1) DEFAULT NULL,
   `tecnico` tinyint(1) DEFAULT NULL,
   `gerente` tinyint(1) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Admin user role
