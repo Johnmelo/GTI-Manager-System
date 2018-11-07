@@ -171,22 +171,18 @@ class TecnicoController extends Action{
         $user = $userDb->findById($_SESSION['user_id']);
         $isCorrectPw = PasswordUtil::verify($pass, $user['password_hash']);
         if($isCorrectPw){
-          ob_start();
           // Generate the hash of the new password ...
           $new_hash = PasswordUtil::hash($_POST['new_password']);
           // ... and store it
-          $userDb->updateColumnById("password_hash",$new_hash,$_SESSION['user_id']);
-          // Clean the buffer so it doesn't get sent to the Ajax call instead of the JSON below.
-          $buffer = ob_get_clean();
+          $updatedPassw = $userDb->updateColumnById("password_hash", $new_hash, $_SESSION['user_id']);
           header('Content-Type: application/json; charset=UTF-8');
-          if (strpos($buffer, "UPDATED successfully") !== false) {
+          if ($updatedPassw) {
             echo json_encode(array('event' => 'success', 'type' => 'password_reset', 'message' => 'Senha alterada com sucesso'));
           } else {
             header("HTTP/1.1 500 Internal Server Error");
-            echo json_encode(array('event' => 'error', 'type' => 'db_error', 'message' => $buffer));
+            echo json_encode(array('event' => 'error', 'type' => 'db_error', 'message' => "A senha não foi alterada"));
           }
       } else {
-        ob_end_clean();
         header("HTTP/1.1 401 Unauthorized");
         header('Content-Type: application/json; charset=UTF-8');
         echo json_encode(array('event' => 'error', 'type' => 'wrong_current_password', 'message' => 'Senha atual incorreta'));

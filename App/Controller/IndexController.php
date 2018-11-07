@@ -103,12 +103,10 @@ class IndexController extends Action{
         }
 
         // Inform last time user logged-in and update DB with the new date
-        ob_start();
         $last_login = $user['data_ultimo_login'];
         $date = new \DateTime("now", new \DateTimeZone('America/Fortaleza'));
         $date = $date->format("Y-m-d H:i:s");
         $acesso->updateColumnById("data_ultimo_login", $date, $user['id']);
-        ob_end_clean();
         header('Content-Type: application/json; charset=UTF-8');
         echo json_encode(array('lastLogin' => $last_login));
       }else{
