@@ -93,6 +93,10 @@ function submitLoginForm() {
             window.location.reload(true);
         }).fail(function(data) {
             // Failure
+            $("input[id=login-submit]").val("Acessar");
+            $("input[id=login-submit]").removeClass("disabled");
+            $("input[id=login-submit]").prop("disabled", false);
+
             if (data && data.responseJSON) {
                 var response = data.responseJSON;
                 if (response.event == "error") {
@@ -101,16 +105,16 @@ function submitLoginForm() {
                     } else {
                         alert("Não foi possível no momento");
                     }
-                    $("input[id=login-submit]").val("Acessar");
-                    $("input[id=login-submit]").removeClass("disabled");
-                    $("input[id=login-submit]").prop("disabled", false);
+                    return false;
+                }
+            }
+            if (data && data.statusText) {
+                if (data.statusText === "Failed Database Connection") {
+                    alert("Falha na conexão com o banco de dados");
                     return false;
                 }
             }
             alert("Houve um problema");
-            $("input[id=login-submit]").val("Acessar");
-            $("input[id=login-submit]").removeClass("disabled");
-            $("input[id=login-submit]").prop("disabled", false);
         });
     } else {
         $("input[id=login-submit]").val("Acessar");
