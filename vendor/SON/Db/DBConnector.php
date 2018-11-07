@@ -12,11 +12,15 @@ class DBConnector extends Singleton {
   private $chrst  = 'utf8mb4';
 
   public function __construct() {
-    $this->dbconn = new \PDO(
-      "mysql:host={$this->host};dbname={$this->dbname};charset={$this->chrst}",
-      $this->user,
-      $this->passw
-    );
+    try {
+      $this->dbconn = new \PDO(
+        "mysql:host={$this->host};dbname={$this->dbname};charset={$this->chrst}",
+        $this->user,
+        $this->passw
+      );
+    } catch (\Exception $e) {
+      throw new \Exception("Failed to connect with DB", 2002);
+    }
   }
 
   public function getConnection() {

@@ -20,10 +20,20 @@ abstract class Bootstrap{
       echo "The page that you have requested could not be found.";
       exit();
     } else {
-      $route = array_values($this->routes)[$route_index];
-      $class = "App\\Controller\\".ucfirst($route['controller']);
-      $controller = new $class;
-      $controller->{$route['action']}();
+      try {
+        $route = array_values($this->routes)[$route_index];
+        $class = "App\\Controller\\".ucfirst($route['controller']);
+        $controller = new $class;
+        $controller->{$route['action']}();
+      } catch (\Exception $e) {
+        $errorCode = $e->getCode();
+        if ($errorCode === 2002) {
+          header("HTTP/1.0 503 Failed Database Connection");
+          echo "<h1>503 Service Unavailable</h1>";
+          echo "Failed to connect to the database";
+          exit();
+        }
+      }
     }
   }
 
