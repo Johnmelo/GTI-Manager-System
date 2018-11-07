@@ -2,6 +2,7 @@
 namespace App\Controller;
 use SON\Controller\Action;
 use \SON\Di\Container;
+use \SON\Db\DBConnector;
 use \App\Model\Email;
 use \App\Model\Token;
 
@@ -374,28 +375,45 @@ class GerenteController extends Action{
       if(isset($_POST['call_request_id']) && isset($_POST['deadline_value'])){
         // Check if the data was sent in the expected format
         if(preg_match("/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/", $_POST['deadline_value']) === 1) {
-          // Update the service request status and get its info
-          // to store in the accepted requests table
-          $requisicao_acessoDb = Container::getClass("SolicitarChamado");
-          $requisicao_acessoDb->updateColumnById("status","ATENDIDA",$_POST['call_request_id']);
-          $requisicao = $requisicao_acessoDb->findById($_POST['call_request_id']);
+          try {
+            $db = DBConnector::getInstance();
+            try {
+              $db->beginTransaction();
+              // Update the service request status and get its info
+              // to store in the accepted requests table
+              $requisicao_acessoDb = Container::getClass("SolicitarChamado");
+              $requisicao_acessoDb->updateColumnById("status","ATENDIDA",$_POST['call_request_id']);
+              $requisicao = $requisicao_acessoDb->findById($_POST['call_request_id']);
 
-          // Save the service request as accepted by saving its data
-          // in the accepted requests table
-          $date = new \DateTime($_POST['deadline_value'], new \DateTimeZone("America/Recife"));
-          $prazo = $date->format("Y-m-d H:i:s");
-          $chamadoDb = Container::getClass("Chamado");
-          $ticketId = $chamadoDb->save($requisicao['id_servico'],$requisicao['id_local'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$prazo,$requisicao['descricao']);
+              // Save the service request as accepted by saving its data
+              // in the accepted requests table
+              $date = new \DateTime($_POST['deadline_value'], new \DateTimeZone("America/Recife"));
+              $prazo = $date->format("Y-m-d H:i:s");
+              $chamadoDb = Container::getClass("Chamado");
+              $ticketId = $chamadoDb->save($requisicao['id_servico'],$requisicao['id_local'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$prazo,$requisicao['descricao']);
 
-          if ($ticketId !== false) {
-            // Return the new ticket data
-            $ticket = $chamadoDb->getTicketById($ticketId);
-            header('Content-Type: application/json; charset=UTF-8');
-            echo json_encode(array('event' => 'success', 'type' => 'new_ticket', 'ticket' => $ticket));
-          } else {
+              if ($ticketId !== false) {
+                // Return the new ticket data
+                $ticket = $chamadoDb->getTicketById($ticketId);
+                $db->commit();
+                header('Content-Type: application/json; charset=UTF-8');
+                echo json_encode(array('event' => 'success', 'type' => 'new_ticket', 'ticket' => $ticket));
+              } else {
+                $db->rollback();
+                header('Content-Type: application/json; charset=UTF-8');
+                header('HTTP/1.1 500');
+                die(json_encode(array('event' => 'error', 'type' => 'db_op_failed')));
+              }
+            } catch (\Exception $e) {
+              $db->rollback();
+              header('Content-Type: application/json; charset=UTF-8');
+              header('HTTP/1.1 500');
+              die(json_encode(array('event' => 'error', 'type' => 'db_op_failed')));
+            }
+          } catch (\Exception $e) {
             header('Content-Type: application/json; charset=UTF-8');
             header('HTTP/1.1 400');
-            die(json_encode(array('event' => 'error', 'type' => 'db_op_failed')));
+            die(json_encode(array('event' => 'error', 'type' => 'db_conn_failed')));
           }
         } else {
           header('Content-Type: application/json; charset=UTF-8');

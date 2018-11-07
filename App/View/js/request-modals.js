@@ -171,6 +171,9 @@ function acceptRequest(requestId) {
             } else if (response.type === "db_op_failed") {
               alert("O chamado não pôde ser armazenado no banco");
               return false;
+          } else if (response.type === "db_conn_failed") {
+              alert("Falha na conexão com o banco de dados");
+              return false;
             }
           }
         }

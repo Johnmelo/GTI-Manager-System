@@ -7,8 +7,8 @@ class DBConnector extends Singleton {
 
   private $host   = 'localhost';
   private $dbname = 'gtichamados';
-  private $user   = 'root';
-  private $passw  = '793549';
+  private $user   = '';
+  private $passw  = '';
   private $chrst  = 'utf8mb4';
 
   public function __construct() {
@@ -18,6 +18,7 @@ class DBConnector extends Singleton {
         $this->user,
         $this->passw
       );
+      $this->dbconn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
     } catch (\Exception $e) {
       throw new \Exception("Failed to connect with DB", 2002);
     }
