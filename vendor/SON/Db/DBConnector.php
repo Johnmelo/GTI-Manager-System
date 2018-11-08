@@ -33,7 +33,9 @@ class DBConnector extends Singleton {
   }
 
   public function commit() {
-    return $this->dbconn->commit();
+    // Use the query function because of this bug:
+    // https://bugs.php.net/bug.php?id=66528
+    return $this->dbconn->query('commit');
   }
 
   public function rollback() {
