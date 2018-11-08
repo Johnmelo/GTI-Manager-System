@@ -233,6 +233,12 @@ function finalizeRequest(requestId) {
           if (response.type === "missing_data") {
             alert("Há dados fazendo falta");
             return false;
+          } else if (response.type === "db_conn_failed") {
+            alert("Falha na conexão com o banco de dados");
+            return false;
+          } else if (response.type === "db_op_failed") {
+            alert("Não foi possível alterar os dados no banco de dados");
+            return false;
           }
         }
       }
