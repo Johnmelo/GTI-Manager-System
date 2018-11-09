@@ -171,6 +171,9 @@ function acceptRequest(requestId) {
             } else if (response.type === "db_op_failed") {
               alert("O chamado não pôde ser armazenado no banco");
               return false;
+          } else if (response.type === "db_conn_failed") {
+              alert("Falha na conexão com o banco de dados");
+              return false;
             }
           }
         }
@@ -229,6 +232,12 @@ function finalizeRequest(requestId) {
         if (response.event === "error") {
           if (response.type === "missing_data") {
             alert("Há dados fazendo falta");
+            return false;
+          } else if (response.type === "db_conn_failed") {
+            alert("Falha na conexão com o banco de dados");
+            return false;
+          } else if (response.type === "db_op_failed") {
+            alert("Não foi possível alterar os dados no banco de dados");
             return false;
           }
         }
@@ -289,6 +298,12 @@ function acquireRequest(ticketID) {
             } else if (response.type === "deadline_wrong_format") {
               alert("O prazo foi informado em um formato não reconhecido");
               return false;
+            } else if (response.type === "db_conn_failed") {
+              alert("Falha na conexão com o banco de dados");
+              return false;
+            } else if (response.type === "db_op_failed") {
+              alert("Não foi possível alterar os dados no banco de dados");
+              return false;
             }
           }
         }
@@ -348,6 +363,12 @@ function refuseRequest(requestId) {
         if (response.type) {
           if (response.type === "missing_data") {
             alert("Há dados fazendo falta");
+            return false;
+          } else if (response.type === "db_conn_failed") {
+            alert("Falha na conexão com o banco de dados");
+            return false;
+          } else if (response.type === "db_op_failed") {
+            alert("Não foi possível alterar os dados no banco de dados");
             return false;
           }
         }

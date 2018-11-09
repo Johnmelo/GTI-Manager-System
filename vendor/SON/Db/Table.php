@@ -5,8 +5,8 @@ abstract class Table{
   protected $db;
   protected $table;
 
-  public function __construct(\PDO $db){
-    $this->db = $db;
+  public function __construct(DBConnector $db){
+    $this->db = $db->getConnection();
   }
 
   public function fetchAll(){
