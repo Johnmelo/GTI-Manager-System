@@ -492,21 +492,26 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
           if (response.event == "error") {
             if (response.type == "invalid_email") {
               alert("O endereço de e-mail informado é inválido");
+              return false;
             } else if (response.type == "login_already_in_use") {
               alert("O username submetido já está em uso por outro usuário");
+              return false;
             } else if (response.type == "email_already_in_use") {
               alert("O endereço de e-mail está registrado com outro usuário");
+              return false;
             } else if (response.type == "registration_number_already_in_use") {
               alert("A matrícula informada está registrada com outro usuário");
-            } else {
-              alert("Houve uma falha inesperada");
+              return false;
+            } else if (response.type == "db_conn_failed") {
+              alert("Falha na conexão com o banco de dados");
+              return false;
+            } else if (response.type == "db_op_failed") {
+              alert("Não foi possível alterar os dados no banco de dados");
+              return false;
             }
-          } else {
-            alert("Houve uma falha inesperada");
           }
-        } else {
-          alert("Houve uma falha inesperada");
         }
+        alert("Houve uma falha inesperada");
       });
     } else {
       alert("Preencha todos os campos");
@@ -626,17 +631,20 @@ $('div#request-list-wrapper input').on('ifUnchecked', function(event) {
           if (response.event == "error") {
             if (response.type == "insuficient_data") {
               alert("Não foi possível realizar a ação por falta de dados");
+              return false;
             } else if(response.type == "insuficient_email_data") {
               alert("Não foi possível realizar a ação porque faltou digitar o texto do email");
-            } else {
-              alert("Houve uma falha inesperada");
+              return false;
+            } else if(response.type == "db_conn_failed") {
+              alert("Falha na conexão com o banco de dados");
+              return false;
+            } else if(response.type == "db_op_failed") {
+              alert("Não foi possível alterar os dados no banco de dados");
+              return false;
             }
-          } else {
-            alert("Houve uma falha inesperada");
           }
-        } else {
-          alert("Houve uma falha inesperada.");
         }
+        alert("Houve uma falha não identificada.");
       });
     }
   });
@@ -775,15 +783,17 @@ function failedRegistration(data) {
           text += "\n\n";
         }
         alert(text);
-      } else {
-        alert("Houve uma falha inesperada");
+        return false;
+      } else if (data.responseJSON.type == "db_conn_failed") {
+        alert("Falha na conexão com o banco de dados");
+        return false;
+      } else if (data.responseJSON.type == "db_op_failed") {
+        alert("Não foi possível alterar os dados no banco de dados");
+        return false;
       }
-    } else {
-      alert("Houve uma falha inesperada");
     }
-  } else {
-    alert("Houve uma falha inesperada");
   }
+  alert("Houve uma falha não identificada");
 }
 </script>
 </body>

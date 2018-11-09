@@ -93,24 +93,24 @@ function submitLoginForm() {
             window.location.reload(true);
         }).fail(function(data) {
             // Failure
+            $("input[id=login-submit]").val("Acessar");
+            $("input[id=login-submit]").removeClass("disabled");
+            $("input[id=login-submit]").prop("disabled", false);
+
             if (data && data.responseJSON) {
                 var response = data.responseJSON;
                 if (response.event == "error") {
                     if (response.type == "invalid_credentials") {
                         alert("O usuário não foi encontrado");
-                    } else {
-                        alert("Não foi possível no momento");
+                    } else if (response.type == "missing_data") {
+                        alert("Há dados fazendo falta");
+                    } else if (response.type == "db_conn_failed") {
+                        alert("Falha na conexão com o banco de dados");
                     }
-                    $("input[id=login-submit]").val("Acessar");
-                    $("input[id=login-submit]").removeClass("disabled");
-                    $("input[id=login-submit]").prop("disabled", false);
                     return false;
                 }
             }
-            alert("Houve um problema");
-            $("input[id=login-submit]").val("Acessar");
-            $("input[id=login-submit]").removeClass("disabled");
-            $("input[id=login-submit]").prop("disabled", false);
+            alert("Houve uma falha não identificada");
         });
     } else {
         $("input[id=login-submit]").val("Acessar");
@@ -155,40 +155,52 @@ function submitRequestAccessForm() {
         // Submit
         $.post("/gtic/public/solicitar_acesso", postData)
         .done(function(data) {
-            // Success
-            alert("Solicitação recebida!\nCheque o e-mail fornecido para verificar os dados.");
+            if (data && data.event) {
+                if (data.event === "info" && data.type) {
+                    if (data.type === "emailSent") {
+                        alert("Solicitação recebida!\nCheque o e-mail fornecido para verificar os dados.");
+                    } else if (data.type === "emailNotSent") {
+                        alert("Solicitação recebida!\nAguarde o suporte entrar em contato por e-mail.");
+                    }
+                }
+            }
             window.location.reload(true);
-        }).fail(function(data) {
-            // Failure
+        })
+        .fail(function(data) {
+            // Unblock page
+            $("input[id=register-submit]").val("Solicitar acesso");
+            $("input[id=register-submit]").removeClass("disabled");
+            $("input[id=register-submit]").prop("disabled", false);
             if (data.hasOwnProperty("responseJSON")) {
                 var response = data.responseJSON;
                 if (response.event == "error") {
                     if (response.type == "invalid_email") {
                         alert("O endereço de email inserido é inválido");
+                        return false;
                     } else if (response.type == "email_already_in_use") {
                         alert("O email inserido já está registrado no sistema");
+                        return false;
                     } else if (response.type == "login_already_in_use") {
                         alert("O login inserido já está em uso por um usuário");
+                        return false;
                     } else if (response.type == "registration_number_already_in_use") {
                         alert("A matrícula inserida já faz parte de um usuário cadastrado");
-                    } else {
-                        alert("Não foi possível no momento");
+                        return false;
+                    } else if (response.type == "missing_data") {
+                        alert("Há dados necessários fazendo falta");
+                        return false;
+                    } else if (response.type == "db_conn_failed") {
+                        alert("Falha na conexão com o banco de dados");
+                        return false;
+                    } else if (response.type == "db_op_failed") {
+                        alert("Não foi possível alterar os dados no banco de dados");
+                        return false;
                     }
-                    $("input[id=register-submit]").val("Solicitar acesso");
-                    $("input[id=register-submit]").removeClass("disabled");
-                    $("input[id=register-submit]").prop("disabled", false);
                 }
-            } else {
-                alert("Não foi possível no momento");
-                $("input[id=register-submit]").val("Solicitar acesso");
-                $("input[id=register-submit]").removeClass("disabled");
-                $("input[id=register-submit]").prop("disabled", false);
             }
+            alert("Houve uma falha não identificada");
         });
     } else {
-        $("input[id=register-submit]").val("Solicitar acesso");
-        $("input[id=register-submit]").removeClass("disabled");
-        $("input[id=register-submit]").prop("disabled", false);
     }
 }
 

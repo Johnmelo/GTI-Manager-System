@@ -49,11 +49,5 @@ class Init extends Bootstrap{
 
     $this->setRoutes($routes);
   }
-
-  public static function getDb(){
-    //o interessante aqui é envolver com try/catch remember about exceptions consequences
-    $db = new \PDO("mysql:host=localhost;dbname=gtichamados;charset=utf8mb4","root","");
-    return $db;
-  }
 }
 ?>

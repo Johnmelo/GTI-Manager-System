@@ -15,9 +15,19 @@ abstract class Bootstrap{
   protected function run($url){
     $route = $this->routes[$url];
     if ($route !== null) {
-      $class = "App\\Controller\\".ucfirst($route['controller']);
-      $controller = new $class;
-      $controller->{$route['action']}();
+      try {
+        $class = "App\\Controller\\".ucfirst($route['controller']);
+        $controller = new $class;
+        $controller->{$route['action']}();
+      } catch (\Exception $e) {
+        $errorCode = $e->getCode();
+        if ($errorCode === 2002) {
+          header("HTTP/1.0 503 Failed Database Connection");
+          echo "<h1>503 Service Unavailable</h1>";
+          echo "Failed to connect to the database";
+          exit();
+        }
+      }
     } else {
       header("HTTP/1.0 404 Not Found");
       echo "<h1>404 Not Found</h1>";
