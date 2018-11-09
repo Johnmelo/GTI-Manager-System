@@ -36,7 +36,6 @@ $('#btn-submit-password-form').on('click', function() {
         var response = data;
         if (response) {
             showAlert("Sucesso!", "Sua senha foi alterada", "alert-success");
-            console.log(response.message);
         }
         $("html").css("cursor", "auto");
         $("body").css("pointer-events", "auto");
@@ -46,12 +45,11 @@ $('#btn-submit-password-form').on('click', function() {
         if (response && response.event === "error") {
             if (response.type === "wrong_current_password") {
                 showAlert("Ops!", "Você errou a senha atual.", "alert-error");
-            } else {
+            } else if (response.type === "db_op_failed") {
                 showAlert("Ops!", "Ocorreu um erro e a senha não foi alterada.", "alert-error");
             }
-            console.error(response.message);
         } else {
-            showAlert("Ops!", "Ocorreu um erro e a senha não foi alterada.", "alert-error");
+            showAlert("Ops!", "Houve uma falha não identificada.", "alert-error");
         }
         $("html").css("cursor", "auto");
         $("body").css("pointer-events", "auto");
