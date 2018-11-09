@@ -7,6 +7,7 @@ use \SON\Di\Container;
 use \App\Model\Email;
 use \App\Model\PasswordUtil;
 use \App\Model\Local;
+use \SON\Db\DBConnector;
 
 class IndexController extends Action{
 
@@ -27,97 +28,143 @@ class IndexController extends Action{
   }
 
   public function solicitar_acesso(){
-    $nome = $_POST['nomeCliente'];
-    $sobrenome = $_POST['sobrenomeCliente'];
-    $email = $_POST['emailCliente'];
-    $login = $_POST['loginCliente'];
-    $setor = $_POST['setorCliente'];
-    $matricula = $_POST['matriculaCliente'];
+    if(
+      (isset($_POST['nomeCliente']) && !preg_match('/^\s*$/', $_POST['nomeCliente'])) &&
+      (isset($_POST['sobrenomeCliente']) && !preg_match('/^\s*$/', $_POST['sobrenomeCliente'])) &&
+      (isset($_POST['emailCliente']) && !preg_match('/^\s*$/', $_POST['emailCliente'])) &&
+      (isset($_POST['loginCliente']) && !preg_match('/^\s*$/', $_POST['loginCliente'])) &&
+      (isset($_POST['setorCliente']) && !preg_match('/^\s*$/', $_POST['setorCliente'])) &&
+      (isset($_POST['matriculaCliente']) && !preg_match('/^\s*$/', $_POST['matriculaCliente']))
+    ) {
+      $nome = $_POST['nomeCliente'];
+      $sobrenome = $_POST['sobrenomeCliente'];
+      $email = $_POST['emailCliente'];
+      $login = $_POST['loginCliente'];
+      $setor = $_POST['setorCliente'];
+      $matricula = $_POST['matriculaCliente'];
 
-    // Check if there's already a registered user with the
-    // submitted login, email or registration number
-    if($this->isLoginInUse($login) == false) {
-      if ($this->isEmailInUse($email) == false) {
-        if ($this->isRegistrationNumberInUse($matricula) == false) {
+      try {
+        $db = DBConnector::getInstance();
+        try {
+          // Check if there's already a registered user with the
+          // submitted login, email or registration number
+          if($this->isLoginInUse($login) == false) {
+            if ($this->isEmailInUse($email) == false) {
+              if ($this->isRegistrationNumberInUse($matricula) == false) {
+                // Validate email address
+                if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                  $acesso = Container::getClass("SolicitarAcesso");
+                  $db->beginTransaction();
+                  $acesso->save($nome." ".$sobrenome,$email,$login,$setor,$matricula);
+                  $db->commit();
 
-          // Validate email address
-          if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-              $acesso = Container::getClass("SolicitarAcesso");
-              $acesso->save($nome." ".$sobrenome,$email,$login,$setor,$matricula);
-
-              // Sending email notification
-              $sendEmail = new Email();
-              $sendEmail->accessRequestNotification($nome,$sobrenome,$login,$email,$setor,$matricula);
-          } else {
+                  // Sending email notification
+                  try {
+                    $sendEmail = new Email();
+                    $sendEmail->accessRequestNotification($nome,$sobrenome,$login,$email,$setor,$matricula);
+                    header('Content-Type: application/json; charset=UTF-8');
+                    echo json_encode(array('event' => 'info', 'type' => 'emailSent'));
+                  } catch (\Exception $e) {
+                    header('Content-Type: application/json; charset=UTF-8');
+                    echo json_encode(array('event' => 'info', 'type' => 'emailNotSent'));
+                  }
+                } else {
+                  header('Content-Type: application/json; charset=UTF-8');
+                  header('HTTP/1.1 400');
+                  echo json_encode(array('event' => 'error', 'type' => 'invalid_email'));
+                }
+              } else {
+                // Error: the submitted registration number is already in use
+                header('Content-Type: application/json; charset=UTF-8');
+                header('HTTP/1.1 400');
+                echo json_encode(array('event' => 'error', 'type' => 'registration_number_already_in_use'));
+              }
+            } else {
+              // Error: the submitted email is already in use
               header('Content-Type: application/json; charset=UTF-8');
               header('HTTP/1.1 400');
-              echo json_encode(array('event' => 'error', 'type' => 'invalid_email'));
+              echo json_encode(array('event' => 'error', 'type' => 'email_already_in_use'));
+            }
+          } else {
+            // Error: the submitted login is already in use
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 400');
+            echo json_encode(array('event' => 'error', 'type' => 'login_already_in_use'));
           }
-
-        } else {
-          // Error: the submitted registration number is already in use
+        } catch (\Exception $e) {
+          $db->rollback();
           header('Content-Type: application/json; charset=UTF-8');
-          header('HTTP/1.1 400');
-          echo json_encode(array('event' => 'error', 'type' => 'registration_number_already_in_use'));
+          header('HTTP/1.1 500');
+          die(json_encode(array('event' => 'error', 'type' => 'db_op_failed')));
         }
-      } else {
-        // Error: the submitted email is already in use
+      } catch (\Exception $e) {
         header('Content-Type: application/json; charset=UTF-8');
         header('HTTP/1.1 400');
-        echo json_encode(array('event' => 'error', 'type' => 'email_already_in_use'));
+        die(json_encode(array('event' => 'error', 'type' => 'db_conn_failed')));
       }
     } else {
-      // Error: the submitted login is already in use
+      // Error: Missing necessary data
       header('Content-Type: application/json; charset=UTF-8');
       header('HTTP/1.1 400');
-      echo json_encode(array('event' => 'error', 'type' => 'login_already_in_use'));
+      echo json_encode(array('event' => 'error', 'type' => 'missing_data'));
     }
   }
 
   public function logar(){
-    if(($_POST['username'] != '') && ($_POST['password'] != '')){
-      $login = $_POST['username'];
-      $pass = $_POST['password'];
+    try {
+      if (
+        (isset($_POST['username']) && !preg_match('/^\s*$/', $_POST['username'])) &&
+        (isset($_POST['password']) && !preg_match('/^\s*$/', $_POST['password']))
+      ) {
+        $login = $_POST['username'];
+        $pass = $_POST['password'];
 
-      $acesso = Container::getClass("Usuario");
-      $user = $acesso->findByLogin($login);
-      $isCorrectPw = PasswordUtil::verify($pass, $user['password_hash']);
-      if($isCorrectPw){
-        $user_role = Container::getClass("UsuarioRole");
-        $role = $user_role->findByIdUser($user['id']);
+        $acesso = Container::getClass("Usuario");
+        $user = $acesso->findByLogin($login);
+        $isCorrectPw = PasswordUtil::verify($pass, $user['password_hash']);
+        if ($isCorrectPw) {
+          $user_role = Container::getClass("UsuarioRole");
+          $role = $user_role->findByIdUser($user['id']);
 
-        session_start();
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_name'] = $user['nome'];
-        $_SESSION['user_login'] = $user['login'];
-        $_SESSION['user_turno'] = $user['turno'];
-        $_SESSION['user_setor'] = $user['setor'];
-        $_SESSION['user_matricula'] = $user['matricula'];
+          session_start();
+          $_SESSION['user_id'] = $user['id'];
+          $_SESSION['user_name'] = $user['nome'];
+          $_SESSION['email'] = $user['email'];
+          $_SESSION['user_login'] = $user['login'];
+          $_SESSION['user_setor'] = $user['setor'];
+          $_SESSION['user_matricula'] = $user['matricula'];
 
-        if($role['cliente'] == 1){
-          $_SESSION['user_role'] = "CLIENTE";
-        }else if($role['tecnico'] == 1){
-          $_SESSION['user_role'] = "TECNICO";
-        }else if($role['gerente'] == 1){
-          $_SESSION['user_role'] = "GERENTE";
+          if($role['cliente'] == 1){
+            $_SESSION['user_role'] = "CLIENTE";
+          }else if($role['tecnico'] == 1){
+            $_SESSION['user_role'] = "TECNICO";
+          }else if($role['gerente'] == 1){
+            $_SESSION['user_role'] = "GERENTE";
+          }
+
+          // Inform last time user logged-in and update DB with the new date
+          $last_login = $user['data_ultimo_login'];
+          $date = new \DateTime("now", new \DateTimeZone('America/Fortaleza'));
+          $date = $date->format("Y-m-d H:i:s");
+          $acesso->updateColumnById("data_ultimo_login", $date, $user['id']);
+          header('Content-Type: application/json; charset=UTF-8');
+          echo json_encode(array('lastLogin' => $last_login));
+        }else{
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          echo json_encode(array('event' => 'error', 'type' => 'invalid_credentials'));
         }
-
-        // Inform last time user logged-in and update DB with the new date
-        $last_login = $user['data_ultimo_login'];
-        $date = new \DateTime("now", new \DateTimeZone('America/Fortaleza'));
-        $date = $date->format("Y-m-d H:i:s");
-        $acesso->updateColumnById("data_ultimo_login", $date, $user['id']);
-        header('Content-Type: application/json; charset=UTF-8');
-        echo json_encode(array('lastLogin' => $last_login));
-      }else{
+      } else {
         header('Content-Type: application/json; charset=UTF-8');
         header('HTTP/1.1 400');
-        echo json_encode(array('event' => 'error', 'type' => 'invalid_credentials'));
+        echo json_encode(array('event' => 'error', 'type' => 'missing_data'));
       }
-    }else{
-      header('Content-Type: application/json; charset=UTF-8');
-      header('HTTP/1.1 400');
-      echo json_encode(array('event' => 'error', 'type' => 'missing_data'));
+    } catch (\Exception $e) {
+      if ($e->getCode() === 2002) {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        echo json_encode(array('event' => 'error', 'type' => 'db_conn_failed'));
+      }
     }
   }
 
