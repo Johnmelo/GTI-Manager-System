@@ -398,6 +398,15 @@ function insertTechnicianCard(technicianName, technicianActivity, editable) {
   let technicianNameInput = editable ? `<input type="text" class="form-control tech-name-input" placeholder="Digite o nome ou usuário do técnico">`: `<h1>${technicianName}</h1>`;
   let btnRemove = editable ? '<button type="button" class="btn btn-danger remove-tech" onclick="removeTechnicianItemBtn(this)"><i class="fas fa-minus"></i></button>' : '';
   let textareaReadonly = editable ? '' : 'readonly';
+  let activitiesTitle = '';
+  let textarea = '';
+
+  let simplerCard = (!editable && (technicianActivity === null || technicianActivity.match(/^\s*$/) !== null));
+  if (!simplerCard) {
+    activitiesTitle = `<h2>Atividade(s):</h2>`;
+    textarea = `<textarea rows="1" cols="5" placeholder="Descreva a parte que ele ficou encarregado" ${textareaReadonly}>${technicianActivity}</textarea>`;
+  }
+
   let technicianItem = `\
   <div class="tech-item-wrapper">\
     <div class="content-wrapper">\
@@ -407,10 +416,10 @@ function insertTechnicianCard(technicianName, technicianActivity, editable) {
             ${technicianNameInput}\
             ${btnRemove}\
           </div>\
-          <h2>Atividade(s):</h2>\
+          ${activitiesTitle}\
         </div>\
       </div>\
-      <textarea rows="1" cols="5" placeholder="Descreva a parte que ele ficou encarregado" ${textareaReadonly}>${technicianActivity}</textarea>\
+      ${textarea}\
     </div>\
   </div>\
   `;

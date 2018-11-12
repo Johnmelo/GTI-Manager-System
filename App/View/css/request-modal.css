@@ -39,16 +39,24 @@
     justify-content: space-between;
 }
 
+.titles-upper-row > .tech-name-input {
+    margin-bottom: 6px;
+    font-size: 1.6rem;
+}
+.titles-upper-row > .tech-name-input::placeholder {
+    font-style: italic;
+}
+
 .item-titles h1 {
     font-size: 1.8rem;
-    margin-bottom: 0px;
+    margin-bottom: 6px;
     margin-top: 6px;
     font-weight: 600;
 }
 
 .item-titles h2 {
     font-size: 1.6rem;
-    margin-top: 8px;
+    margin-top: 2px;
     margin-bottom: 0px;
 }
 
@@ -69,14 +77,13 @@
 .content-wrapper > textarea[readonly] {
     font-size: 1.6rem;
     margin-top: 4px;
-    margin-bottom: 4px;
     border: 0;
     padding: 0;
 }
 
 .remove-tech {
     align-self: center;
-    margin: 0px 0px 0px 10px !important;
+    margin: 0px 0px 6px 10px !important;
     width: 32px;
     height: 32px;
     padding: 0;
