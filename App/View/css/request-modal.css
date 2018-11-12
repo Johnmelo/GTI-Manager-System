@@ -1,0 +1,92 @@
+.modal-content {
+    background-color: #f5f5f5;
+}
+
+.responsaveis-wrapper {
+    height: auto;
+    margin-top: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.tech-items-list {
+    width: 80%;
+}
+
+.tech-item-wrapper {
+    background-color: #fff;
+    width: 100%;
+    height: auto;
+    padding: 10px;
+    margin-bottom: 16px;
+    border-radius: 6px;
+    -webkit-box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
+    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
+}
+
+.item-header {
+
+}
+
+.item-titles {
+    flex: 1;
+}
+
+.titles-upper-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.item-titles h1 {
+    font-size: 1.8rem;
+    margin-bottom: 0px;
+    margin-top: 6px;
+    font-weight: 600;
+}
+
+.item-titles h2 {
+    font-size: 1.6rem;
+    margin-top: 8px;
+    margin-bottom: 0px;
+}
+
+.content-wrapper > textarea {
+    font-size: 1.6rem;
+    margin-top: 8px;
+    width: 100%;
+    padding: 6px;
+    border: #ddd solid 1px;
+    background-color: #fff;
+    resize: none;
+}
+.content-wrapper > textarea::placeholder {
+    color: #000;
+    opacity: 0.4;
+    font-style: italic;
+}
+.content-wrapper > textarea[readonly] {
+    font-size: 1.6rem;
+    margin-top: 4px;
+    margin-bottom: 4px;
+    border: 0;
+    padding: 0;
+}
+
+.remove-tech {
+    align-self: center;
+    margin: 0px 0px 0px 10px !important;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+}
+
+.add-tech-btn {
+    width: 206px;
+    margin: 0px !important;
+}
+
+.add-tech-btn > svg {
+    margin-right: 4px;
+}

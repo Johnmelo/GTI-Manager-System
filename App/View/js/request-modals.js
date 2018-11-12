@@ -27,6 +27,8 @@ function defineModal(modalConfig) {
     $('.request-modal-form input, .request-modal-form textarea').val("");
     $('.request-modal').find('.modal-footer').css("display", "none");
     $('.request-modal').find('.modal-footer button').remove();
+    $('.autocomplete-suggestions').remove();
+    $('.tech-items-list').empty();
 
     // Set config
     $('.request-modal').find('.modal-header > h4')[0].innerHTML = modalConfig.title;
@@ -378,6 +380,48 @@ function refuseRequest(requestId) {
   });
 }
 
+function insertTechnicianItemBtn(e) {
+  insertTechnicianCard('', '', true);
+}
+
+function removeTechnicianItemBtn(e) {
+  // Get the technician item index
+  let index = $(e).closest('.tech-item-wrapper').index();
+  // Remove the autocomplete object related to the item being removed
+  $('.autocomplete-suggestions').eq(index).remove();
+  // Then remove the item
+  $(e).closest('.tech-item-wrapper').remove();
+}
+
+function insertTechnicianCard(technicianName, technicianActivity, editable) {
+  let techniciansList = $('.tech-items-list');
+  let technicianNameInput = editable ? `<input type="text" class="form-control tech-name-input" placeholder="Digite o nome ou usuário do técnico">`: `<h1>${technicianName}</h1>`;
+  let btnRemove = editable ? '<button type="button" class="btn btn-danger remove-tech" onclick="removeTechnicianItemBtn(this)"><i class="fas fa-minus"></i></button>' : '';
+  let textareaReadonly = editable ? '' : 'readonly';
+  let technicianItem = `\
+  <div class="tech-item-wrapper">\
+    <div class="content-wrapper">\
+      <div class="item-header">\
+        <div class="item-titles">\
+          <div class="titles-upper-row">\
+            ${technicianNameInput}\
+            ${btnRemove}\
+          </div>\
+          <h2>Atividade(s):</h2>\
+        </div>\
+      </div>\
+      <textarea rows="1" cols="5" placeholder="Descreva a parte que ele ficou encarregado" ${textareaReadonly}>${technicianActivity}</textarea>\
+    </div>\
+  </div>\
+  `;
+  techniciansList.append(technicianItem);
+
+  if (editable) {
+    // $('.tech-name-input').autocomplete({});
+    autosize($('textarea'));
+  }
+}
+
 // Inserting HTML structure into modal tag
 $(document).ready(function() {
     $('.modal.request-modal').get(0).innerHTML = '\
@@ -483,6 +527,16 @@ $(document).ready(function() {
               <label for="motivo_recusa_field" class="col-sm-4 control-label">Motivo da recusa</label>\
               <div class="col-sm-8">\
                 <textarea class="form-control" rows="3" id="motivo_recusa_field" readonly></textarea>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="responsaveis_field" class="control-label">Acrescentar técnicos:</label>\
+              <div class="">\
+                <input type="hidden" class="form-control" id="responsaveis_field" readonly>\
+              </div>\
+              <div class="responsaveis-wrapper">\
+                <div class="tech-items-list"></div>\
+                <button type="button" class="btn btn-primary add-tech-btn" onclick="insertTechnicianItemBtn()"><i class="fas fa-plus"></i> Adicionar outro técnico</button>\
               </div>\
             </div>\
           </form>\
