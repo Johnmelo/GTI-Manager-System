@@ -14,6 +14,7 @@
 <link href="../App/View/css/custom-style-override.css" rel="stylesheet">
 <link href="../App/View/css/custom-modal.css" rel="stylesheet">
 <link href="../App/View/css/request-modal.css" rel="stylesheet">
+<link href="../App/View/css/autocomplete-custom-style.css" rel="stylesheet">
 </head>
 
 <body class="nav-md">
@@ -381,7 +382,8 @@
           descricao_field: true,
           data_solicitacao_field: true,
           data_abertura_field: true,
-          prazo_field: false
+          prazo_field: false,
+          responsaveis_field: true
         },
         footer_config: [
           {
@@ -784,6 +786,14 @@
   };
 
   $(document).ready(function() {
+    // User info
+    window.myself = {
+      "id": <?php echo json_encode($_SESSION['user_id']) ?>,
+      "name": <?php echo json_encode($_SESSION['user_name']) ?>,
+      "username": <?php echo json_encode($_SESSION['user_login']) ?>,
+      "email": <?php echo json_encode($_SESSION['email']) ?>
+    };
+
     // Load the requests for the page
     window.activeTicketRequests = <?php echo json_encode($this->view->activeTicketRequests) ?>;
     window.inQueueTickets = <?php echo json_encode($this->view->inQueueTickets) ?>;
