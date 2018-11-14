@@ -112,6 +112,15 @@ function fillUpRequestModal(requestData, visibleFields) {
                     'YYYY-MM-DD HH:mm:ss'
                 ).format("DD/MM/YYYY [às] HH:mm");
                 field.value = datetime;
+        } else if (field.id === "responsaveis_field") {
+            // When responsible technicians area
+            if (requestData.hasOwnProperty("responsaveis")) {
+              // When there are technicians related, first show the one who is logged in
+            } else {
+              if (window.myself) {
+                insertTechnicianCard(myself.name, '', "ownCard");
+              }
+            }
         } else {
             // Other values except dates, just put it in the input field
             field.value = requestData[fieldTitle];
