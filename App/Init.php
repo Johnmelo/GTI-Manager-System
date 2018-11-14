@@ -15,6 +15,7 @@ class Init extends Bootstrap{
     $routes['/gtic/public/get_services_suggestions'] = array('controller' => 'indexController', 'action' => 'get_services_suggestions');
     $routes['/gtic/public/get_locales_suggestions'] = array('controller' => 'indexController', 'action' => 'get_locales_suggestions');
     $routes['/gtic/public/get_users_suggestions'] = array('controller' => 'indexController', 'action' => 'get_users_suggestions');
+    $routes['/gtic/public/get_support_users_suggestions'] = array('controller' => 'indexController', 'action' => 'get_support_users_suggestions');
     //--------------------------------------------------------------------------------------------------------------------------
 
     //ADMIN ROUTES--------------------------------------------------------------------------------------------------------------
