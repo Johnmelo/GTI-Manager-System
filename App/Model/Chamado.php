@@ -227,6 +227,17 @@ class Chamado extends Table{
       return $res;
   }
 
+  public function setTicketTechnicians($ticketID, $technicianID, $technicianResponsibility) {
+      $query = "INSERT INTO `chamado_tecnico_xref` (id_chamado, id_tecnico, atividade) VALUES (?, ?, ?)";
+      $params = \func_get_args();
+      $stmt = $this->db->prepare($query);
+      if ($stmt->execute($params) && $stmt->rowCount() > 0) {
+        return $this->db->lastInsertId();
+      } else {
+        return false;
+      }
+  }
+
   public function save($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description){
     $query = "Insert into ".$this->table." (id_servico,id_local,id_solicitacao,id_tecnico_abertura,id_cliente_solicitante,prazo,descricao) values (?,?,?,?,?,?,?)";
     $params = array($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description);

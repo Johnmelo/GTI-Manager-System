@@ -40,7 +40,7 @@ class Init extends Bootstrap{
 
     //TECHNICIAN ROUTES-----------------------------------------------------------------------------------------------------------
     $routes['/gtic/public/tecnico'] = array('controller' => 'tecnicoController', 'action' => 'index');
-    $routes['/gtic/public/technician_select_request'] = array('controller' => 'tecnicoController', 'action' => 'technician_select_request');
+    $routes['/gtic/public/tecnico/technician_select_request'] = array('controller' => 'tecnicoController', 'action' => 'technician_select_request');
     $routes['/gtic/public/tecnico/historico_chamados'] = array('controller' => 'tecnicoController', 'action' => 'technician_history');
     $routes['/gtic/public/tecnico/solicitar_atendimento'] = array('controller' => 'tecnicoController', 'action' => 'solicitar_atendimento');
     $routes['/gtic/public/tecnico/register_call_request'] = array('controller' => 'tecnicoController', 'action' => 'register_call_request');

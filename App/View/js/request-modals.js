@@ -270,13 +270,16 @@ function acquireRequest(ticketID) {
     let date = datetime[0].split("/");
     let time = datetime[1];
     datetime = date[2] + "-" + date[1] + "-" + date[0] + " " + time;
+    // Get the technicians responsible and their responsibility
+    let techniciansList = getTechniciansList();
 
     $("html").css("cursor", "wait");
     $("body").css("pointer-events", "none");
-    $.post("/gtic/public/technician_select_request",
+    $.post("/gtic/public/tecnico/technician_select_request",
     {
       "ticket_id": ticketID,
-      "deadline_value": datetime
+      "deadline_value": datetime,
+      "technicians_list": techniciansList
     })
     .done(function(response) {
       // Unblock page
@@ -400,6 +403,54 @@ function removeTechnicianItemBtn(e) {
   $('.autocomplete-suggestions').eq(index).remove();
   // Then remove the item
   $(e).closest('.tech-item-wrapper').remove();
+}
+
+function getTechniciansList() {
+  let techniciansList = [];
+  let okToContinue = false;
+  // Check the necessary variables availability
+  if (!myself && !technicians) {
+    return false;
+  }
+  // Get the inserted technicians
+  $('.tech-items-list').children().each((index, element) => {
+    let techNameInput = $(element).find('input.tech-name-input').get(0);
+    let techActivityInput = $(element).find('textarea').get(0);
+    if (techNameInput !== undefined) {
+      let technicianName = techNameInput.value;
+      // Check if it's a valid option (an autocomplete suggestion)
+      let isTechnicianListed = ((window.technicians.filter(x => x.value === technicianName)).length > 0);
+      if (isTechnicianListed) {
+        let technician = window.technicians.find(t => t.value === technicianName)
+        let technicianID = technician.data.userID;
+        let technicianActivity = techActivityInput.value.replace(/^\s*/, '').replace(/\s*$/, '');
+        techniciansList.push(
+          {
+            "technicianID": technicianID,
+            "technicianActivity": technicianActivity
+          }
+        );
+        okToContinue = true;
+      } else {
+        alert("Você adicionou um campo para adicionar outro técnico mas não definiu o técnico");
+        return okToContinue = false;
+      }
+    } else {
+      // Else, it's the first card, so add the own technican
+      techniciansList.push(
+        {
+          "technicianID": myself.id,
+          "technicianActivity": techActivityInput.value.replace(/^\s*/, '').replace(/\s*$/, '')
+        }
+      );
+      okToContinue = true;
+    }
+  });
+
+  if (okToContinue) {
+    return techniciansList;
+  }
+  return false;
 }
 
 function insertTechnicianCard(technicianName, technicianActivity, flag) {

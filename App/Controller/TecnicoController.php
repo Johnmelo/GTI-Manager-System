@@ -50,7 +50,7 @@ class TecnicoController extends Action{
     session_start();
     if($_SESSION['user_role'] === "TECNICO"){
       // Check if the necessary data was sent
-      if(isset($_POST['ticket_id']) && isset($_POST['deadline_value'])){
+      if(isset($_POST['ticket_id']) && isset($_POST['deadline_value']) && isset($_POST['technicians_list']) && count($_POST['technicians_list']) > 0){
         // Check if the data was sent in the expected format
         if(preg_match("/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/", $_POST['deadline_value']) === 1) {
           try {
@@ -65,10 +65,18 @@ class TecnicoController extends Action{
               $data_assumido = $date->format("Y-m-d H:i:s");
               $Chamado = Container::getClass("Chamado");
               $db->beginTransaction();
-              $Chamado->updateColumnById("id_tecnico_responsavel", $_SESSION['user_id'], $ticketID);
               $Chamado->updateColumnById("data_assumido", $data_assumido, $ticketID);
               $Chamado->updateColumnById("status", "ATENDIMENTO", $ticketID);
               $Chamado->updateColumnById("prazo", $prazo, $ticketID);
+              // Associate the ticket with technicians
+              $Chamado = Container::getClass("Chamado");
+              \array_walk($_POST['technicians_list'], function($techData)use($Chamado, $ticketID) {
+                if (\preg_match('/^\s*$/', $techData['technicianActivity'])) {
+                  $Chamado->setTicketTechnicians($ticketID, $techData['technicianID'], null);
+                } else {
+                  $Chamado->setTicketTechnicians($ticketID, $techData['technicianID'], $techData['technicianActivity']);
+                }
+              });
               $db->commit();
               $ticket = $Chamado->getTicketById($ticketID);
               if ($ticket) {
