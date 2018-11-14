@@ -44,5 +44,30 @@ class Usuario extends Table{
     $res = $stmt->fetch();
     return $res;
   }
+
+  public function findByRole() {
+    // Each argument is a role. Example: findByRole("admin", "technician", "client");
+    $args = \func_get_args();
+    $querysWhereBuilding = [];
+    if (\array_search('client', $args) !== false) {
+      \array_push($querysWhereBuilding, "(`u_r`.`cliente` = 1 AND `u_r`.`tecnico` = 0 AND `u_r`.`gerente` = 0)");
+    }
+    if (\array_search('technician', $args) !== false) {
+      \array_push($querysWhereBuilding, "(`u_r`.`cliente` = 0 AND `u_r`.`tecnico` = 1 AND `u_r`.`gerente` = 0)");
+    }
+    if (\array_search('admin', $args) !== false) {
+      \array_push($querysWhereBuilding, "(`u_r`.`cliente` = 0 AND `u_r`.`tecnico` = 0 AND `u_r`.`gerente` = 1)");
+    }
+    $querysWhereSetting = \implode(" OR ", $querysWhereBuilding);
+
+    $stmt = $this->db->prepare(
+      "SELECT * FROM `usuarios` AS `u` ".
+      "LEFT JOIN `usuarios_roles` AS `u_r` ON `u_r`.`id_usuario` = `u`.`id` ".
+      "WHERE ".$querysWhereSetting
+    );
+    $stmt->execute();
+    $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    return $res;
+  }
 }
 ?>
