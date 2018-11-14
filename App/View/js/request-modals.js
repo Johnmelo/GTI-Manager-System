@@ -433,14 +433,52 @@ function insertTechnicianCard(technicianName, technicianActivity, flag) {
   `;
   techniciansList.append(technicianItem);
 
-  if (editable) {
-    // $('.tech-name-input').autocomplete({});
+  if (flag === "editable") {
+    const _formatRegexp = function(q) {
+      q = q.replace(/[eéèêẽëEÉÈÊẼË]/gi,'[eéèêẽëEÉÈÊẼË]');
+      q = q.replace(/[aáàâãäAÁÀÂÃÄÅÆ]/gi,'[aáàâãäAÁÀÂÃÄÅÆ]');
+      q = q.replace(/[cçCÇ]/gi,'[cçCÇ]');
+      q = q.replace(/[iíìîïIÌÍÎÏ]/gi,'[iíìîïIÌÍÎÏ]');
+      q = q.replace(/[oóòôõöOÓÒÔÕÖ]/gi,'[oóòôõöOÓÒÔÕÖ]');
+      q = q.replace(/[uúùûüUÚÙÛÜ]/gi,'[uúùûüUÚÙÛÜ]');
+      q = q.replace(/[nñNÑ]/gi,'[nñNÑ]');
+      q = q.replace(/[yYÿ^yÝ]/gi,'[yYÿ^yÝ]');
+      return q;
+    }
+    const _autocompleteLookup = function (suggestion, originalQuery, queryLowerCase) {
+      let pattern = '(\\b|)('+$.Autocomplete.utils.escapeRegExChars(queryLowerCase)+')';
+      pattern = _formatRegexp(pattern);
+      let matcher = new RegExp(pattern);
+      let ret = suggestion.value.toLowerCase().match(matcher);
+      return ret;
+    };
+    const _autocompleteFormatResult = function (suggestion, currentValue) {
+      let pattern = '(\\b|)('+$.Autocomplete.utils.escapeRegExChars(currentValue)+')';
+      pattern = _formatRegexp(pattern);
+      return suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1$2<\/strong>');
+    };
+    $('.tech-name-input').autocomplete({
+      minChars: 0,
+      lookup: window.technicians.filter(r => r.data.userID !== myself.id),
+      showNoSuggestionNotice: true,
+      noSuggestionNotice: "Técnico não encontrado no sistema",
+      lookupFilter: _autocompleteLookup,
+      formatResult: _autocompleteFormatResult
+    });
     autosize($('textarea'));
   }
 }
 
 // Inserting HTML structure into modal tag
 $(document).ready(function() {
+    $.post("/gtic/public/get_support_users_suggestions")
+    .done(function(data) {
+      window.technicians = data;
+    })
+    .fail(function(data) {
+      alert("Houve um problema enquanto carregava a lista de técnicos para o \"autocomplete\"");
+    });
+
     $('.modal.request-modal').get(0).innerHTML = '\
     <div class="modal-dialog" role="document">\
       <div class="modal-content">\
