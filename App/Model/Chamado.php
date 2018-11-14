@@ -188,22 +188,45 @@ class Chamado extends Table{
   }
 
   public function getInProcessTickets() {
+    // Get the tickets
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
-          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
-          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
           ." LEFT JOIN `usuarios` AS `u1` ON `u1`.`id` = `c`.`id_cliente_solicitante`"
           ." LEFT JOIN `usuarios` AS `u2` ON `u2`.`id` = `c`.`id_tecnico_abertura`"
-          ." LEFT JOIN `usuarios` AS `u3` ON `u3`.`id` = `c`.`id_tecnico_responsavel`"
           ." LEFT JOIN `locais` AS `l` ON `l`.`id` = `sc`.`id_local`"
           ." WHERE `c`.`status` = 'ATENDIMENTO'"
           ." ORDER BY `c`.`data_assumido`");
       $stmt->execute();
       $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+      // Include the technicians sharing tickets
+      $stmt = $this->db->prepare(
+          "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade` ".
+          "FROM `chamado_tecnico_xref` AS `ct_xref` ".
+          "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` "
+      );
+      $stmt->execute();
+      $tickets_technicians_xref = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      \array_walk($tickets_technicians_xref, function($xref)use(&$res) {
+        $ticketIndex = array_search($xref['id_chamado'], array_column($res, 'id_chamado'));
+        if ($res[$ticketIndex]['responsaveis'] === null) {
+          $res[$ticketIndex]['responsaveis'] = [];
+        }
+        \array_push(
+          $res[$ticketIndex]['responsaveis'],
+          array(
+            "id_tecnico" => $xref['id_tecnico'],
+            "tecnico" => $xref['tecnico'],
+            "atividade" => $xref['atividade']
+          )
+        );
+      });
       return $res;
   }
 

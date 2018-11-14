@@ -23,16 +23,14 @@ class TecnicoController extends Action{
         $techniciansInProcessTickets = [];
         $otherTechniciansInProcessTickets = [];
 
-        $techniciansInProcessTickets = \array_filter($inProcessTickets, function($ticket) {
-          $inProcess = ($ticket["status"] === "ATENDIMENTO");
-          $techniciansTicket = ($ticket["id_tecnico_responsavel"] === $_SESSION["user_id"]);
-            return ($inProcess && $techniciansTicket);
-        });
-
-        $otherTechniciansInProcessTickets = \array_filter($inProcessTickets, function($ticket) {
-          $inProcess = ($ticket["status"] === "ATENDIMENTO");
-          $otherTechniciansTicket = ($ticket["id_tecnico_responsavel"] !== $_SESSION["user_id"]);
-            return ($inProcess && $otherTechniciansTicket);
+        \array_walk($inProcessTickets, function($ticket)use(&$techniciansInProcessTickets, &$otherTechniciansInProcessTickets) {
+          $ticketTechniciansIDs = array_column($ticket['responsaveis'], 'id_tecnico');
+          $technicianDataIndex = array_search($_SESSION['user_id'], $ticketTechniciansIDs);
+          if ($technicianDataIndex !== false) {
+            \array_push($techniciansInProcessTickets, $ticket);
+          } else {
+            \array_push($otherTechniciansInProcessTickets, $ticket);
+          }
         });
 
         $this->view->token = \json_encode($token->data);
