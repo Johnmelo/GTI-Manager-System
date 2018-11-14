@@ -381,7 +381,7 @@ function refuseRequest(requestId) {
 }
 
 function insertTechnicianItemBtn(e) {
-  insertTechnicianCard('', '', true);
+  insertTechnicianCard('', '', "editable");
 }
 
 function removeTechnicianItemBtn(e) {
@@ -393,18 +393,26 @@ function removeTechnicianItemBtn(e) {
   $(e).closest('.tech-item-wrapper').remove();
 }
 
-function insertTechnicianCard(technicianName, technicianActivity, editable) {
+function insertTechnicianCard(technicianName, technicianActivity, flag) {
   let techniciansList = $('.tech-items-list');
-  let technicianNameInput = editable ? `<input type="text" class="form-control tech-name-input" placeholder="Digite o nome ou usuário do técnico">`: `<h1>${technicianName}</h1>`;
-  let btnRemove = editable ? '<button type="button" class="btn btn-danger remove-tech" onclick="removeTechnicianItemBtn(this)"><i class="fas fa-minus"></i></button>' : '';
-  let textareaReadonly = editable ? '' : 'readonly';
+  let technicianNameInput = '';
+  let textareaPlaceholder = '';
+  if (flag === null || flag === "ownCard") {
+    technicianNameInput = `<h1>${technicianName}</h1>`;
+    textareaPlaceholder = (flag === "ownCard") ? "Descreva sua responsabilidade" : "Descreva a parte que ele ficou encarregado";
+  } else if (flag === "editable") {
+    technicianNameInput = `<input type="text" class="form-control tech-name-input" placeholder="Digite o nome ou usuário do técnico">`;
+    textareaPlaceholder = "Descreva a parte que ele ficou encarregado";
+  }
+  let btnRemove = (flag === "editable") ? '<button type="button" class="btn btn-danger remove-tech" onclick="removeTechnicianItemBtn(this)"><i class="fas fa-minus"></i></button>' : '';
+  let textareaReadonly = (flag === "editable" || flag === "ownCard") ? '' : 'readonly';
   let activitiesTitle = '';
   let textarea = '';
 
-  let simplerCard = (!editable && (technicianActivity === null || technicianActivity.match(/^\s*$/) !== null));
+  let simplerCard = (!(flag === "editable" || flag === "ownCard") && (technicianActivity === null || technicianActivity.match(/^\s*$/) !== null));
   if (!simplerCard) {
     activitiesTitle = `<h2>Atividade(s):</h2>`;
-    textarea = `<textarea rows="1" cols="5" placeholder="Descreva a parte que ele ficou encarregado" ${textareaReadonly}>${technicianActivity}</textarea>`;
+    textarea = `<textarea rows="1" cols="5" placeholder="${textareaPlaceholder}" ${textareaReadonly}>${technicianActivity}</textarea>`;
   }
 
   let technicianItem = `\
