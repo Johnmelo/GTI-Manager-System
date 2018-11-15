@@ -93,6 +93,9 @@
     width: 206px;
     margin: 0px !important;
 }
+.responsaveis-wrapper.readonly .add-tech-btn {
+    display: none;
+}
 
 .add-tech-btn > svg {
     margin-right: 4px;

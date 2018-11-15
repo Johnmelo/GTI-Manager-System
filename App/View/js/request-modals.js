@@ -36,6 +36,15 @@ function defineModal(modalConfig) {
     // Define the form inputs to be visible and its readonly setting
     var visibleFields = modalConfig.visible_fields;
     for (var key in visibleFields) {
+        if (key === "responsaveis_field") {
+            if (visibleFields[key] === true) {
+                $('label[for=responsaveis_field]').text("Técnicos responsáveis:");
+                $('.responsaveis-wrapper').addClass("readonly");
+            } else {
+                $('label[for=responsaveis_field]').text("Definir técnicos e responsabilidades:");
+                $('.responsaveis-wrapper').removeClass("readonly");
+            }
+        }
         $('.request-modal-form')[0].elements[key].readOnly= visibleFields[key];
         $($('.request-modal-form')[0].elements[key]).parents('.form-group').css("display", "block");
     }
@@ -116,6 +125,17 @@ function fillUpRequestModal(requestData, visibleFields) {
             // When responsible technicians area
             if (requestData.hasOwnProperty("responsaveis")) {
               // When there are technicians related, first show the one who is logged in
+              if (window.myself) {
+                  // Get logged in technician responsibility info and display it
+                  let ownResponsibilityData = requestData.responsaveis.find(rd => rd.id_tecnico === myself.id);
+                  insertTechnicianCard(myself.name, ownResponsibilityData.atividade, "ownCard");
+                  // Then add the other technicians, if any
+                  let otherTechnicians = requestData.responsaveis.filter(r => r !== ownResponsibilityData);
+                  for (responsibilityData of otherTechnicians) {
+                      let techName = technicians.find(t => t.data.userID === responsibilityData.id_tecnico).value;
+                      insertTechnicianCard(techName, responsibilityData.atividade, "editable");
+                  }
+              }
             } else {
               if (window.myself) {
                 insertTechnicianCard(myself.name, '', "ownCard");
@@ -461,7 +481,7 @@ function insertTechnicianCard(technicianName, technicianActivity, flag) {
     technicianNameInput = `<h1>${technicianName}</h1>`;
     textareaPlaceholder = (flag === "ownCard") ? "Descreva sua responsabilidade" : "Descreva a parte que ele ficou encarregado";
   } else if (flag === "editable") {
-    technicianNameInput = `<input type="text" class="form-control tech-name-input" placeholder="Digite o nome ou usuário do técnico">`;
+    technicianNameInput = `<input type="text" class="form-control tech-name-input" placeholder="Digite o nome ou usuário do técnico" value="${technicianName}">`;
     textareaPlaceholder = "Descreva a parte que ele ficou encarregado";
   }
   let btnRemove = (flag === "editable") ? '<button type="button" class="btn btn-danger remove-tech" onclick="removeTechnicianItemBtn(this)"><i class="fas fa-minus"></i></button>' : '';
@@ -472,6 +492,7 @@ function insertTechnicianCard(technicianName, technicianActivity, flag) {
   let simplerCard = (!(flag === "editable" || flag === "ownCard") && (technicianActivity === null || technicianActivity.match(/^\s*$/) !== null));
   if (!simplerCard) {
     activitiesTitle = `<h2>Atividade(s):</h2>`;
+    technicianActivity = (technicianActivity === null) ? '' : technicianActivity;
     textarea = `<textarea rows="1" cols="5" placeholder="${textareaPlaceholder}" ${textareaReadonly}>${technicianActivity}</textarea>`;
   }
 
@@ -612,12 +633,6 @@ $(document).ready(function() {
               <label for="prazo_field" class="col-sm-4 control-label">Prazo</label>\
               <div class="col-sm-8">\
                 <input type="text" class="form-control" id="prazo_field" readonly>\
-              </div>\
-            </div>\
-            <div class="form-group" style="display: none;">\
-              <label for="tecnico_responsavel_field" class="col-sm-4 control-label">Técnico responsável</label>\
-              <div class="col-sm-8">\
-                <input type="text" class="form-control" id="tecnico_responsavel_field" readonly>\
               </div>\
             </div>\
             <div class="form-group" style="display: none;">\
