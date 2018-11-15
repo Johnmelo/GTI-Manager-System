@@ -61,7 +61,7 @@ class Usuario extends Table{
     $querysWhereSetting = \implode(" OR ", $querysWhereBuilding);
 
     $stmt = $this->db->prepare(
-      "SELECT * FROM `usuarios` AS `u` ".
+      "SELECT `u`.`id`, `nome`, `email`, `login`, `setor`, `matricula`, `data_cadastro`, `data_ultimo_login` FROM `{$this->table}` AS `u` ".
       "LEFT JOIN `usuarios_roles` AS `u_r` ON `u_r`.`id_usuario` = `u`.`id` ".
       "WHERE ".$querysWhereSetting
     );
