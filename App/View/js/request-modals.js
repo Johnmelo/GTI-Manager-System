@@ -475,40 +475,30 @@ function getTechniciansList() {
 
 function insertTechnicianCard(technicianName, technicianActivity, flag) {
   let techniciansList = $('.tech-items-list');
-  let technicianNameInput = '';
+  let ownCardClass = (flag && flag === "ownCard") ? " own-card" : "";
+  let noActivity = (technicianActivity === null || technicianActivity.match(/^\s*$/) !== null);
+  let noActivityClass = (noActivity) ? " no-activity" : "";
+  technicianActivity = (noActivity) ? '' : technicianActivity;
+
   let textareaPlaceholder = '';
   if (flag === null || flag === "ownCard") {
-    technicianNameInput = `<h1>${technicianName}</h1>`;
     textareaPlaceholder = (flag === "ownCard") ? "Descreva sua responsabilidade" : "Descreva a parte que ele ficou encarregado";
-  } else if (flag === "editable") {
-    technicianNameInput = `<input type="text" class="form-control tech-name-input" placeholder="Digite o nome ou usuário do técnico" value="${technicianName}">`;
+  } else {
     textareaPlaceholder = "Descreva a parte que ele ficou encarregado";
-  }
-  let btnRemove = (flag === "editable") ? '<button type="button" class="btn btn-danger remove-tech" onclick="removeTechnicianItemBtn(this)"><i class="fas fa-minus"></i></button>' : '';
-  let textareaReadonly = (flag === "editable" || flag === "ownCard") ? '' : 'readonly';
-  let activitiesTitle = '';
-  let textarea = '';
-
-  let simplerCard = (!(flag === "editable" || flag === "ownCard") && (technicianActivity === null || technicianActivity.match(/^\s*$/) !== null));
-  if (!simplerCard) {
-    activitiesTitle = `<h2>Atividade(s):</h2>`;
-    technicianActivity = (technicianActivity === null) ? '' : technicianActivity;
-    textarea = `<textarea rows="1" cols="5" placeholder="${textareaPlaceholder}" ${textareaReadonly}>${technicianActivity}</textarea>`;
   }
 
   let technicianItem = `\
-  <div class="tech-item-wrapper">\
+  <div class="tech-item-wrapper${noActivityClass}${ownCardClass}">\
     <div class="content-wrapper">\
       <div class="item-header">\
         <div class="item-titles">\
           <div class="titles-upper-row">\
-            ${technicianNameInput}\
-            ${btnRemove}\
+            <input type="text" class="form-control tech-name-input" placeholder="Digite o nome ou usuário do técnico" value="${technicianName}">\
+            <button type="button" class="btn btn-danger remove-tech" onclick="removeTechnicianItemBtn(this)"><i class="fas fa-minus"></i></button>\
           </div>\
-          ${activitiesTitle}\
         </div>\
       </div>\
-      ${textarea}\
+      <textarea rows="1" cols="5" placeholder="${textareaPlaceholder}">${technicianActivity}</textarea>\
     </div>\
   </div>\
   `;
@@ -666,7 +656,12 @@ $(document).ready(function() {
               </div>\
               <div class="responsaveis-wrapper">\
                 <div class="tech-items-list"></div>\
-                <button type="button" class="btn btn-primary add-tech-btn" onclick="insertTechnicianItemBtn()"><i class="fas fa-plus"></i> Adicionar outro técnico</button>\
+                <div class="buttons-row">\
+                  <button type="button" class="btn btn-primary edit-techs-btn" onclick="editTechListBtn()"><i class="fas fa-edit"></i> Editar responsáveis</button>\
+                  <button type="button" class="btn btn-primary cancel-edit-btn" onclick="cancelTechListEditionBtn()"><i class="fas fa-times"></i> Cancelar edição</button>\
+                  <button type="button" class="btn btn-primary add-tech-btn" onclick="insertTechnicianItemBtn()"><i class="fas fa-plus"></i> Adicionar outro técnico</button>\
+                  <button type="button" class="btn btn-primary save-tech-btn" onclick="saveTechListBtn()"><i class="fas fa-save"></i> Salvar</button>\
+                </div>\
               </div>\
             </div>\
           </form>\
