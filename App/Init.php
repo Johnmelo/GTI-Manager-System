@@ -46,6 +46,7 @@ class Init extends Bootstrap{
     $routes['/gtic/public/tecnico/register_call_request'] = array('controller' => 'tecnicoController', 'action' => 'register_call_request');
     $routes['/gtic/public/tecnico/configuracoes'] = array('controller' => 'tecnicoController', 'action' => 'technician_account_settings');
     $routes['/gtic/public/tecnico/refuse_support_request'] = array('controller' => 'tecnicoController', 'action' => 'refuse_support_request');
+    $routes['/gtic/public/tecnico/update_ticket_responsible_technicians'] = array('controller' => 'tecnicoController', 'action' => 'update_ticket_responsible_technicians');
     //----------------------------------------------------------------------------------------------------------------------------
 
     $this->setRoutes($routes);

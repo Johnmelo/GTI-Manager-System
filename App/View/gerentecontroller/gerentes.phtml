@@ -12,6 +12,7 @@
 <link href="../App/View/css/custom-style-override.css" rel="stylesheet">
 <link href="../App/View/css/custom-modal.css" rel="stylesheet">
 <link href="../App/View/css/request-modal.css" rel="stylesheet">
+<link href="../App/View/css/autocomplete-custom-style.css" rel="stylesheet">
 </head>
 
 <body class="nav-md">
@@ -235,6 +236,8 @@
   <script src="../App/View/js/bootstrap.min.js"></script>
   <!-- NProgress -->
   <script src="../App/View/js/nprogress.js"></script>
+  <!-- Autosize -->
+  <script src="../App/View/js/autosize.min.js"></script>
   <!-- Moment.js -->
   <script src="../App/View/js/moment.min.js"></script>
   <!-- forge-sha256 -->
@@ -335,6 +338,9 @@
   </script>
   <!-- Custom Theme Scripts -->
   <script src="../App/View/js/custom.min.js"></script>
+
+  <!-- jQuery autocomplete -->
+  <script src="../App/View/js/jquery.autocomplete.min.js"></script>
 
   <!-- Request modal settings -->
   <script src="../App/View/js/request-modals.js"></script>
@@ -495,6 +501,11 @@
       // Remove the request from the table
       $('form[name=client_call_request]').find(`[data-request-id=${request.id_solicitacao}]`).remove();
     }
+    function ticketTechniciansUpdated(ticket) {
+      // Replace the ticket responsible technicians data
+      let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+      ticketToBeUpdated.responsaveis = ticket.responsaveis;
+    }
   </script>
 
   <!-- Tables handling -->
@@ -647,6 +658,14 @@
     }
 
     $(document).ready(function() {
+      // User info
+      window.myself = {
+        "id": <?php echo json_encode($_SESSION['user_id']) ?>,
+        "name": <?php echo json_encode($_SESSION['user_name']) ?>,
+        "username": <?php echo json_encode($_SESSION['user_login']) ?>,
+        "email": <?php echo json_encode($_SESSION['email']) ?>
+      };
+
       // Load the requests for the page
       window.unreviewedAccountRequests = <?php echo json_encode($this->view->unreviewedAccountRequests) ?>;
       window.activeTicketRequests = <?php echo json_encode($this->view->activeTicketRequests) ?>;

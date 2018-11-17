@@ -610,6 +610,11 @@
     let techniciansTable = $('form[name=meus_servicos_atendimento_form]');
     techniciansTable.find(`[data-request-id=${ticket.id_chamado}]`).remove();
   }
+  function ticketTechniciansUpdated(ticket) {
+    // Replace the ticket responsible technicians data
+    let ticketToBeUpdated = techniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    ticketToBeUpdated.responsaveis = ticket.responsaveis;
+  }
 </script>
 
 <!-- Tables handling -->

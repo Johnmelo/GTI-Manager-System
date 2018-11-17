@@ -334,6 +334,12 @@ class Chamado extends Table{
       }
   }
 
+  public function deleteTicketTechnicianAssociations($ticketID) {
+    $stmt = $this->db->prepare("DELETE FROM `chamado_tecnico_xref` WHERE `chamado_tecnico_xref`.`id_chamado` = :ticketID");
+    $stmt->bindParam(":ticketID", $ticketID);
+    return $stmt->execute();
+  }
+
   public function save($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description){
     $query = "Insert into ".$this->table." (id_servico,id_local,id_solicitacao,id_tecnico_abertura,id_cliente_solicitante,prazo,descricao) values (?,?,?,?,?,?,?)";
     $params = array($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description);

@@ -29,6 +29,7 @@ function defineModal(modalConfig) {
     $('.request-modal').find('.modal-footer button').remove();
     $('.autocomplete-suggestions').remove();
     $('.tech-items-list').empty();
+    $('.responsaveis-wrapper').removeClass('editable editing')
 
     // Set config
     $('.request-modal').find('.modal-header > h4')[0].innerHTML = modalConfig.title;
@@ -37,13 +38,7 @@ function defineModal(modalConfig) {
     var visibleFields = modalConfig.visible_fields;
     for (var key in visibleFields) {
         if (key === "responsaveis_field") {
-            if (visibleFields[key] === true) {
-                $('label[for=responsaveis_field]').text("Técnicos responsáveis:");
-                $('.responsaveis-wrapper').addClass("readonly");
-            } else {
-                $('label[for=responsaveis_field]').text("Definir técnicos e responsabilidades:");
-                $('.responsaveis-wrapper').removeClass("readonly");
-            }
+            $('.responsaveis-wrapper').addClass(visibleFields[key]);
         }
         $('.request-modal-form')[0].elements[key].readOnly= visibleFields[key];
         $($('.request-modal-form')[0].elements[key]).parents('.form-group').css("display", "block");
@@ -124,16 +119,23 @@ function fillUpRequestModal(requestData, visibleFields) {
         } else if (field.id === "responsaveis_field") {
             // When responsible technicians area
             if (requestData.hasOwnProperty("responsaveis")) {
-              // When there are technicians related, first show the one who is logged in
               if (window.myself) {
-                  // Get logged in technician responsibility info and display it
+                  let respTechnicians = requestData.responsaveis;
+                  // If logged in user is one of the responsible technicians
+                  // display his/her card first
                   let ownResponsibilityData = requestData.responsaveis.find(rd => rd.id_tecnico === myself.id);
-                  insertTechnicianCard(myself.name, ownResponsibilityData.atividade, "ownCard");
-                  // Then add the other technicians, if any
-                  let otherTechnicians = requestData.responsaveis.filter(r => r !== ownResponsibilityData);
-                  for (responsibilityData of otherTechnicians) {
+                  if (ownResponsibilityData) {
+                      insertTechnicianCard(myself.name, ownResponsibilityData.atividade, "ownCard");
+                      respTechnicians = requestData.responsaveis.filter(r => r !== ownResponsibilityData);
+                  }
+                  for (responsibilityData of respTechnicians) {
                       let techName = technicians.find(t => t.data.userID === responsibilityData.id_tecnico).value;
-                      insertTechnicianCard(techName, responsibilityData.atividade, "editable");
+                      insertTechnicianCard(techName, responsibilityData.atividade);
+                  }
+              } else {
+                  let techniciansData = requestData.responsaveis;
+                  for (responsibilityData of techniciansData) {
+                      insertTechnicianCard(responsibilityData.tecnico, responsibilityData.atividade);
                   }
               }
             } else {
@@ -293,6 +295,10 @@ function acquireRequest(ticketID) {
     // Get the technicians responsible and their responsibility
     let techniciansList = getTechniciansList();
 
+    if (!techniciansList) {
+      return false;
+    }
+
     $("html").css("cursor", "wait");
     $("body").css("pointer-events", "none");
     $.post("/gtic/public/tecnico/technician_select_request",
@@ -412,6 +418,88 @@ function refuseRequest(requestId) {
   });
 }
 
+function editTechListBtn() {
+  let backup = $('.tech-items-list').clone();
+  window.technicianResDataBackup = backup;
+  $('.responsaveis-wrapper').addClass("editing");
+  $('.tech-item-wrapper:not(.own-card) .tech-name-input').prop("readonly", false);
+  $('.tech-item-wrapper textarea').prop("readonly", false);
+  buildAutocompleteInputs();
+}
+
+function saveTechListBtn() {
+  let ticketID = $('.request-modal input#id_chamado_field').val();
+  let techniciansRespList = getTechniciansList();
+  if (!techniciansRespList) {
+    return false;
+  }
+
+  $("html").css("cursor", "wait");
+  $("body").css("pointer-events", "none");
+  $.post("/gtic/public/tecnico/update_ticket_responsible_technicians",
+  {
+    "ticket_id": ticketID,
+    "technicians_list": techniciansRespList
+  })
+  .done(response => {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+    if (response && response.event === "success") {
+      if (response.type && response.type === "ticket_responsible_technicians_updated") {
+        if (response.ticket){
+          ticketTechniciansUpdated(response.ticket);
+          $('.autocomplete-suggestions').remove();
+          $('.responsaveis-wrapper').removeClass("editing");
+          // Update the cards if they changed from having no activity or the contrary
+          $('.tech-item-wrapper').each((index, element) => {
+            let textarea = $(element).find('textarea');
+            let activity = textarea.val();
+            let noActivity = (activity === null || activity.match(/^\s*$/) !== null);
+            if (noActivity) {
+              $(element).addClass('no-activity');
+            } else {
+              $(element).removeClass('no-activity');
+            }
+          });
+          return true;
+        }
+      }
+    }
+    window.location.reload(true);
+  })
+  .fail(data => {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+    if (data && data.responseJSON) {
+      response = data.responseJSON;
+      if (response.event && response.type) {
+        if (response.event === "error") {
+          if (response.type === "missing_data") {
+            alert("Há dados fazendo falta");
+            return false;
+          } else if (response.type === "db_conn_failed") {
+            alert("Falha na conexão com o banco de dados");
+            return false;
+          } else if (response.type === "db_op_failed") {
+            alert("Não foi possível alterar os dados no banco de dados");
+            return false;
+          }
+        }
+      }
+    }
+    alert("Houve uma falha não identificada");
+  });
+}
+
+function cancelTechListEditionBtn() {
+  $('.tech-items-list').remove();
+  $('.autocomplete-suggestions').remove();
+  $('.responsaveis-wrapper').removeClass("editing");
+  $('.responsaveis-wrapper').prepend(window.technicianResDataBackup);
+}
+
 function insertTechnicianItemBtn(e) {
   insertTechnicianCard('', '', "editable");
 }
@@ -434,7 +522,7 @@ function getTechniciansList() {
   }
   // Get the inserted technicians
   $('.tech-items-list').children().each((index, element) => {
-    let techNameInput = $(element).find('input.tech-name-input').get(0);
+    let techNameInput = $(element).find('input.tech-name-input:not([readonly])').get(0);
     let techActivityInput = $(element).find('textarea').get(0);
     if (techNameInput !== undefined) {
       let technicianName = techNameInput.value;
@@ -475,6 +563,9 @@ function getTechniciansList() {
 
 function insertTechnicianCard(technicianName, technicianActivity, flag) {
   let techniciansList = $('.tech-items-list');
+  let isEditingMode = $('.responsaveis-wrapper').hasClass('editing');
+  let techNameReadonly = (flag === "ownCard" || !isEditingMode) ? ' readonly' : '';
+  let textareaReadonly = (!isEditingMode) ? ' readonly' : '';
   let ownCardClass = (flag && flag === "ownCard") ? " own-card" : "";
   let noActivity = (technicianActivity === null || technicianActivity.match(/^\s*$/) !== null);
   let noActivityClass = (noActivity) ? " no-activity" : "";
@@ -493,18 +584,21 @@ function insertTechnicianCard(technicianName, technicianActivity, flag) {
       <div class="item-header">\
         <div class="item-titles">\
           <div class="titles-upper-row">\
-            <input type="text" class="form-control tech-name-input" placeholder="Digite o nome ou usuário do técnico" value="${technicianName}">\
+            <input type="text" class="form-control tech-name-input" placeholder="Digite o nome ou usuário do técnico" value="${technicianName}" ${techNameReadonly}>\
             <button type="button" class="btn btn-danger remove-tech" onclick="removeTechnicianItemBtn(this)"><i class="fas fa-minus"></i></button>\
           </div>\
         </div>\
       </div>\
-      <textarea rows="1" cols="5" placeholder="${textareaPlaceholder}">${technicianActivity}</textarea>\
+      <textarea rows="1" cols="5" placeholder="${textareaPlaceholder}"${textareaReadonly}>${technicianActivity}</textarea>\
     </div>\
   </div>\
   `;
   techniciansList.append(technicianItem);
+  buildAutocompleteInputs();
+}
 
-  if (flag === "editable") {
+function buildAutocompleteInputs() {
+  if (window.myself) {
     const _formatRegexp = function(q) {
       q = q.replace(/[eéèêẽëEÉÈÊẼË]/gi,'[eéèêẽëEÉÈÊẼË]');
       q = q.replace(/[aáàâãäAÁÀÂÃÄÅÆ]/gi,'[aáàâãäAÁÀÂÃÄÅÆ]');
@@ -528,7 +622,7 @@ function insertTechnicianCard(technicianName, technicianActivity, flag) {
       pattern = _formatRegexp(pattern);
       return suggestion.value.replace(new RegExp(pattern, 'gi'), '<strong>$1$2<\/strong>');
     };
-    $('.tech-name-input').autocomplete({
+    $('.tech-name-input:not([readonly])').autocomplete({
       minChars: 0,
       lookup: window.technicians.filter(r => r.data.userID !== myself.id),
       showNoSuggestionNotice: true,
@@ -650,7 +744,7 @@ $(document).ready(function() {
               </div>\
             </div>\
             <div class="form-group" style="display: none;">\
-              <label for="responsaveis_field" class="control-label">Acrescentar técnicos:</label>\
+              <label for="responsaveis_field" class="control-label">Técnicos responsáveis:</label>\
               <div class="">\
                 <input type="hidden" class="form-control" id="responsaveis_field" readonly>\
               </div>\

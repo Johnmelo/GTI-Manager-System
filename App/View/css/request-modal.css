@@ -44,6 +44,9 @@
     margin-bottom: 0px;
     box-shadow: none;
 }
+.titles-upper-row > .tech-name-input[readonly] {
+    background-color: #FFF;
+}
 .responsaveis-wrapper.editing .tech-name-input {
     border: #CCC solid 1px;
     margin-bottom: 8px;
