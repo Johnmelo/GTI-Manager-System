@@ -487,6 +487,9 @@ function saveTechListBtn() {
           } else if (response.type === "db_op_failed") {
             alert("Não foi possível alterar os dados no banco de dados");
             return false;
+          } else if (response.type === "not_unique_tech_ids") {
+            alert("Erro: se certifique que cada técnico aparece na lista de responsáveis apenas uma vez");
+            return false;
           }
         }
       }
