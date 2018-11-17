@@ -6,16 +6,15 @@ class Chamado extends Table{
 
   public function getTicketById($ticketId) {
     $stmt = $this->db->prepare(
-      "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`, ".
-      "`c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, ".
-      "`c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_assumido`, `c`.`data_finalizado`, ".
-      "`c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico` ".
+      "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, ".
+      "`u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, ".
+      "`c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`, ".
+      "`c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico` ".
       "FROM `{$this->table}` AS `c` ".
       "LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao` ".
       "LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico` ".
       "LEFT JOIN `usuarios` AS `u1` ON `u1`.`id` = `c`.`id_cliente_solicitante` ".
       "LEFT JOIN `usuarios` AS `u2` ON `u2`.`id` = `c`.`id_tecnico_abertura` ".
-      "LEFT JOIN `usuarios` AS `u3` ON `u3`.`id` = `c`.`id_tecnico_responsavel` ".
       "LEFT JOIN `locais` AS `l` ON `l`.`id` = `sc`.`id_local` ".
       "WHERE `c`.`id` = :ticketId ".
       "ORDER BY `c`.`data_abertura` "
@@ -23,7 +22,21 @@ class Chamado extends Table{
     $stmt->bindParam(":ticketId", $ticketId);
     $stmt->execute();
     $res = $stmt->fetch(\PDO::FETCH_ASSOC);
-    return $res;
+
+    // Include the technicians sharing tickets
+    $stmt = $this->db->prepare(
+        "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade` ".
+        "FROM `chamado_tecnico_xref` AS `ct_xref` ".
+        "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
+        "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
+        "WHERE `c`.`id` = :ticketId"
+    );
+    $stmt->bindParam(":ticketId", $ticketId);
+    $stmt->execute();
+    $tickets_technicians_xref = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    $temp_arr = [$res];
+    $this->insertResponsibleTechniciansInTickets($temp_arr, $tickets_technicians_xref);
+    return $temp_arr[0];
   }
 
   public function getChamadosByStatus($status){
@@ -44,37 +57,48 @@ class Chamado extends Table{
 
   public function getUsersOpenTickets($userId) {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
-          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
-          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
           ." LEFT JOIN `usuarios` AS `u1` ON `u1`.`id` = `c`.`id_cliente_solicitante`"
           ." LEFT JOIN `usuarios` AS `u2` ON `u2`.`id` = `c`.`id_tecnico_abertura`"
-          ." LEFT JOIN `usuarios` AS `u3` ON `u3`.`id` = `c`.`id_tecnico_responsavel`"
           ." LEFT JOIN `locais` AS `l` ON `l`.`id` = `sc`.`id_local`"
           ." WHERE `c`.`id_cliente_solicitante` = :userId AND (`c`.`status` = 'AGUARDANDO' OR `c`.`status` = 'ATENDIMENTO')"
           ." ORDER BY `c`.`data_abertura`");
       $stmt->bindParam(":userId", $userId);
       $stmt->execute();
       $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+      // Include the technicians sharing tickets
+      $stmt = $this->db->prepare(
+          "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade` ".
+          "FROM `chamado_tecnico_xref` AS `ct_xref` ".
+          "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
+          "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
+          "WHERE `c`.`id_cliente_solicitante` = :userId AND (`c`.`status` = 'AGUARDANDO' OR `c`.`status` = 'ATENDIMENTO')"
+      );
+      $stmt->bindParam(":userId", $userId);
+      $stmt->execute();
+      $tickets_technicians_xref = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $this->insertResponsibleTechniciansInTickets($res, $tickets_technicians_xref);
       return $res;
   }
 
   public function getUsersInQueueTickets($userId) {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
-          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
-          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
           ." LEFT JOIN `usuarios` AS `u1` ON `u1`.`id` = `c`.`id_cliente_solicitante`"
           ." LEFT JOIN `usuarios` AS `u2` ON `u2`.`id` = `c`.`id_tecnico_abertura`"
-          ." LEFT JOIN `usuarios` AS `u3` ON `u3`.`id` = `c`.`id_tecnico_responsavel`"
           ." LEFT JOIN `locais` AS `l` ON `l`.`id` = `sc`.`id_local`"
           ." WHERE `c`.`id_cliente_solicitante` = :userId AND `c`.`status` = 'AGUARDANDO'"
           ." ORDER BY `c`.`data_abertura`");
@@ -86,99 +110,148 @@ class Chamado extends Table{
 
   public function getUsersInProcessTickets($userId) {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
-          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
-          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
           ." LEFT JOIN `usuarios` AS `u1` ON `u1`.`id` = `c`.`id_cliente_solicitante`"
           ." LEFT JOIN `usuarios` AS `u2` ON `u2`.`id` = `c`.`id_tecnico_abertura`"
-          ." LEFT JOIN `usuarios` AS `u3` ON `u3`.`id` = `c`.`id_tecnico_responsavel`"
           ." LEFT JOIN `locais` AS `l` ON `l`.`id` = `sc`.`id_local`"
           ." WHERE `c`.`id_cliente_solicitante` = :userId AND `c`.`status` = 'ATENDIMENTO'"
           ." ORDER BY `c`.`data_assumido`");
       $stmt->bindParam(":userId", $userId);
       $stmt->execute();
       $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+      // Include the technicians sharing tickets
+      $stmt = $this->db->prepare(
+          "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade` ".
+          "FROM `chamado_tecnico_xref` AS `ct_xref` ".
+          "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
+          "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
+          "WHERE `c`.`id_cliente_solicitante` = :userId AND `c`.`status` = 'ATENDIMENTO'"
+      );
+      $stmt->bindParam(":userId", $userId);
+      $stmt->execute();
+      $tickets_technicians_xref = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $this->insertResponsibleTechniciansInTickets($res, $tickets_technicians_xref);
       return $res;
   }
 
   public function getUsersInactiveTickets($userId) {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
-          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
-          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
           ." LEFT JOIN `usuarios` AS `u1` ON `u1`.`id` = `c`.`id_cliente_solicitante`"
           ." LEFT JOIN `usuarios` AS `u2` ON `u2`.`id` = `c`.`id_tecnico_abertura`"
-          ." LEFT JOIN `usuarios` AS `u3` ON `u3`.`id` = `c`.`id_tecnico_responsavel`"
           ." LEFT JOIN `locais` AS `l` ON `l`.`id` = `sc`.`id_local`"
           ." WHERE `c`.`id_cliente_solicitante` = :userId AND `c`.`status` <> 'AGUARDANDO' AND `c`.`status` <> 'ATENDIMENTO'"
           ." ORDER BY `c`.`data_abertura` DESC");
       $stmt->bindParam(":userId", $userId);
       $stmt->execute();
       $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+      // Include the technicians sharing tickets
+      $stmt = $this->db->prepare(
+          "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade` ".
+          "FROM `chamado_tecnico_xref` AS `ct_xref` ".
+          "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
+          "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
+          "WHERE `c`.`id_cliente_solicitante` = :userId AND `c`.`status` <> 'AGUARDANDO' AND `c`.`status` <> 'ATENDIMENTO'"
+      );
+      $stmt->bindParam(":userId", $userId);
+      $stmt->execute();
+      $tickets_technicians_xref = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $this->insertResponsibleTechniciansInTickets($res, $tickets_technicians_xref);
       return $res;
   }
 
   public function getTechniciansClosedTickets($technicianId) {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
-          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
-          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
           ." LEFT JOIN `usuarios` AS `u1` ON `u1`.`id` = `c`.`id_cliente_solicitante`"
           ." LEFT JOIN `usuarios` AS `u2` ON `u2`.`id` = `c`.`id_tecnico_abertura`"
-          ." LEFT JOIN `usuarios` AS `u3` ON `u3`.`id` = `c`.`id_tecnico_responsavel`"
           ." LEFT JOIN `locais` AS `l` ON `l`.`id` = `sc`.`id_local`"
-          ." WHERE `c`.`id_tecnico_responsavel` = :technicianId AND `c`.`status` = 'FINALIZADO'"
+          ." LEFT JOIN `chamado_tecnico_xref` AS `ct_xref` ON `ct_xref`.`id_chamado` = `c`.`id`"
+          ." WHERE `ct_xref`.`id_tecnico` = :technicianId AND `c`.`status` = 'FINALIZADO'"
           ." ORDER BY `c`.`data_abertura` DESC");
       $stmt->bindParam(":technicianId", $technicianId);
       $stmt->execute();
       $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+      // Include the technicians sharing tickets
+      $stmt = $this->db->prepare(
+          "SELECT * FROM `chamado_tecnico_xref` ".
+          "WHERE `chamado_tecnico_xref`.`id_chamado` ".
+          "IN (".
+              "SELECT `c`.`id` AS `id_chamado` ".
+              "FROM `chamados` AS `c` ".
+              "LEFT JOIN `chamado_tecnico_xref` AS `ct_xref` ON `ct_xref`.`id_chamado` = `c`.`id` ".
+              "WHERE `ct_xref`.`id_tecnico` = 72 AND `c`.`status` = 'FINALIZADO'".
+          ")"
+      );
+      $stmt->execute();
+      $tickets_technicians_xref = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $this->insertResponsibleTechniciansInTickets($res, $tickets_technicians_xref);
       return $res;
   }
 
   public function getOpenTickets() {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
-          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
-          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
           ." LEFT JOIN `usuarios` AS `u1` ON `u1`.`id` = `c`.`id_cliente_solicitante`"
           ." LEFT JOIN `usuarios` AS `u2` ON `u2`.`id` = `c`.`id_tecnico_abertura`"
-          ." LEFT JOIN `usuarios` AS `u3` ON `u3`.`id` = `c`.`id_tecnico_responsavel`"
           ." LEFT JOIN `locais` AS `l` ON `l`.`id` = `sc`.`id_local`"
           ." WHERE `c`.`status` = 'AGUARDANDO' OR `c`.`status` = 'ATENDIMENTO'"
           ." ORDER BY `c`.`data_abertura`");
       $stmt->execute();
       $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+      // Include the technicians sharing tickets
+      $stmt = $this->db->prepare(
+          "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade` ".
+          "FROM `chamado_tecnico_xref` AS `ct_xref` ".
+          "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
+          "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
+          "WHERE `c`.`status` = 'AGUARDANDO' OR `c`.`status` = 'ATENDIMENTO'"
+      );
+      $stmt->execute();
+      $tickets_technicians_xref = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $this->insertResponsibleTechniciansInTickets($res, $tickets_technicians_xref);
       return $res;
   }
 
   public function getInQueueTickets() {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
-          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
-          ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
-          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+        "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
+        ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+        ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
+        ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
           ." LEFT JOIN `usuarios` AS `u1` ON `u1`.`id` = `c`.`id_cliente_solicitante`"
           ." LEFT JOIN `usuarios` AS `u2` ON `u2`.`id` = `c`.`id_tecnico_abertura`"
-          ." LEFT JOIN `usuarios` AS `u3` ON `u3`.`id` = `c`.`id_tecnico_responsavel`"
           ." LEFT JOIN `locais` AS `l` ON `l`.`id` = `sc`.`id_local`"
           ." WHERE `c`.`status` = 'AGUARDANDO'"
           ." ORDER BY `c`.`data_abertura`");
@@ -209,44 +282,44 @@ class Chamado extends Table{
       $stmt = $this->db->prepare(
           "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade` ".
           "FROM `chamado_tecnico_xref` AS `ct_xref` ".
-          "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` "
+          "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
+          "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
+          "WHERE `c`.`status` = 'ATENDIMENTO'"
       );
       $stmt->execute();
       $tickets_technicians_xref = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-      \array_walk($tickets_technicians_xref, function($xref)use(&$res) {
-        $ticketIndex = array_search($xref['id_chamado'], array_column($res, 'id_chamado'));
-        if ($res[$ticketIndex]['responsaveis'] === null) {
-          $res[$ticketIndex]['responsaveis'] = [];
-        }
-        \array_push(
-          $res[$ticketIndex]['responsaveis'],
-          array(
-            "id_tecnico" => $xref['id_tecnico'],
-            "tecnico" => $xref['tecnico'],
-            "atividade" => $xref['atividade']
-          )
-        );
-      });
+      $this->insertResponsibleTechniciansInTickets($res, $tickets_technicians_xref);
       return $res;
   }
 
   public function getInactiveTickets() {
       $stmt = $this->db->prepare(
-          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, `u1`.`nome` AS `cliente`,"
-          ." `c`.`id_tecnico_responsavel`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
-          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `u3`.`nome` AS `tecnico_responsavel`, `c`.`parecer_tecnico`"
+          ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
           ." LEFT JOIN `solicitacao_chamado` AS `sc` ON `sc`.`id` = `c`.`id_solicitacao`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
           ." LEFT JOIN `usuarios` AS `u1` ON `u1`.`id` = `c`.`id_cliente_solicitante`"
           ." LEFT JOIN `usuarios` AS `u2` ON `u2`.`id` = `c`.`id_tecnico_abertura`"
-          ." LEFT JOIN `usuarios` AS `u3` ON `u3`.`id` = `c`.`id_tecnico_responsavel`"
           ." LEFT JOIN `locais` AS `l` ON `l`.`id` = `sc`.`id_local`"
           ." WHERE `c`.`status` <> 'AGUARDANDO' AND `c`.`status` <> 'ATENDIMENTO'"
           ." ORDER BY `c`.`data_abertura` DESC");
       $stmt->execute();
       $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+      // Include the technicians sharing tickets
+      $stmt = $this->db->prepare(
+          "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade` ".
+          "FROM `chamado_tecnico_xref` AS `ct_xref` ".
+          "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
+          "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
+          "WHERE `c`.`status` <> 'AGUARDANDO' AND `c`.`status` <> 'ATENDIMENTO'"
+      );
+      $stmt->execute();
+      $tickets_technicians_xref = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+      $this->insertResponsibleTechniciansInTickets($res, $tickets_technicians_xref);
       return $res;
   }
 
@@ -270,6 +343,23 @@ class Chamado extends Table{
     } else {
       return false;
     }
+  }
+
+  protected function insertResponsibleTechniciansInTickets(&$tickets, &$respTechniciansData) {
+    \array_walk($respTechniciansData, function($xref)use(&$tickets) {
+      $ticketIndex = array_search($xref['id_chamado'], array_column($tickets, 'id_chamado'));
+      if ($tickets[$ticketIndex]['responsaveis'] === null) {
+        $tickets[$ticketIndex]['responsaveis'] = [];
+      }
+      \array_push(
+        $tickets[$ticketIndex]['responsaveis'],
+        array(
+          "id_tecnico" => $xref['id_tecnico'],
+          "tecnico" => $xref['tecnico'],
+          "atividade" => $xref['atividade']
+        )
+      );
+    });
   }
 
 }

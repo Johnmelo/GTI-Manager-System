@@ -28,7 +28,6 @@ CREATE TABLE `chamados` (
   `data_finalizado` datetime DEFAULT NULL,
   `data_assumido` datetime DEFAULT NULL,
   `prazo` datetime DEFAULT NULL,
-  `id_tecnico_responsavel` int(10) DEFAULT NULL,
   `id_tecnico_abertura` int(10) NOT NULL,
   `id_cliente_solicitante` int(10) NOT NULL,
   `descricao` text COLLATE utf8mb4_unicode_ci,
@@ -209,7 +208,6 @@ ALTER TABLE `chamados`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_servico` (`id_servico`),
   ADD KEY `id_tecnico_abertura` (`id_tecnico_abertura`),
-  ADD KEY `id_tecnico_responsavel` (`id_tecnico_responsavel`),
   ADD KEY `id_cliente_solicitante` (`id_cliente_solicitante`);
 
 --

@@ -9,6 +9,7 @@
 <link href="../../App/View/css/base-style.css" rel="stylesheet">
 <link href="../../App/View/css/custom-style-override.css" rel="stylesheet">
 <link href="../../App/View/css/custom-modal.css" rel="stylesheet">
+<link href="../../App/View/css/request-modal.css" rel="stylesheet">
 </head>
 
 <body class="nav-md">
@@ -127,7 +128,6 @@
                         <th>ID</th>
                         <th>Local</th>
                         <th>Serviço</th>
-                        <th>Técnico Responsável</th>
                         <th>Técnico Abertura</th>
                         <th>Status</th>
                       </tr>
@@ -211,7 +211,6 @@
       cols += `<td>${request.id_chamado}</td>`;
       cols += `<td>${request.local}</td>`;
       cols += `<td>${request.servico}</td>`;
-      cols += `<td>${request.tecnico_responsavel}</td>`;
       cols += `<td>${request.tecnico_abertura}</td>`;
       cols += `<td>${request.status}</td>`;
       newRow.append(cols);

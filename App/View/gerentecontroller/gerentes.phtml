@@ -11,6 +11,7 @@
 <link href="../App/View/css/base-style.css" rel="stylesheet">
 <link href="../App/View/css/custom-style-override.css" rel="stylesheet">
 <link href="../App/View/css/custom-modal.css" rel="stylesheet">
+<link href="../App/View/css/request-modal.css" rel="stylesheet">
 </head>
 
 <body class="nav-md">
@@ -126,7 +127,6 @@
                       <th>Cliente</th>
                       <th>Local</th>
                       <th>Serviço</th>
-                      <th>Técnico Responsável</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -458,7 +458,7 @@
               tecnico_abertura_field: true,
               descricao_field: true,
               prazo_field: true,
-              responsaveis_field: true
+              responsaveis_field: "editable"
             }
           };
           let requestData = inProcessTickets.find(r => r.id_chamado === requestId);
@@ -613,7 +613,6 @@
       cols += `<td>${ticket.cliente}</td>`;
       cols += `<td>${ticket.local}</td>`;
       cols += `<td>${ticket.servico}</td>`;
-      cols += `<td>${ticket.tecnico_responsavel}</td>`;
       newRow.append(cols);
 
       // Events

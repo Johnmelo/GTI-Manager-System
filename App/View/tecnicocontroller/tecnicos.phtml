@@ -167,7 +167,6 @@
                         <th>Cliente</th>
                         <th>Local</th>
                         <th>Serviço</th>
-                        <th>Técnico Responsável</th>
                       </tr>
                     </thead>
                     <tbody></tbody>
@@ -383,7 +382,7 @@
           data_solicitacao_field: true,
           data_abertura_field: true,
           prazo_field: false,
-          responsaveis_field: false
+          responsaveis_field: "editing"
         },
         footer_config: [
           {
@@ -467,7 +466,7 @@
           prazo_field: true,
           descricao_field: true,
           parecer_tecnico_field: false,
-          responsaveis_field: false
+          responsaveis_field: "editing"
         },
         footer_config: [
           {
@@ -542,7 +541,7 @@
             tecnico_abertura_field: true,
             descricao_field: true,
             prazo_field: true,
-            responsaveis_field: true
+            responsaveis_field: "editable"
           }
         };
         let tableID = $(e.target).closest("table")[0].id;
@@ -752,7 +751,6 @@
     cols += `<td>${request.cliente}</td>`;
     cols += `<td>${request.local}</td>`;
     cols += `<td>${request.servico}</td>`;
-    cols += `<td>${request.tecnico_responsavel}</td>`;
     newRow.append(cols);
 
     // Events
