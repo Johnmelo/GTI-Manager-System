@@ -126,11 +126,13 @@ function fillUpRequestModal(requestData, visibleFields) {
                   let ownResponsibilityData = requestData.responsaveis.find(rd => rd.id_tecnico === myself.id);
                   if (ownResponsibilityData) {
                       insertTechnicianCard(myself.name, ownResponsibilityData.atividade, "ownCard");
+                      updateTechnicianSuggestionsAvailableList();
                       respTechnicians = requestData.responsaveis.filter(r => r !== ownResponsibilityData);
                   }
                   for (responsibilityData of respTechnicians) {
                       let techName = technicians.find(t => t.data.userID === responsibilityData.id_tecnico).value;
                       insertTechnicianCard(techName, responsibilityData.atividade);
+                      updateTechnicianSuggestionsAvailableList();
                   }
               } else {
                   let techniciansData = requestData.responsaveis;
@@ -594,6 +596,10 @@ function insertTechnicianCard(technicianName, technicianActivity, flag) {
   </div>\
   `;
   techniciansList.append(technicianItem);
+  $('.tech-item-wrapper:not(.own-card) .tech-name-input').on('input', (e) => {
+    updateTechnicianSuggestionsAvailableList();
+    $(e.currentTarget).autocomplete().options.lookup = availableTechnicianSuggestions;
+  });
   buildAutocompleteInputs();
 }
 
@@ -624,14 +630,29 @@ function buildAutocompleteInputs() {
     };
     $('.tech-name-input:not([readonly])').autocomplete({
       minChars: 0,
-      lookup: window.technicians.filter(r => r.data.userID !== myself.id),
+      lookup: window.availableTechnicianSuggestions,
       showNoSuggestionNotice: true,
       noSuggestionNotice: "Técnico não encontrado no sistema",
       lookupFilter: _autocompleteLookup,
-      formatResult: _autocompleteFormatResult
+      formatResult: _autocompleteFormatResult,
+      onSelect: function(option) {
+        updateTechnicianSuggestionsAvailableList();
+      }
     });
     autosize($('textarea'));
   }
+}
+
+function updateTechnicianSuggestionsAvailableList() {
+  window.availableTechnicianSuggestions = technicians.slice();
+  $('.tech-name-input').each((index, element) => {
+    let isOwnCard = $(element.closest('.tech-item-wrapper')).hasClass('own-card');
+    if (isOwnCard) {
+      availableTechnicianSuggestions = availableTechnicianSuggestions.filter(sug => sug.data.userID !== myself.id);
+    } else {
+      availableTechnicianSuggestions = availableTechnicianSuggestions.filter(sug => sug.value !== element.value);
+    }
+  });
 }
 
 // Inserting HTML structure into modal tag
