@@ -510,12 +510,14 @@ function insertTechnicianItemBtn(e) {
 }
 
 function removeTechnicianItemBtn(e) {
+  let cardsList = $('.tech-items-list').children(':not(.own-card)');
   // Get the technician item index
-  let index = $(e).closest('.tech-item-wrapper').index();
+  let indexCardToRemove = cardsList.index($(e).closest('.tech-item-wrapper'));
   // Remove the autocomplete object related to the item being removed
-  $('.autocomplete-suggestions').eq(index).remove();
+  $('.autocomplete-suggestions').eq(indexCardToRemove).remove();
   // Then remove the item
   $(e).closest('.tech-item-wrapper').remove();
+  updateTechnicianSuggestionsAvailableList();
 }
 
 function getTechniciansList() {
@@ -598,7 +600,9 @@ function insertTechnicianCard(technicianName, technicianActivity, flag) {
     </div>\
   </div>\
   `;
+
   techniciansList.append(technicianItem);
+  updateTechnicianSuggestionsAvailableList();
   $('.tech-item-wrapper:not(.own-card) .tech-name-input').on('input', (e) => {
     updateTechnicianSuggestionsAvailableList();
     $(e.currentTarget).autocomplete().options.lookup = availableTechnicianSuggestions;
