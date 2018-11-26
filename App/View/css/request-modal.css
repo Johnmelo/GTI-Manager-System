@@ -85,20 +85,23 @@
     outline-width: 0px;
     resize: none;
 }
-.responsaveis-wrapper.editing textarea:not([readonly]) {
+.responsaveis-wrapper.editing textarea:not([readonly]),
+.tech-item-wrapper.own-card.pending-acceptance textarea {
     border: #DDD solid 1px;
 }
 .responsaveis-wrapper.editing textarea[readonly] {
     opacity: 0.5;
 }
-.responsaveis-wrapper.editing textarea:not([readonly]):focus {
+.responsaveis-wrapper.editing textarea:not([readonly]):focus,
+.tech-item-wrapper.own-card.pending-acceptance textarea:focus {
     outline-style: solid;
     outline-width: 2px;
 }
 .tech-item-wrapper.no-activity .content-wrapper > textarea {
     display: none;
 }
-.responsaveis-wrapper.editing .tech-item-wrapper.no-activity textarea:not([readonly]) {
+.responsaveis-wrapper.editing .tech-item-wrapper.no-activity textarea:not([readonly]),
+.tech-item-wrapper.no-activity.own-card.pending-acceptance textarea {
     display: block;
 }
 .content-wrapper > textarea::placeholder {
@@ -119,6 +122,19 @@
     display: block;
 }
 
+.tech-item-wrapper  .request-sharing-btn-row {
+    align-self: end;
+    display: none;
+    margin-top: 10px;
+}
+.tech-item-wrapper.pending-acceptance.own-card .request-sharing-btn-row {
+    display: block;
+}
+
+.request-sharing-btn-row > button {
+    margin: 0px 0px 0px 6px !important;
+}
+
 .tech-item-wrapper .pending-acceptance-warning {
     cursor: none;
     pointer-events: none;
@@ -127,7 +143,7 @@
     display: none;
     background-color: #FFF;
 }
-.tech-item-wrapper.pending-acceptance .pending-acceptance-warning {
+.tech-item-wrapper.pending-acceptance:not(.own-card) .pending-acceptance-warning {
     display: block;
 }
 

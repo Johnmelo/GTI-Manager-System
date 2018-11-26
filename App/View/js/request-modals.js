@@ -125,7 +125,8 @@ function fillUpRequestModal(requestData, visibleFields) {
                   // display his/her card first
                   let ownResponsibilityData = requestData.responsaveis.find(rd => rd.id_tecnico === myself.id);
                   if (ownResponsibilityData) {
-                      insertTechnicianCard(myself.name, ownResponsibilityData.atividade, true, false);
+                      let isPendingAcceptance = (ownResponsibilityData.status === "0") ? true : false;
+                      insertTechnicianCard(myself.name, ownResponsibilityData.atividade, true, isPendingAcceptance);
                       updateTechnicianSuggestionsAvailableList();
                       respTechnicians = requestData.responsaveis.filter(r => r !== ownResponsibilityData);
                   }
@@ -585,7 +586,7 @@ function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, isP
   // Activity textarea config
   technicianActivity = (noActivity) ? '' : technicianActivity;
   let isTextareaEditable = (isOwnCard || isPendingAcceptance) ? 'editable' : 'not-editable';
-  let isTextareaReadonly = !isEditingMode || !(isTextareaEditable === 'editable') ? 'readonly' : '';
+  let isTextareaReadonly = !(isOwnCard && isPendingAcceptance) && (!isEditingMode || !(isTextareaEditable === 'editable')) ? 'readonly' : '';
   let textareaPlaceholder = (isOwnCard) ? 'Descreva sua responsabilidade' : 'Descreva a parte que ele ficou encarregado';
 
   let technicianItem = `\
@@ -600,6 +601,10 @@ function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, isP
         </div>\
       </div>\
       <textarea rows="1" cols="5" class="${isTextareaEditable}" placeholder="${textareaPlaceholder}" ${isTextareaReadonly}>${technicianActivity}</textarea>\
+        <div class="request-sharing-btn-row">\
+        <button type="button" class="btn btn-danger"><i class="fas fa-times"></i> Recusar</button>\
+        <button type="button" class="btn btn-success"><i class="fas fa-clock"></i> Assumir</button>\
+      </div>\
       <button type="button" class="btn pending-acceptance-warning"><i class="fas fa-clock"></i> Pendendo aceite</button>\
     </div>\
   </div>\
