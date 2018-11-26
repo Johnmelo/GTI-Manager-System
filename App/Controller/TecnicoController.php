@@ -27,7 +27,12 @@ class TecnicoController extends Action{
           $ticketTechniciansIDs = array_column($ticket['responsaveis'], 'id_tecnico');
           $technicianDataIndex = array_search($_SESSION['user_id'], $ticketTechniciansIDs);
           if ($technicianDataIndex !== false) {
-            \array_push($techniciansInProcessTickets, $ticket);
+            $status = $ticket['responsaveis'][$technicianDataIndex]['status'];
+            if ($status === "1") {
+              \array_push($techniciansInProcessTickets, $ticket);
+            } else {
+              \array_push($otherTechniciansInProcessTickets, $ticket);
+            }
           } else {
             \array_push($otherTechniciansInProcessTickets, $ticket);
           }
