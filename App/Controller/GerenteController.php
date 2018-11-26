@@ -20,7 +20,7 @@ class GerenteController extends Action{
       $unreviewedAccountRequests = $SolicitarAcesso->getUnreviewedRequests();
       $activeTicketRequests = $SolicitarChamado->getActiveTicketRequests();
       $inQueueTickets = $Chamado->getInQueueTickets();
-      $inProcessTickets = $Chamado->getInProcessTickets();
+      $inProcessTickets = $Chamado->getInProcessTickets(true);
 
       $this->view->token = \json_encode($token->data);
       $this->view->unreviewedAccountRequests = $unreviewedAccountRequests;

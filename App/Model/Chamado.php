@@ -25,7 +25,7 @@ class Chamado extends Table{
 
     // Include the technicians sharing tickets
     $stmt = $this->db->prepare(
-        "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade` ".
+        "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade`, `ct_xref`.`status` ".
         "FROM `chamado_tecnico_xref` AS `ct_xref` ".
         "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
         "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
@@ -79,7 +79,7 @@ class Chamado extends Table{
           "FROM `chamado_tecnico_xref` AS `ct_xref` ".
           "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
           "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
-          "WHERE `c`.`id_cliente_solicitante` = :userId AND (`c`.`status` = 'AGUARDANDO' OR `c`.`status` = 'ATENDIMENTO')"
+          "WHERE `c`.`id_cliente_solicitante` = :userId AND (`c`.`status` = 'AGUARDANDO' OR `c`.`status` = 'ATENDIMENTO') AND `ct_xref`.`status` = 1"
       );
       $stmt->bindParam(":userId", $userId);
       $stmt->execute();
@@ -132,7 +132,7 @@ class Chamado extends Table{
           "FROM `chamado_tecnico_xref` AS `ct_xref` ".
           "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
           "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
-          "WHERE `c`.`id_cliente_solicitante` = :userId AND `c`.`status` = 'ATENDIMENTO'"
+          "WHERE `c`.`id_cliente_solicitante` = :userId AND `c`.`status` = 'ATENDIMENTO' AND `ct_xref`.`status` = 1"
       );
       $stmt->bindParam(":userId", $userId);
       $stmt->execute();
@@ -165,7 +165,7 @@ class Chamado extends Table{
           "FROM `chamado_tecnico_xref` AS `ct_xref` ".
           "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
           "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
-          "WHERE `c`.`id_cliente_solicitante` = :userId AND `c`.`status` <> 'AGUARDANDO' AND `c`.`status` <> 'ATENDIMENTO'"
+          "WHERE `c`.`id_cliente_solicitante` = :userId AND `c`.`status` <> 'AGUARDANDO' AND `c`.`status` <> 'ATENDIMENTO' AND `ct_xref`.`status` = 1"
       );
       $stmt->bindParam(":userId", $userId);
       $stmt->execute();
@@ -260,7 +260,7 @@ class Chamado extends Table{
       return $res;
   }
 
-  public function getInProcessTickets() {
+  public function getInProcessTickets($includePendingTechnicians) {
     // Get the tickets
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
@@ -279,13 +279,14 @@ class Chamado extends Table{
       $res = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
       // Include the technicians sharing tickets
-      $stmt = $this->db->prepare(
-          "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade` ".
+      $statusCondition = (!$includePendingTechnicians) ?  " AND `ct_xref`.`status` = 1" : "";
+      $query =
+          "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade`, `ct_xref`.`status` ".
           "FROM `chamado_tecnico_xref` AS `ct_xref` ".
           "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
           "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
-          "WHERE `c`.`status` = 'ATENDIMENTO'"
-      );
+          "WHERE `c`.`status` = 'ATENDIMENTO'" . $statusCondition;
+      $stmt = $this->db->prepare($query);
       $stmt->execute();
       $tickets_technicians_xref = $stmt->fetchAll(\PDO::FETCH_ASSOC);
       $this->insertResponsibleTechniciansInTickets($res, $tickets_technicians_xref);
@@ -323,15 +324,23 @@ class Chamado extends Table{
       return $res;
   }
 
-  public function setTicketTechnicians($ticketID, $technicianID, $technicianResponsibility) {
-      $query = "INSERT INTO `chamado_tecnico_xref` (id_chamado, id_tecnico, atividade) VALUES (?, ?, ?)";
-      $params = \func_get_args();
+  public function setTicketTechnicians($ticketID, $technicianID, $technicianResponsibility, $status = 0) {
+      $this->deleteTicketTechnicianResponsibility($ticketID, $technicianID);
+      $query = "INSERT INTO `chamado_tecnico_xref` (id_chamado, id_tecnico, atividade, status) VALUES (?, ?, ?, ?)";
+      $params = [$ticketID, $technicianID, $technicianResponsibility, $status];
       $stmt = $this->db->prepare($query);
       if ($stmt->execute($params) && $stmt->rowCount() > 0) {
         return $this->db->lastInsertId();
       } else {
         return false;
       }
+  }
+
+  public function deleteTicketTechnicianResponsibility($ticketID, $technicianID) {
+      $stmt = $this->db->prepare('DELETE FROM `chamado_tecnico_xref` WHERE `id_chamado` = :ticketID AND `id_tecnico` = :technicianID');
+      $stmt->bindParam(':ticketID', $ticketID);
+      $stmt->bindParam(':technicianID', $technicianID);
+      $stmt->execute();
   }
 
   public function deleteTicketTechnicianAssociations($ticketID) {
@@ -362,7 +371,8 @@ class Chamado extends Table{
         array(
           "id_tecnico" => $xref['id_tecnico'],
           "tecnico" => $xref['tecnico'],
-          "atividade" => $xref['atividade']
+          "atividade" => $xref['atividade'],
+          "status" => $xref['status']
         )
       );
     });

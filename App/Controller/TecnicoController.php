@@ -18,7 +18,7 @@ class TecnicoController extends Action{
 
         $Chamado = Container::getClass("Chamado");
         $inQueueTickets = $Chamado->getInQueueTickets();
-        $inProcessTickets = $Chamado->getInProcessTickets();
+        $inProcessTickets = $Chamado->getInProcessTickets(true);
 
         $techniciansInProcessTickets = [];
         $otherTechniciansInProcessTickets = [];
@@ -69,10 +69,11 @@ class TecnicoController extends Action{
               // Associate the ticket with technicians
               $Chamado = Container::getClass("Chamado");
               \array_walk($_POST['technicians_list'], function($techData)use($Chamado, $ticketID) {
-                if (\preg_match('/^\s*$/', $techData['technicianActivity'])) {
-                  $Chamado->setTicketTechnicians($ticketID, $techData['technicianID'], null);
+                $activity = \preg_match('/^\s*$/', $techData['technicianActivity']) ? null : $techData['technicianActivity'];
+                if ($techData['technicianID'] === $_SESSION['user_id']) {
+                  $Chamado->setTicketTechnicians($ticketID, $_SESSION['user_id'], $activity, 1);
                 } else {
-                  $Chamado->setTicketTechnicians($ticketID, $techData['technicianID'], $techData['technicianActivity']);
+                  $Chamado->setTicketTechnicians($ticketID, $techData['technicianID'], $activity);
                 }
               });
               $db->commit();
@@ -299,19 +300,45 @@ class TecnicoController extends Action{
             $db = DBConnector::getInstance();
             try {
               $ticketID = $_POST['ticket_id'];
-              $responsibleTechniciansData = $_POST['technicians_list'];
+              $newRespTechniciansData = $_POST['technicians_list'];
               $Chamado = Container::getClass("Chamado");
               $db->beginTransaction();
-              // Remove all old ticket-technician associations from this ticket
-              $Chamado->deleteTicketTechnicianAssociations($ticketID);
-              // Store the new associations
-              \array_walk($responsibleTechniciansData, function($techData)use($Chamado, $ticketID) {
-                if (\preg_match('/^\s*$/', $techData['technicianActivity'])) {
-                  $Chamado->setTicketTechnicians($ticketID, $techData['technicianID'], null);
+              // Get previous data
+              $ticketData = $Chamado->getTicketById($ticketID);
+              // For each previously defined technician and his responsibility ...
+              \array_walk($ticketData['responsaveis'], function($dbRespData)use($newRespTechniciansData, $Chamado, $ticketID) {
+                $sentDataIndex = \array_search($dbRespData['id_tecnico'], array_column($newRespTechniciansData, 'technicianID'));
+                if ($sentDataIndex !== false) {
+                  if ($dbRespData['status'] === "0" || $dbRespData['id_tecnico'] === $_SESSION['user_id'] || $_SESSION['user_role'] === "GERENTE") {
+                    // ... Update the definitions if allowed
+                    $responsibility = $newRespTechniciansData[$sentDataIndex]['technicianActivity'];
+                    $responsibility = \preg_replace('/^\s*|\s*$/', '', $responsibility);
+                    $responsibility = (\preg_match('/^\s*$/', $responsibility)) ? null : $responsibility;
+                    if ($responsibility !== $dbRespData['atividade']) {
+                      // Update the responsibility in the DB if it was changed
+                      $Chamado->setTicketTechnicians($ticketID, $dbRespData['id_tecnico'], $responsibility, $dbRespData['status']);
+                    }
+                  }
                 } else {
-                  $Chamado->setTicketTechnicians($ticketID, $techData['technicianID'], $techData['technicianActivity']);
+                  if ($dbRespData['status'] === "0" || $dbRespData['id_tecnico'] === $_SESSION['user_id'] || $_SESSION['user_role'] === "GERENTE") {
+                    // ... Remove the definitions which isn't present in the submitted list
+                    $Chamado->deleteTicketTechnicianResponsibility($ticketID, $dbRespData['id_tecnico']);
+                  }
                 }
               });
+              // Get the newly added technicians
+              $newTechRespData = \array_filter($newRespTechniciansData, function($respData)use($ticketData) {
+                // Get the responsibilities data that isn't in the database
+                return (\array_search($respData['technicianID'], \array_column($ticketData['responsaveis'], 'id_tecnico')) === false);
+              });
+              // Store them in the database (with status 0, since the added technician still needs to accept)
+              \array_walk($newTechRespData, function($newRespData)use($Chamado, $ticketID) {
+                $responsibility = $newRespData['technicianActivity'];
+                $responsibility = \preg_replace('/^\s*|\s*$/', '', $responsibility);
+                $responsibility = (\preg_match('/^\s*$/', $responsibility)) ? null : $responsibility;
+                $Chamado->setTicketTechnicians($ticketID, $newRespData['technicianID'], $responsibility, 0);
+              });
+
               $db->commit();
               $ticket = $Chamado->getTicketById($ticketID);
               if ($ticket) {

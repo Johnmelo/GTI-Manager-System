@@ -663,7 +663,8 @@
         "id": <?php echo json_encode($_SESSION['user_id']) ?>,
         "name": <?php echo json_encode($_SESSION['user_name']) ?>,
         "username": <?php echo json_encode($_SESSION['user_login']) ?>,
-        "email": <?php echo json_encode($_SESSION['email']) ?>
+        "email": <?php echo json_encode($_SESSION['email']) ?>,
+        "role": <?php echo json_encode($_SESSION['user_role']) ?>
       };
 
       // Load the requests for the page

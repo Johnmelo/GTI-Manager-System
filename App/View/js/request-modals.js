@@ -125,24 +125,25 @@ function fillUpRequestModal(requestData, visibleFields) {
                   // display his/her card first
                   let ownResponsibilityData = requestData.responsaveis.find(rd => rd.id_tecnico === myself.id);
                   if (ownResponsibilityData) {
-                      insertTechnicianCard(myself.name, ownResponsibilityData.atividade, "ownCard");
+                      insertTechnicianCard(myself.name, ownResponsibilityData.atividade, true, false);
                       updateTechnicianSuggestionsAvailableList();
                       respTechnicians = requestData.responsaveis.filter(r => r !== ownResponsibilityData);
                   }
                   for (responsibilityData of respTechnicians) {
                       let techName = technicians.find(t => t.data.userID === responsibilityData.id_tecnico).value;
-                      insertTechnicianCard(techName, responsibilityData.atividade);
+                      let isPendingAcceptance = (responsibilityData.status === "0") ? true : false;
+                      insertTechnicianCard(techName, responsibilityData.atividade, false, isPendingAcceptance);
                       updateTechnicianSuggestionsAvailableList();
                   }
               } else {
                   let techniciansData = requestData.responsaveis;
                   for (responsibilityData of techniciansData) {
-                      insertTechnicianCard(responsibilityData.tecnico, responsibilityData.atividade);
+                      insertTechnicianCard(responsibilityData.tecnico, responsibilityData.atividade, false, false);
                   }
               }
             } else {
               if (window.myself) {
-                insertTechnicianCard(myself.name, '', "ownCard");
+                insertTechnicianCard(myself.name, '', true, false);
               }
             }
         } else {
@@ -424,8 +425,8 @@ function editTechListBtn() {
   let backup = $('.tech-items-list').clone();
   window.technicianResDataBackup = backup;
   $('.responsaveis-wrapper').addClass("editing");
-  $('.tech-item-wrapper:not(.own-card) .tech-name-input').prop("readonly", false);
-  $('.tech-item-wrapper textarea').prop("readonly", false);
+  $('.tech-item-wrapper:not(.own-card) .tech-name-input:not(.not-editable)').prop("readonly", false);
+  $('.tech-item-wrapper textarea:not(.not-editable)').prop("readonly", false);
   buildAutocompleteInputs();
 }
 
@@ -506,7 +507,7 @@ function cancelTechListEditionBtn() {
 }
 
 function insertTechnicianItemBtn(e) {
-  insertTechnicianCard('', '', "editable");
+  insertTechnicianCard('', '', false, true);
 }
 
 function removeTechnicianItemBtn(e) {
@@ -522,7 +523,7 @@ function removeTechnicianItemBtn(e) {
 
 function getTechniciansList() {
   let techniciansList = [];
-  let okToContinue = false;
+  let okToContinue = true;
   // Check the necessary variables availability
   if (!myself && !technicians) {
     return false;
@@ -531,7 +532,8 @@ function getTechniciansList() {
   $('.tech-items-list').children().each((index, element) => {
     let techNameInput = $(element).find('input.tech-name-input:not([readonly])').get(0);
     let techActivityInput = $(element).find('textarea').get(0);
-    if (techNameInput !== undefined) {
+
+    if ($(element).hasClass('pending-acceptance')) {
       let technicianName = techNameInput.value;
       // Check if it's a valid option (an autocomplete suggestion)
       let isTechnicianListed = ((window.technicians.filter(x => x.value === technicianName)).length > 0);
@@ -545,20 +547,17 @@ function getTechniciansList() {
             "technicianActivity": technicianActivity
           }
         );
-        okToContinue = true;
       } else {
         alert("Você adicionou um campo para adicionar outro técnico mas não definiu o técnico");
         return okToContinue = false;
       }
-    } else {
-      // Else, it's the first card, so add the own technican
+    } else if ($(element).hasClass('own-card')) {
       techniciansList.push(
         {
           "technicianID": myself.id,
           "technicianActivity": techActivityInput.value.replace(/^\s*/, '').replace(/\s*$/, '')
         }
       );
-      okToContinue = true;
     }
   });
 
@@ -568,41 +567,47 @@ function getTechniciansList() {
   return false;
 }
 
-function insertTechnicianCard(technicianName, technicianActivity, flag) {
+function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, isPendingAcceptance) {
   let techniciansList = $('.tech-items-list');
   let isEditingMode = $('.responsaveis-wrapper').hasClass('editing');
-  let techNameReadonly = (flag === "ownCard" || !isEditingMode) ? ' readonly' : '';
-  let textareaReadonly = (!isEditingMode) ? ' readonly' : '';
-  let ownCardClass = (flag && flag === "ownCard") ? " own-card" : "";
   let noActivity = (technicianActivity === null || technicianActivity.match(/^\s*$/) !== null);
-  let noActivityClass = (noActivity) ? " no-activity" : "";
-  technicianActivity = (noActivity) ? '' : technicianActivity;
 
-  let textareaPlaceholder = '';
-  if (flag === null || flag === "ownCard") {
-    textareaPlaceholder = (flag === "ownCard") ? "Descreva sua responsabilidade" : "Descreva a parte que ele ficou encarregado";
-  } else {
-    textareaPlaceholder = "Descreva a parte que ele ficou encarregado";
-  }
+  // Card config
+  let ownCardClass = (isOwnCard) ? 'own-card' : '';
+  let pendingAcceptance = (isPendingAcceptance) ? 'pending-acceptance' : '';
+  let noActivityClass = (noActivity) ? 'no-activity' : '';
+  let isCardRemovable = (!isOwnCard && isPendingAcceptance) ? 'editable' : 'not-editable';
+
+  // Name input config
+  let isTechNameEditable = (!isOwnCard && isPendingAcceptance) ? 'editable' : 'not-editable';
+  let isTechNameReadonly = !isEditingMode || !(isTechNameEditable === 'editable') ? 'readonly' : '';
+
+  // Activity textarea config
+  technicianActivity = (noActivity) ? '' : technicianActivity;
+  let isTextareaEditable = (isOwnCard || isPendingAcceptance) ? 'editable' : 'not-editable';
+  let isTextareaReadonly = !isEditingMode || !(isTextareaEditable === 'editable') ? 'readonly' : '';
+  let textareaPlaceholder = (isOwnCard) ? 'Descreva sua responsabilidade' : 'Descreva a parte que ele ficou encarregado';
 
   let technicianItem = `\
-  <div class="tech-item-wrapper${noActivityClass}${ownCardClass}">\
+  <div class="tech-item-wrapper ${noActivityClass} ${ownCardClass} ${pendingAcceptance}">\
     <div class="content-wrapper">\
       <div class="item-header">\
         <div class="item-titles">\
           <div class="titles-upper-row">\
-            <input type="text" class="form-control tech-name-input" placeholder="Digite o nome ou usuário do técnico" value="${technicianName}" ${techNameReadonly}>\
-            <button type="button" class="btn btn-danger remove-tech" onclick="removeTechnicianItemBtn(this)"><i class="fas fa-minus"></i></button>\
+            <input type="text" class="form-control tech-name-input ${isTechNameEditable}" placeholder="Digite o nome ou usuário do técnico" value="${technicianName}" ${isTechNameReadonly}>\
+            <button type="button" class="btn btn-danger remove-tech ${isCardRemovable}" onclick="removeTechnicianItemBtn(this)"><i class="fas fa-minus"></i></button>\
           </div>\
         </div>\
       </div>\
-      <textarea rows="1" cols="5" placeholder="${textareaPlaceholder}"${textareaReadonly}>${technicianActivity}</textarea>\
+      <textarea rows="1" cols="5" class="${isTextareaEditable}" placeholder="${textareaPlaceholder}" ${isTextareaReadonly}>${technicianActivity}</textarea>\
+      <button type="button" class="btn pending-acceptance-warning"><i class="fas fa-clock"></i> Pendendo aceite</button>\
     </div>\
   </div>\
   `;
 
   techniciansList.append(technicianItem);
   updateTechnicianSuggestionsAvailableList();
+  $('.tech-item-wrapper:not(.own-card) .tech-name-input').off('input');
   $('.tech-item-wrapper:not(.own-card) .tech-name-input').on('input', (e) => {
     updateTechnicianSuggestionsAvailableList();
     $(e.currentTarget).autocomplete().options.lookup = availableTechnicianSuggestions;
