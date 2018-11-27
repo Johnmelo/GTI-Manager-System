@@ -123,7 +123,7 @@
 }
 
 .tech-item-wrapper  .request-sharing-btn-row {
-    align-self: end;
+    align-self: flex-end;
     display: none;
     margin-top: 10px;
 }
@@ -139,7 +139,7 @@
     cursor: none;
     pointer-events: none;
     margin-top: 3px;
-    align-self: end;
+    align-self: flex-end;
     display: none;
     background-color: #FFF;
 }
