@@ -321,7 +321,8 @@ class TecnicoController extends Action{
                     $responsibility = (\preg_match('/^\s*$/', $responsibility)) ? null : $responsibility;
                     if ($responsibility !== $dbRespData['atividade']) {
                       // Update the responsibility in the DB if it was changed
-                      $Chamado->setTicketTechnicians($ticketID, $dbRespData['id_tecnico'], $responsibility, $dbRespData['status']);
+                      $status = $dbRespData['id_tecnico'] === $_SESSION['user_id'] ? 1 : $dbRespData['status'];
+                      $Chamado->setTicketTechnicians($ticketID, $dbRespData['id_tecnico'], $responsibility, $status);
                     }
                   }
                 } else {
@@ -336,12 +337,13 @@ class TecnicoController extends Action{
                 // Get the responsibilities data that isn't in the database
                 return (\array_search($respData['technicianID'], \array_column($ticketData['responsaveis'], 'id_tecnico')) === false);
               });
-              // Store them in the database (with status 0, since the added technician still needs to accept)
+              // Store them in the database
               \array_walk($newTechRespData, function($newRespData)use($Chamado, $ticketID) {
                 $responsibility = $newRespData['technicianActivity'];
                 $responsibility = \preg_replace('/^\s*|\s*$/', '', $responsibility);
                 $responsibility = (\preg_match('/^\s*$/', $responsibility)) ? null : $responsibility;
-                $Chamado->setTicketTechnicians($ticketID, $newRespData['technicianID'], $responsibility, 0);
+                $status = $newRespData['technicianID'] === $_SESSION['user_id'] ? 1 : 0;
+                $Chamado->setTicketTechnicians($ticketID, $newRespData['technicianID'], $responsibility, $status);
               });
 
               $db->commit();
