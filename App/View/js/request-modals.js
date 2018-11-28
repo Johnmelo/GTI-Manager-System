@@ -400,6 +400,63 @@ function refuseRequest(requestId) {
   });
 }
 
+function ticketSharingResponseBtn(e) {
+  let card = $(e.target).closest('.tech-item-wrapper');
+  let response = $(e.target).hasClass("accept-ticket-sharing-btn") ? 'accepted' : 'refused';
+
+  $("html").css("cursor", "wait");
+  $("body").css("pointer-events", "none");
+  $.post("/gtic/public/tecnico/respond_ticket_sharing_invitation", {
+    "ticketID": $('.request-modal .request-modal-form input#id_chamado_field').val(),
+    "response": response,
+    "responsibility": card.find('textarea').val()
+  })
+  .done(response => {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+
+    if (response && response.event === "success") {
+        if (response.ticket) {
+          if (response.type && response.type === "ticket_sharing_invitation_accepted") {
+          // ticketSharingAccepted(response.ticket);
+          card.removeClass('pending-acceptance');
+          return true;
+        } else if (response.type && response.type === "ticket_sharing_invitation_refused") {
+          // ticketSharingAccepted(response.ticket);
+          card.closest('.tech-item-wrapper').remove();
+          return true;
+        }
+      }
+    }
+    window.location.reload(true);
+  })
+  .fail(data => {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+
+    if (data && data.responseJSON) {
+      response = data.responseJSON;
+      if (response.event && response.event === "error") {
+        if (response.type) {
+          if (response.type === "missing_data") {
+            alert("Há dados fazendo falta");
+            return false;
+          } else if (response.type === "db_conn_failed") {
+            alert("Falha na conexão com o banco de dados");
+            return false;
+          } else if (response.type === "db_op_failed") {
+            alert("Não foi possível alterar os dados no banco de dados");
+            return false;
+          }
+        }
+      }
+    }
+    alert("Houve uma falha não identificada");
+  });
+}
+
 function editTechListBtn() {
   if (window.myself) {
     let backup = $('.tech-items-list').clone();
@@ -606,13 +663,16 @@ function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, isP
       </div>\
       <textarea rows="1" cols="5" class="${isTextareaEditable}" placeholder="${textareaPlaceholder}" ${isTextareaReadonly}>${technicianActivity}</textarea>\
         <div class="request-sharing-btn-row">\
-        <button type="button" class="btn btn-danger"><i class="fas fa-times"></i> Recusar</button>\
-        <button type="button" class="btn btn-success"><i class="fas fa-clock"></i> Assumir</button>\
+        <button type="button" class="btn btn-danger refuse-ticket-sharing-btn"><i class="fas fa-times"></i> Recusar</button>\
+        <button type="button" class="btn btn-success accept-ticket-sharing-btn"><i class="fas fa-clock"></i> Assumir</button>\
       </div>\
       <button type="button" class="btn pending-acceptance-warning"><i class="fas fa-clock"></i> Pendendo aceite</button>\
     </div>\
   </div>\
   `;
+
+  $('.accept-ticket-sharing-btn, .refuse-ticket-sharing-btn').off('click');
+  $('.accept-ticket-sharing-btn, .refuse-ticket-sharing-btn').on('click', ticketSharingResponseBtn)
 
   techniciansList.append(technicianItem);
   updateTechnicianSuggestionsAvailableList();
