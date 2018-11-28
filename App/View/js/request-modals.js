@@ -531,10 +531,17 @@ function getTechniciansList() {
   }
   // Get the inserted technicians
   $('.tech-items-list').children().each((index, element) => {
-    let techNameInput = $(element).find('input.tech-name-input:not([readonly])').get(0);
+    let techNameInput = $(element).find('input.tech-name-input').get(0);
     let techActivityInput = $(element).find('textarea').get(0);
 
-    if ($(element).hasClass('pending-acceptance')) {
+    if ($(element).hasClass('own-card')) {
+      techniciansList.push(
+        {
+          "technicianID": myself.id,
+          "technicianActivity": techActivityInput.value.replace(/^\s*/, '').replace(/\s*$/, '')
+        }
+      );
+    } else {
       let technicianName = techNameInput.value;
       // Check if it's a valid option (an autocomplete suggestion)
       let isTechnicianListed = ((window.technicians.filter(x => x.value === technicianName)).length > 0);
@@ -552,13 +559,6 @@ function getTechniciansList() {
         alert("Você adicionou um campo para adicionar outro técnico mas não definiu o técnico");
         return okToContinue = false;
       }
-    } else if ($(element).hasClass('own-card')) {
-      techniciansList.push(
-        {
-          "technicianID": myself.id,
-          "technicianActivity": techActivityInput.value.replace(/^\s*/, '').replace(/\s*$/, '')
-        }
-      );
     }
   });
 
