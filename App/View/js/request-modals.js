@@ -29,7 +29,7 @@ function defineModal(modalConfig) {
     $('.request-modal').find('.modal-footer button').remove();
     $('.autocomplete-suggestions').remove();
     $('.tech-items-list').empty();
-    $('.responsaveis-wrapper').removeClass('editable editing')
+    $('.responsaveis-wrapper').removeClass('editable editing');
 
     // Set config
     $('.request-modal').find('.modal-header > h4')[0].innerHTML = modalConfig.title;
@@ -119,29 +119,7 @@ function fillUpRequestModal(requestData, visibleFields) {
         } else if (field.id === "responsaveis_field") {
             // When responsible technicians area
             if (requestData.hasOwnProperty("responsaveis")) {
-              if (window.myself) {
-                  let respTechnicians = requestData.responsaveis;
-                  // If logged in user is one of the responsible technicians
-                  // display his/her card first
-                  let ownResponsibilityData = requestData.responsaveis.find(rd => rd.id_tecnico === myself.id);
-                  if (ownResponsibilityData) {
-                      let isPendingAcceptance = (ownResponsibilityData.status === "0") ? true : false;
-                      insertTechnicianCard(myself.name, ownResponsibilityData.atividade, true, isPendingAcceptance);
-                      updateTechnicianSuggestionsAvailableList();
-                      respTechnicians = requestData.responsaveis.filter(r => r !== ownResponsibilityData);
-                  }
-                  for (responsibilityData of respTechnicians) {
-                      let techName = technicians.find(t => t.data.userID === responsibilityData.id_tecnico).value;
-                      let isPendingAcceptance = (responsibilityData.status === "0") ? true : false;
-                      insertTechnicianCard(techName, responsibilityData.atividade, false, isPendingAcceptance);
-                      updateTechnicianSuggestionsAvailableList();
-                  }
-              } else {
-                  let techniciansData = requestData.responsaveis;
-                  for (responsibilityData of techniciansData) {
-                      insertTechnicianCard(responsibilityData.tecnico, responsibilityData.atividade, false, false);
-                  }
-              }
+              fillTicketTechniciansList(requestData.responsaveis);
             } else {
               if (window.myself) {
                 insertTechnicianCard(myself.name, '', true, false);
@@ -453,19 +431,8 @@ function saveTechListBtn() {
       if (response.type && response.type === "ticket_responsible_technicians_updated") {
         if (response.ticket){
           ticketTechniciansUpdated(response.ticket);
-          $('.autocomplete-suggestions').remove();
+          fillTicketTechniciansList(response.ticket.responsaveis);
           $('.responsaveis-wrapper').removeClass("editing");
-          // Update the cards if they changed from having no activity or the contrary
-          $('.tech-item-wrapper').each((index, element) => {
-            let textarea = $(element).find('textarea');
-            let activity = textarea.val();
-            let noActivity = (activity === null || activity.match(/^\s*$/) !== null);
-            if (noActivity) {
-              $(element).addClass('no-activity');
-            } else {
-              $(element).removeClass('no-activity');
-            }
-          });
           return true;
         }
       }
@@ -566,6 +533,34 @@ function getTechniciansList() {
     return techniciansList;
   }
   return false;
+}
+
+function fillTicketTechniciansList(ticketTechniciansData) {
+  // Reset the list
+  $('.autocomplete-suggestions').remove();
+  $('.tech-items-list').empty();
+
+  if (window.myself) {
+    // If logged in user is one of the responsible technicians
+    // display his/her card first
+    let ownResponsibilityData = ticketTechniciansData.find(rd => rd.id_tecnico === myself.id);
+    if (ownResponsibilityData) {
+      let isPendingAcceptance = (ownResponsibilityData.status === "0") ? true : false;
+      insertTechnicianCard(myself.name, ownResponsibilityData.atividade, true, isPendingAcceptance);
+      updateTechnicianSuggestionsAvailableList();
+      ticketTechniciansData = ticketTechniciansData.filter(r => r !== ownResponsibilityData);
+    }
+    for (responsibilityData of ticketTechniciansData) {
+      let techName = technicians.find(t => t.data.userID === responsibilityData.id_tecnico).value;
+      let isPendingAcceptance = (responsibilityData.status === "0") ? true : false;
+      insertTechnicianCard(techName, responsibilityData.atividade, false, isPendingAcceptance);
+      updateTechnicianSuggestionsAvailableList();
+    }
+  } else {
+    for (responsibilityData of ticketTechniciansData) {
+      insertTechnicianCard(responsibilityData.tecnico, responsibilityData.atividade, false, false);
+    }
+  }
 }
 
 function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, isPendingAcceptance) {

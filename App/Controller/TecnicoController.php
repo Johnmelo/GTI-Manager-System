@@ -319,7 +319,7 @@ class TecnicoController extends Action{
                     $responsibility = $newRespTechniciansData[$sentDataIndex]['technicianActivity'];
                     $responsibility = \preg_replace('/^\s*|\s*$/', '', $responsibility);
                     $responsibility = (\preg_match('/^\s*$/', $responsibility)) ? null : $responsibility;
-                    if ($responsibility !== $dbRespData['atividade']) {
+                    if ($responsibility !== $dbRespData['atividade']  || $dbRespData['status'] == "0") {
                       // Update the responsibility in the DB if it was changed
                       $status = $dbRespData['id_tecnico'] === $_SESSION['user_id'] ? 1 : $dbRespData['status'];
                       $Chamado->setTicketTechnicians($ticketID, $dbRespData['id_tecnico'], $responsibility, $status);
