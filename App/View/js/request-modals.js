@@ -401,12 +401,19 @@ function refuseRequest(requestId) {
 }
 
 function editTechListBtn() {
-  let backup = $('.tech-items-list').clone();
-  window.technicianResDataBackup = backup;
-  $('.responsaveis-wrapper').addClass("editing");
-  $('.tech-item-wrapper:not(.own-card) .tech-name-input:not(.not-editable)').prop("readonly", false);
-  $('.tech-item-wrapper textarea:not(.not-editable)').prop("readonly", false);
-  buildAutocompleteInputs();
+  if (window.myself) {
+    let backup = $('.tech-items-list').clone();
+    window.technicianResDataBackup = backup;
+    $('.responsaveis-wrapper').addClass("editing");
+    if (myself.role === "GERENTE") {
+      $('.tech-item-wrapper .tech-name-input').prop("readonly", false);
+      $('.tech-item-wrapper textarea').prop("readonly", false);
+    } else {
+      $('.tech-item-wrapper:not(.own-card) .tech-name-input:not(.not-editable)').prop("readonly", false);
+      $('.tech-item-wrapper textarea:not(.not-editable)').prop("readonly", false);
+    }
+    buildAutocompleteInputs();
+  }
 }
 
 function saveTechListBtn() {
@@ -545,8 +552,9 @@ function fillTicketTechniciansList(ticketTechniciansData) {
     // display his/her card first
     let ownResponsibilityData = ticketTechniciansData.find(rd => rd.id_tecnico === myself.id);
     if (ownResponsibilityData) {
+      let techName = technicians.find(t => t.data.userID === ownResponsibilityData.id_tecnico).value;
       let isPendingAcceptance = (ownResponsibilityData.status === "0") ? true : false;
-      insertTechnicianCard(myself.name, ownResponsibilityData.atividade, true, isPendingAcceptance);
+      insertTechnicianCard(techName, ownResponsibilityData.atividade, true, isPendingAcceptance);
       updateTechnicianSuggestionsAvailableList();
       ticketTechniciansData = ticketTechniciansData.filter(r => r !== ownResponsibilityData);
     }
@@ -567,15 +575,16 @@ function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, isP
   let techniciansList = $('.tech-items-list');
   let isEditingMode = $('.responsaveis-wrapper').hasClass('editing');
   let noActivity = (technicianActivity === null || technicianActivity.match(/^\s*$/) !== null);
+  let isAdmin = (window.myself && window.myself.role === "GERENTE") ? true : false;
 
   // Card config
   let ownCardClass = (isOwnCard) ? 'own-card' : '';
   let pendingAcceptance = (isPendingAcceptance) ? 'pending-acceptance' : '';
   let noActivityClass = (noActivity) ? 'no-activity' : '';
-  let isCardRemovable = (!isOwnCard && isPendingAcceptance) ? 'editable' : 'not-editable';
+  let isCardRemovable = isAdmin || (!isOwnCard && isPendingAcceptance) ? 'editable' : 'not-editable';
 
   // Name input config
-  let isTechNameEditable = (!isOwnCard && isPendingAcceptance) ? 'editable' : 'not-editable';
+  let isTechNameEditable = isAdmin || (!isOwnCard && isPendingAcceptance) ? 'editable' : 'not-editable';
   let isTechNameReadonly = !isEditingMode || !(isTechNameEditable === 'editable') ? 'readonly' : '';
 
   // Activity textarea config
@@ -607,8 +616,9 @@ function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, isP
 
   techniciansList.append(technicianItem);
   updateTechnicianSuggestionsAvailableList();
-  $('.tech-item-wrapper:not(.own-card) .tech-name-input').off('input');
-  $('.tech-item-wrapper:not(.own-card) .tech-name-input').on('input', (e) => {
+  let techNameInputSelector = (isAdmin) ? '.tech-item-wrapper .tech-name-input' : '.tech-item-wrapper:not(.own-card) .tech-name-input';
+  $(techNameInputSelector).off('input');
+  $(techNameInputSelector).on('input', (e) => {
     updateTechnicianSuggestionsAvailableList();
     $(e.currentTarget).autocomplete().options.lookup = availableTechnicianSuggestions;
   });
@@ -659,7 +669,7 @@ function updateTechnicianSuggestionsAvailableList() {
   window.availableTechnicianSuggestions = technicians.slice();
   $('.tech-name-input').each((index, element) => {
     let isOwnCard = $(element.closest('.tech-item-wrapper')).hasClass('own-card');
-    if (isOwnCard) {
+    if (isOwnCard && window.myself.role !== "GERENTE") {
       availableTechnicianSuggestions = availableTechnicianSuggestions.filter(sug => sug.data.userID !== myself.id);
     } else {
       availableTechnicianSuggestions = availableTechnicianSuggestions.filter(sug => sug.value !== element.value);

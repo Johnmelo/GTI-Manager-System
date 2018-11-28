@@ -45,8 +45,7 @@
     justify-content: space-between;
 }
 
-.titles-upper-row > .tech-name-input,
-.responsaveis-wrapper.editing .tech-item-wrapper.own-card .tech-name-input {
+.titles-upper-row > .tech-name-input {
     color: inherit;
     font-size: 1.6rem;
     font-weight: bold;
@@ -118,7 +117,7 @@
     padding: 0;
     display: none;
 }
-.responsaveis-wrapper.editing .tech-item-wrapper:not(.own-card) .remove-tech.editable {
+.responsaveis-wrapper.editing .tech-item-wrapper .remove-tech.editable {
     display: block;
 }
 
@@ -127,7 +126,7 @@
     display: none;
     margin-top: 10px;
 }
-.tech-item-wrapper.pending-acceptance.own-card .request-sharing-btn-row {
+.responsaveis-wrapper:not(.editing) .tech-item-wrapper.pending-acceptance.own-card .request-sharing-btn-row {
     display: block;
 }
 
