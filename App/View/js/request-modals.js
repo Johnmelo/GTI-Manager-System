@@ -402,7 +402,7 @@ function refuseRequest(requestId) {
 
 function ticketSharingResponseBtn(e) {
   let card = $(e.target).closest('.tech-item-wrapper');
-  let response = $(e.target).hasClass("accept-ticket-sharing-btn") ? 'accepted' : 'refused';
+  let response = $(e.target).hasClass("accept-ticket-sharing-btn") ? 'accepted' : 'declined';
 
   $("html").css("cursor", "wait");
   $("body").css("pointer-events", "none");
@@ -421,10 +421,11 @@ function ticketSharingResponseBtn(e) {
           if (response.type && response.type === "ticket_sharing_invitation_accepted") {
           // ticketSharingAccepted(response.ticket);
           card.removeClass('pending-acceptance');
+          $('.responsaveis-wrapper').addClass('editable');
           return true;
-        } else if (response.type && response.type === "ticket_sharing_invitation_refused") {
+        } else if (response.type && response.type === "ticket_sharing_invitation_declined") {
           // ticketSharingAccepted(response.ticket);
-          card.closest('.tech-item-wrapper').remove();
+          card.removeClass('pending-acceptance').addClass('invitation-declined');
           return true;
         }
       }
@@ -610,15 +611,29 @@ function fillTicketTechniciansList(ticketTechniciansData) {
     let ownResponsibilityData = ticketTechniciansData.find(rd => rd.id_tecnico === myself.id);
     if (ownResponsibilityData) {
       let techName = technicians.find(t => t.data.userID === ownResponsibilityData.id_tecnico).value;
-      let isPendingAcceptance = (ownResponsibilityData.status === "0") ? true : false;
-      insertTechnicianCard(techName, ownResponsibilityData.atividade, true, isPendingAcceptance);
+      let invitationStatus;
+      if (ownResponsibilityData.status === "1") {
+        invitationStatus = "accepted";
+      } else if (ownResponsibilityData.status === "0") {
+        invitationStatus = "pending";
+      } else if (ownResponsibilityData.status === "-1") {
+        invitationStatus = "declined";
+      }
+      insertTechnicianCard(techName, ownResponsibilityData.atividade, true, invitationStatus);
       updateTechnicianSuggestionsAvailableList();
       ticketTechniciansData = ticketTechniciansData.filter(r => r !== ownResponsibilityData);
     }
     for (responsibilityData of ticketTechniciansData) {
       let techName = technicians.find(t => t.data.userID === responsibilityData.id_tecnico).value;
-      let isPendingAcceptance = (responsibilityData.status === "0") ? true : false;
-      insertTechnicianCard(techName, responsibilityData.atividade, false, isPendingAcceptance);
+      let invitationStatus;
+      if (responsibilityData.status === "1") {
+        invitationStatus = "accepted";
+      } else if (responsibilityData.status === "0") {
+        invitationStatus = "pending";
+      } else if (responsibilityData.status === "-1") {
+        invitationStatus = "declined";
+      }
+      insertTechnicianCard(techName, responsibilityData.atividade, false, invitationStatus);
       updateTechnicianSuggestionsAvailableList();
     }
   } else {
@@ -628,7 +643,7 @@ function fillTicketTechniciansList(ticketTechniciansData) {
   }
 }
 
-function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, isPendingAcceptance) {
+function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, invitationStatus) {
   let techniciansList = $('.tech-items-list');
   let isEditingMode = $('.responsaveis-wrapper').hasClass('editing');
   let noActivity = (technicianActivity === null || technicianActivity.match(/^\s*$/) !== null);
@@ -636,22 +651,27 @@ function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, isP
 
   // Card config
   let ownCardClass = (isOwnCard) ? 'own-card' : '';
-  let pendingAcceptance = (isPendingAcceptance) ? 'pending-acceptance' : '';
   let noActivityClass = (noActivity) ? 'no-activity' : '';
-  let isCardRemovable = isAdmin || (!isOwnCard && isPendingAcceptance) ? 'editable' : 'not-editable';
+  let isCardRemovable = isAdmin || (!isOwnCard && invitationStatus === 'pending') ? 'editable' : 'not-editable';
+  let invitationStatusClass;
+  if (invitationStatus === 'pending') {
+    invitationStatusClass = 'pending-acceptance';
+  } else if (invitationStatus === 'declined') {
+    invitationStatusClass = 'invitation-declined';
+  }
 
   // Name input config
-  let isTechNameEditable = isAdmin || (!isOwnCard && isPendingAcceptance) ? 'editable' : 'not-editable';
+  let isTechNameEditable = isAdmin || (!isOwnCard && invitationStatus === 'pending') ? 'editable' : 'not-editable';
   let isTechNameReadonly = !isEditingMode || !(isTechNameEditable === 'editable') ? 'readonly' : '';
 
   // Activity textarea config
   technicianActivity = (noActivity) ? '' : technicianActivity;
-  let isTextareaEditable = (isOwnCard || isPendingAcceptance) ? 'editable' : 'not-editable';
-  let isTextareaReadonly = !(isOwnCard && isPendingAcceptance) && (!isEditingMode || !(isTextareaEditable === 'editable')) ? 'readonly' : '';
+  let isTextareaEditable = (isOwnCard || invitationStatus === 'pending') ? 'editable' : 'not-editable';
+  let isTextareaReadonly = !(isOwnCard && invitationStatus === 'pending') && (!isEditingMode || !(isTextareaEditable === 'editable')) ? 'readonly' : '';
   let textareaPlaceholder = (isOwnCard) ? 'Descreva sua responsabilidade' : 'Descreva a parte que ele ficou encarregado';
 
   let technicianItem = `\
-  <div class="tech-item-wrapper ${noActivityClass} ${ownCardClass} ${pendingAcceptance}">\
+  <div class="tech-item-wrapper ${noActivityClass} ${ownCardClass} ${invitationStatusClass}">\
     <div class="content-wrapper">\
       <div class="item-header">\
         <div class="item-titles">\
@@ -666,6 +686,7 @@ function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, isP
         <button type="button" class="btn btn-danger refuse-ticket-sharing-btn"><i class="fas fa-times"></i> Recusar</button>\
         <button type="button" class="btn btn-success accept-ticket-sharing-btn"><i class="fas fa-clock"></i> Assumir</button>\
       </div>\
+      <button type="button" class="btn invitation-declined-warning"><i class="fas fa-ban"></i> Convite recusado</button>\
       <button type="button" class="btn pending-acceptance-warning"><i class="fas fa-clock"></i> Pendendo aceite</button>\
     </div>\
   </div>\

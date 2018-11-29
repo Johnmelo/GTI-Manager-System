@@ -381,20 +381,21 @@ class TecnicoController extends Action{
   public function respond_ticket_sharing_invitation() {
     session_start();
     if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
-      if (isset($_POST['ticketID']) && $_POST['response'] && $_POST['responsibility']) {
+      if (isset($_POST['ticketID']) && isset($_POST['response']) && isset($_POST['responsibility'])) {
         try {
           $db = DBConnector::getInstance();
           try {
             $Chamado = Container::getClass("Chamado");
             $status = ($_POST['response'] === "accepted") ? 1 : -1;
-            $successEventType = ($status === 1) ? 'ticket_sharing_invitation_accepted': 'ticket_sharing_invitation_refused';
+            $responseType = 'ticket_sharing_invitation_';
+            $responseType .= ($status === 1) ? 'accepted' : 'declined';
             $db->beginTransaction();
             $Chamado->setTicketTechnicians($_POST['ticketID'], $_SESSION['user_id'], $_POST['responsibility'], $status);
             $db->commit();
             $ticket = $Chamado->getTicketById($_POST['ticketID']);
             if ($ticket) {
               header('Content-Type: application/json; charset=UTF-8');
-              echo json_encode(array('event' => 'success', 'type' => $successEventType, 'ticket' => $ticket));
+              echo json_encode(array('event' => 'success', 'type' => $responseType, 'ticket' => $ticket));
             }
           } catch (\Exception $e) {
             $db->rollback();
