@@ -554,6 +554,10 @@ function removeTechnicianItemBtn(e) {
   // Then remove the item
   $(e).closest('.tech-item-wrapper').remove();
   updateTechnicianSuggestionsAvailableList();
+
+  // If someone is being removed, then it's possible to add at least one technician.
+  // Activate the "add" button.
+  $('.responsaveis-wrapper').removeClass('restrained');
 }
 
 function getTechniciansList() {
@@ -706,6 +710,13 @@ function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, inv
     $(e.currentTarget).autocomplete().options.lookup = availableTechnicianSuggestions;
   });
   buildAutocompleteInputs();
+
+  // If there isn't available technicians anymore, deactivate the "add" button
+  let qtyAddedCards = $('.tech-items-list').children().length;
+  let qtyTechnicians = technicians.length;
+  if (qtyAddedCards === qtyTechnicians) {
+    $('.responsaveis-wrapper').addClass('restrained');
+  }
 }
 
 function buildAutocompleteInputs() {

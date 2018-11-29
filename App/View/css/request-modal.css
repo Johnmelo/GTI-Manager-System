@@ -153,7 +153,7 @@
 }
 
 .buttons-row > button {
-    margin: 0px !important;
+    margin: 0px 6px !important;
     display: none;
 }
 
@@ -162,10 +162,6 @@
 }
 .responsaveis-wrapper.editing.editable .edit-techs-btn {
     display: none;
-}
-
-.buttons-row > .add-tech-btn {
-    margin: 0px 12px 0px 12px !important;
 }
 
 .responsaveis-wrapper.editable .cancel-edit-btn,
@@ -180,6 +176,9 @@
 .responsaveis-wrapper.editing.editable .add-tech-btn,
 .responsaveis-wrapper.editing.editable .save-tech-btn {
     display: block;
+}
+.responsaveis-wrapper.restrained .add-tech-btn {
+    display: none;
 }
 
 .buttons-row > button > svg {
