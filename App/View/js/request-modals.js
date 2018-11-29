@@ -753,6 +753,7 @@ function buildAutocompleteInputs() {
       formatResult: _autocompleteFormatResult,
       onSelect: function(option) {
         updateTechnicianSuggestionsAvailableList();
+        buildAutocompleteInputs();
       }
     });
     autosize($('textarea'));
