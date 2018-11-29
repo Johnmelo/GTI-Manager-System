@@ -422,10 +422,12 @@ function ticketSharingResponseBtn(e) {
           // ticketSharingAccepted(response.ticket);
           card.removeClass('pending-acceptance');
           $('.responsaveis-wrapper').addClass('editable');
+          fillTicketTechniciansList(response.ticket.responsaveis);
           return true;
         } else if (response.type && response.type === "ticket_sharing_invitation_declined") {
           // ticketSharingAccepted(response.ticket);
           card.removeClass('pending-acceptance').addClass('invitation-declined');
+          fillTicketTechniciansList(response.ticket.responsaveis);
           return true;
         }
       }
