@@ -122,7 +122,7 @@ function fillUpRequestModal(requestData, visibleFields) {
               fillTicketTechniciansList(requestData.responsaveis);
             } else {
               if (window.myself) {
-                insertTechnicianCard(myself.name, '', true, false);
+                insertTechnicianCard(myself.name, '', true);
               }
             }
         } else {
@@ -542,7 +542,7 @@ function cancelTechListEditionBtn() {
 }
 
 function insertTechnicianItemBtn(e) {
-  insertTechnicianCard('', '', false, true);
+  insertTechnicianCard('', '', false, 'pending');
 }
 
 function removeTechnicianItemBtn(e) {
@@ -640,7 +640,7 @@ function fillTicketTechniciansList(ticketTechniciansData) {
     }
   } else {
     for (responsibilityData of ticketTechniciansData) {
-      insertTechnicianCard(responsibilityData.tecnico, responsibilityData.atividade, false, false);
+      insertTechnicianCard(responsibilityData.tecnico, responsibilityData.atividade, false);
     }
   }
 }
@@ -655,7 +655,7 @@ function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, inv
   let ownCardClass = (isOwnCard) ? 'own-card' : '';
   let noActivityClass = (noActivity) ? 'no-activity' : '';
   let isCardRemovable = isAdmin || (!isOwnCard && invitationStatus === 'pending') ? 'editable' : 'not-editable';
-  let invitationStatusClass;
+  let invitationStatusClass = '';
   if (invitationStatus === 'pending') {
     invitationStatusClass = 'pending-acceptance';
   } else if (invitationStatus === 'declined') {
