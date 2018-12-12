@@ -122,7 +122,7 @@ function fillUpRequestModal(requestData, visibleFields) {
               fillTicketTechniciansList(requestData.responsaveis);
             } else {
               if (window.myself) {
-                insertTechnicianCard(myself.name, '', true);
+                insertTechnicianCard(myself.name, '', 'acquiring own-card');
               }
             }
         } else {
@@ -400,16 +400,13 @@ function refuseRequest(requestId) {
   });
 }
 
-function ticketSharingResponseBtn(e) {
-  let card = $(e.target).closest('.tech-item-wrapper');
-  let response = $(e.target).hasClass("accept-ticket-sharing-btn") ? 'accepted' : 'declined';
-
+function acceptInvitation(e) {
   $("html").css("cursor", "wait");
   $("body").css("pointer-events", "none");
   $.post("/gtic/public/tecnico/respond_ticket_sharing_invitation", {
-    "ticketID": $('.request-modal .request-modal-form input#id_chamado_field').val(),
-    "response": response,
-    "responsibility": card.find('textarea').val()
+    "ticketID": $('#id_chamado_field').val(),
+    "response": 'accepted',
+    "responsibility": $(e).closest('.tech-item-wrapper').find('textarea').val()
   })
   .done(response => {
     // Unblock page
@@ -417,17 +414,62 @@ function ticketSharingResponseBtn(e) {
     $("body").css("pointer-events", "auto");
 
     if (response && response.event === "success") {
-        if (response.ticket) {
-          if (response.type && response.type === "ticket_sharing_invitation_accepted") {
+      if (response.ticket) {
+        if (response.type && response.type === "ticket_sharing_invitation_accepted") {
           // ticketSharingAccepted(response.ticket);
-          card.removeClass('pending-acceptance');
-          $('.responsaveis-wrapper').addClass('editable');
-          fillTicketTechniciansList(response.ticket.responsaveis);
+          $(e).closest('.tech-item-wrapper').removeClass().addClass('tech-item-wrapper viewing in-process own-card');
+          $(e).closest('.tech-item-wrapper').find('textarea').prop('readOnly', true);
           return true;
-        } else if (response.type && response.type === "ticket_sharing_invitation_declined") {
+        }
+      }
+    }
+    window.location.reload(true);
+  })
+  .fail(data => {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+
+    if (data && data.responseJSON) {
+      response = data.responseJSON;
+      if (response.event && response.event === "error") {
+        if (response.type) {
+          if (response.type === "missing_data") {
+            alert("Há dados fazendo falta");
+            return false;
+          } else if (response.type === "db_conn_failed") {
+            alert("Falha na conexão com o banco de dados");
+            return false;
+          } else if (response.type === "db_op_failed") {
+            alert("Não foi possível alterar os dados no banco de dados");
+            return false;
+          }
+        }
+      }
+    }
+    alert("Houve uma falha não identificada");
+  });
+}
+
+function refusedInvitation(e) {
+  $("html").css("cursor", "wait");
+  $("body").css("pointer-events", "none");
+  $.post("/gtic/public/tecnico/respond_ticket_sharing_invitation", {
+    "ticketID": $('#id_chamado_field').val(),
+    "response": 'declined',
+    "responsibility": $(e).closest('.tech-item-wrapper').find('textarea').val()
+  })
+  .done(response => {
+    // Unblock page
+    $("html").css("cursor", "auto");
+    $("body").css("pointer-events", "auto");
+
+    if (response && response.event === "success") {
+      if (response.ticket) {
+        if (response.type && response.type === "ticket_sharing_invitation_declined") {
           // ticketSharingAccepted(response.ticket);
-          card.removeClass('pending-acceptance').addClass('invitation-declined');
-          fillTicketTechniciansList(response.ticket.responsaveis);
+          $(e).closest('.tech-item-wrapper').removeClass().addClass('tech-item-wrapper viewing refused own-card');
+          $(e).closest('.tech-item-wrapper').find('textarea').attr('readonly', 'readonly');
           return true;
         }
       }
@@ -534,6 +576,186 @@ function saveTechListBtn() {
   });
 }
 
+function responsibilityDone(e) {
+  let ticketID = $('#id_chamado_field').val()
+  $("html").css("cursor", "wait");
+  $("body").css("pointer-events", "none");
+  $.post("/gtic/public/tecnico/responsibility_done", { 'ticketID': ticketID })
+  .done(response => {
+     // Unblock page
+     $("html").css("cursor", "auto");
+     $("body").css("pointer-events", "auto");
+
+     if (response && response.event === "success") {
+       if (response.ticket) {
+         if (response.type && response.type === "responsibility_done") {
+           // ticketResponsibilityDone(response.ticket);
+           fillTicketTechniciansList(response.ticket.responsaveis);
+           return true;
+         }
+       }
+     }
+     window.location.reload(true);
+   })
+  .fail(data => {
+     // Unblock page
+     $("html").css("cursor", "auto");
+     $("body").css("pointer-events", "auto");
+
+     if (data && data.responseJSON) {
+       response = data.responseJSON;
+       if (response.event && response.event === "error") {
+         if (response.type) {
+           if (response.type === "missing_data") {
+             alert("Há dados fazendo falta");
+             return false;
+           } else if (response.type === "db_conn_failed") {
+             alert("Falha na conexão com o banco de dados");
+             return false;
+           } else if (response.type === "db_op_failed") {
+             alert("Não foi possível alterar os dados no banco de dados");
+             return false;
+           }
+         }
+       }
+     }
+     alert("Houve uma falha não identificada");
+   });
+}
+
+function cancelActionBtn(e) {
+  let card = $(e).closest('.tech-item-wrapper');
+  let cardClasses = card.attr('class');
+  card.removeClass('editing').addClass('viewing');
+  card.find('textarea').prop('readonly', true);
+  let backedUpActivity = window.cardsBackup.get(`${card.index()}`);
+  card.find('textarea').val(backedUpActivity);
+  autosize.update(card.find('textarea'));
+  if (cardClasses.match(/tech-item-wrapper editing in-process own-card/g) !== null) {
+  }
+}
+
+function editCardBtn(e) {
+  if (window.cardsBackup === undefined) {
+    window.cardsBackup = new Map();
+  }
+  let card = $(e).closest('.tech-item-wrapper');
+  let cardClasses = card.attr('class');
+  let cardResponsibility = card.find('textarea').val();
+  // change the layout
+  card.removeClass('viewing').addClass('editing');
+  card.find('textarea').prop('readonly', false);
+  // store the current info for in case the edition is canceled
+  window.cardsBackup.set(`${card.index()}`, cardResponsibility);
+  if (cardClasses.match(/tech-item-wrapper viewing in-process own-card/g) !== null) {
+  } else if (cardClasses.match(/tech-item-wrapper pending-acceptance viewing other-technician"]/g) !== null) {
+  }
+}
+
+function reacquireTicketBtn(e) {
+  let ticketID = $('#id_chamado_field').val()
+  let card = $(e).closest('.tech-item-wrapper');
+  let cardResponsibility = card.find('textarea').val();
+  $("html").css("cursor", "wait");
+  $("body").css("pointer-events", "none");
+  $.post("/gtic/public/tecnico/reaquire_ticket", {
+    'ticketID': ticketID,
+    'responsibility': cardResponsibility
+  })
+  .done(response => {
+     // Unblock page
+     $("html").css("cursor", "auto");
+     $("body").css("pointer-events", "auto");
+
+     if (response && response.event === "success") {
+       if (response.ticket) {
+         if (response.type && response.type === "ticket_reaquired") {
+           // ticketResponsibilityDone(response.ticket);
+           fillTicketTechniciansList(response.ticket.responsaveis);
+           return true;
+         }
+       }
+     }
+     window.location.reload(true);
+   })
+  .fail(data => {
+     // Unblock page
+     $("html").css("cursor", "auto");
+     $("body").css("pointer-events", "auto");
+
+     if (data && data.responseJSON) {
+       response = data.responseJSON;
+       if (response.event && response.event === "error") {
+         if (response.type) {
+           if (response.type === "missing_data") {
+             alert("Há dados fazendo falta");
+             return false;
+           } else if (response.type === "db_conn_failed") {
+             alert("Falha na conexão com o banco de dados");
+             return false;
+           } else if (response.type === "db_op_failed") {
+             alert("Não foi possível alterar os dados no banco de dados");
+             return false;
+           }
+         }
+       }
+     }
+     alert("Houve uma falha não identificada");
+   });
+}
+
+function saveResponsibilityChange(e) {
+  let ticketID = $('#id_chamado_field').val()
+  let card = $(e).closest('.tech-item-wrapper');
+  let cardResponsibility = card.find('textarea').val();
+  $("html").css("cursor", "wait");
+  $("body").css("pointer-events", "none");
+  $.post("/gtic/public/tecnico/save_responsibility_change", {
+    'ticketID': ticketID,
+    'responsibility': cardResponsibility
+  })
+  .done(response => {
+     // Unblock page
+     $("html").css("cursor", "auto");
+     $("body").css("pointer-events", "auto");
+
+     if (response && response.event === "success") {
+       if (response.ticket) {
+         if (response.type && response.type === "responsibility_change_saved") {
+           // ticketResponsibilityDone(response.ticket);
+           fillTicketTechniciansList(response.ticket.responsaveis);
+           return true;
+         }
+       }
+     }
+     window.location.reload(true);
+   })
+  .fail(data => {
+     // Unblock page
+     $("html").css("cursor", "auto");
+     $("body").css("pointer-events", "auto");
+
+     if (data && data.responseJSON) {
+       response = data.responseJSON;
+       if (response.event && response.event === "error") {
+         if (response.type) {
+           if (response.type === "missing_data") {
+             alert("Há dados fazendo falta");
+             return false;
+           } else if (response.type === "db_conn_failed") {
+             alert("Falha na conexão com o banco de dados");
+             return false;
+           } else if (response.type === "db_op_failed") {
+             alert("Não foi possível alterar os dados no banco de dados");
+             return false;
+           }
+         }
+       }
+     }
+     alert("Houve uma falha não identificada");
+   });
+}
+
 function cancelTechListEditionBtn() {
   $('.tech-items-list').remove();
   $('.autocomplete-suggestions').remove();
@@ -542,7 +764,7 @@ function cancelTechListEditionBtn() {
 }
 
 function insertTechnicianItemBtn(e) {
-  insertTechnicianCard('', '', false, 'pending');
+  insertTechnicianCard('', '', 'new-invitation creating other-technician');
 }
 
 function removeTechnicianItemBtn(e) {
@@ -615,17 +837,22 @@ function fillTicketTechniciansList(ticketTechniciansData) {
     // If logged in user is one of the responsible technicians
     // display his/her card first
     let ownResponsibilityData = ticketTechniciansData.find(rd => rd.id_tecnico === myself.id);
+    let technicianHasTicket = false;
     if (ownResponsibilityData) {
       let techName = technicians.find(t => t.data.userID === ownResponsibilityData.id_tecnico).value;
       let invitationStatus;
       if (ownResponsibilityData.status === "1") {
-        invitationStatus = "accepted";
+        technicianHasTicket = true;
+        invitationStatus = 'viewing in-process own-card';
       } else if (ownResponsibilityData.status === "0") {
-        invitationStatus = "pending";
+        invitationStatus = 'new-invitation responding own-card';
       } else if (ownResponsibilityData.status === "-1") {
-        invitationStatus = "declined";
+        invitationStatus = 'viewing refused own-card';
+      } else if (ownResponsibilityData.status === "2") {
+        technicianHasTicket = true;
+        invitationStatus = 'viewing done own-card';
       }
-      insertTechnicianCard(techName, ownResponsibilityData.atividade, true, invitationStatus);
+      insertTechnicianCard(techName, ownResponsibilityData.atividade, invitationStatus);
       updateTechnicianSuggestionsAvailableList();
       ticketTechniciansData = ticketTechniciansData.filter(r => r !== ownResponsibilityData);
     }
@@ -633,77 +860,96 @@ function fillTicketTechniciansList(ticketTechniciansData) {
       let techName = technicians.find(t => t.data.userID === responsibilityData.id_tecnico).value;
       let invitationStatus;
       if (responsibilityData.status === "1") {
-        invitationStatus = "accepted";
+        invitationStatus = "viewing in-process other-technician";
       } else if (responsibilityData.status === "0") {
-        invitationStatus = "pending";
+        invitationStatus = "pending-acceptance viewing other-technician";
       } else if (responsibilityData.status === "-1") {
-        invitationStatus = "declined";
+        invitationStatus = "refused viewing other-technician";
+      } else if (responsibilityData.status === "2") {
+        invitationStatus = "done viewing other-technician";
       }
-      insertTechnicianCard(techName, responsibilityData.atividade, false, invitationStatus);
+      invitationStatus += (technicianHasTicket) ? '' : ' not-editable';
+      insertTechnicianCard(techName, responsibilityData.atividade, invitationStatus);
       updateTechnicianSuggestionsAvailableList();
     }
   } else {
     for (responsibilityData of ticketTechniciansData) {
-      insertTechnicianCard(responsibilityData.tecnico, responsibilityData.atividade, false);
-    }
+      let invitationStatus = '';
+      if (responsibilityData.status === "1") {
+        invitationStatus = "viewing in-process other-technician";
+      } else if (responsibilityData.status === "2") {
+        invitationStatus = "done viewing other-technician";
+      }
+      insertTechnicianCard(responsibilityData.tecnico, responsibilityData.atividade, invitationStatus);
   }
 }
+}
 
-function insertTechnicianCard(technicianName, technicianActivity, isOwnCard, invitationStatus) {
+function insertTechnicianCard(technicianName, technicianActivity, classes) {
   let techniciansList = $('.tech-items-list');
-  let isEditingMode = $('.responsaveis-wrapper').hasClass('editing');
   let noActivity = (technicianActivity === null || technicianActivity.match(/^\s*$/) !== null);
-  let isAdmin = (window.myself && window.myself.role === "GERENTE") ? true : false;
-
-  // Card config
-  let ownCardClass = (isOwnCard) ? 'own-card' : '';
-  let noActivityClass = (noActivity) ? 'no-activity' : '';
-  let isCardRemovable = isAdmin || (!isOwnCard && invitationStatus === 'pending') ? 'editable' : 'not-editable';
-  let invitationStatusClass = '';
-  if (invitationStatus === 'pending') {
-    invitationStatusClass = 'pending-acceptance';
-  } else if (invitationStatus === 'declined') {
-    invitationStatusClass = 'invitation-declined';
-  }
 
   // Name input config
-  let isTechNameEditable = isAdmin || (!isOwnCard && invitationStatus === 'pending') ? 'editable' : 'not-editable';
-  let isTechNameReadonly = !isEditingMode || !(isTechNameEditable === 'editable') ? 'readonly' : '';
+  let techNameReadonly = '';
+  if (
+    classes !== 'new-invitation creating other-technician' &&
+    classes !== 'pending-acceptance editing other-technician' &&
+    classes !== 'new-invitation open-ticket other-technician'
+  ) {
+    techNameReadonly = 'readonly';
+  }
 
   // Activity textarea config
   technicianActivity = (noActivity) ? '' : technicianActivity;
-  let isTextareaEditable = (isOwnCard || invitationStatus === 'pending') ? 'editable' : 'not-editable';
-  let isTextareaReadonly = !(isOwnCard && invitationStatus === 'pending') && (!isEditingMode || !(isTextareaEditable === 'editable')) ? 'readonly' : '';
-  let textareaPlaceholder = (isOwnCard) ? 'Descreva sua responsabilidade' : 'Descreva a parte que ele ficou encarregado';
+  let textareaReadonly = '';
+  if (
+    classes.match(/viewing/g) !== null ||
+    classes.match(/in-process/g) !== null ||
+    classes.match(/refused/g) !== null ||
+    classes.match(/done/g) !== null
+  ) {
+    textareaReadonly = 'readonly';
+  }
+  if (noActivity && !classes.match(/acquiring|new-invitation|editing/)) {
+    classes += " no-activity";
+  }
+  let textareaPlaceholder = (classes.match(/own-card/gi)) ? 'Descreva sua responsabilidade' : 'Descreva a parte que ele ficou encarregado';
 
   let technicianItem = `\
-  <div class="tech-item-wrapper ${noActivityClass} ${ownCardClass} ${invitationStatusClass}">\
+  <div class="tech-item-wrapper ${classes}">\
     <div class="content-wrapper">\
       <div class="item-header">\
         <div class="item-titles">\
           <div class="titles-upper-row">\
-            <input type="text" class="form-control tech-name-input ${isTechNameEditable}" placeholder="Digite o nome ou usuário do técnico" value="${technicianName}" ${isTechNameReadonly}>\
-            <button type="button" class="btn btn-danger remove-tech ${isCardRemovable}" onclick="removeTechnicianItemBtn(this)"><i class="fas fa-minus"></i></button>\
+            <input type="text" class="form-control tech-name-input" placeholder="Digite o nome ou usuário do técnico" value="${technicianName}" ${techNameReadonly}>\
+            <button type="button" class="btn btn-danger remove-card-btn" onclick="removeTechnicianItemBtn(this)"><i class="fas fa-minus"></i></button>\
           </div>\
         </div>\
       </div>\
-      <textarea rows="1" cols="5" class="${isTextareaEditable}" placeholder="${textareaPlaceholder}" ${isTextareaReadonly}>${technicianActivity}</textarea>\
-        <div class="request-sharing-btn-row">\
-        <button type="button" class="btn btn-danger refuse-ticket-sharing-btn"><i class="fas fa-times"></i> Recusar</button>\
-        <button type="button" class="btn btn-success accept-ticket-sharing-btn"><i class="fas fa-clock"></i> Assumir</button>\
+      <textarea rows="1" cols="5" placeholder="${textareaPlaceholder}" ${textareaReadonly}>${technicianActivity}</textarea>\
+        <div class="status-row">\
+        <button type="button" class="btn status pending-status"><i class="fas fa-clock"></i> Pendendo aceite</button>\
+        <button type="button" class="btn status refused-status"><i class="fas fa-ban"></i> Convite recusado</button>\
+        <button type="button" class="btn status in-process-status"><i class="fas fa-spinner"></i> Em andamento</button>\
+        <button type="button" class="btn status done-status"><i class="fas fa-check"></i> Realizado</button>\
       </div>\
-      <button type="button" class="btn invitation-declined-warning"><i class="fas fa-ban"></i> Convite recusado</button>\
-      <button type="button" class="btn pending-acceptance-warning"><i class="fas fa-clock"></i> Pendendo aceite</button>\
+      <div class="card-bottom-btn-row">\
+        <button type="button" class="btn btn-danger cancel-btn" onclick="cancelActionBtn(this)"><i class="fas fa-times"></i> Cancelar</button>\
+        <button type="button" class="btn btn-primary invite-btn"><i class="fas fa-share"></i> Convidar</button>\
+        <button type="button" class="btn btn-danger refuse-btn" onclick="refusedInvitation(this)"><i class="fas fa-times"></i> Recusar</button>\
+        <button type="button" class="btn btn-success acquire-btn" onclick="acceptInvitation(this)"><i class="fas fa-check"></i> Assumir</button>\
+        <button type="button" class="btn btn-primary save-btn" onclick="saveResponsibilityChange(this)"><i class="fas fa-check"></i> Salvar</button>\
+        <button type="button" class="btn btn-primary edit-btn" onclick="editCardBtn(this)"><i class="fas fa-edit"></i> Editar</button>\
+        <button type="button" class="btn btn-success done-btn" onclick="responsibilityDone(this)"><i class="fas fa-check"></i> Finalizar</button>\
+        <button type="button" class="btn btn-primary reacquire-btn" onclick="reacquireTicketBtn(this)"><i class="fas fa-redo"></i> Reassumir</button>\
+      </div>\
     </div>\
   </div>\
   `;
 
-  $('.accept-ticket-sharing-btn, .refuse-ticket-sharing-btn').off('click');
-  $('.accept-ticket-sharing-btn, .refuse-ticket-sharing-btn').on('click', ticketSharingResponseBtn)
-
   techniciansList.append(technicianItem);
   updateTechnicianSuggestionsAvailableList();
-  let techNameInputSelector = (isAdmin) ? '.tech-item-wrapper .tech-name-input' : '.tech-item-wrapper:not(.own-card) .tech-name-input';
+  let techNameInputSelector = (window.myself && window.myself.role === "GERENTE") ? '.tech-item-wrapper .tech-name-input' : '.tech-item-wrapper:not(.own-card) .tech-name-input';
   $(techNameInputSelector).off('input');
   $(techNameInputSelector).on('input', (e) => {
     updateTechnicianSuggestionsAvailableList();
@@ -758,6 +1004,10 @@ function buildAutocompleteInputs() {
     });
     autosize($('textarea'));
   }
+}
+
+function afterShownModal() {
+  autosize.update($('textarea'))
 }
 
 function updateTechnicianSuggestionsAvailableList() {
@@ -888,7 +1138,7 @@ $(document).ready(function() {
               </div>\
               <div class="responsaveis-wrapper">\
                 <div class="tech-items-list"></div>\
-                <div class="buttons-row">\
+                <div class="list-buttons-row">\
                   <button type="button" class="btn btn-primary edit-techs-btn" onclick="editTechListBtn()"><i class="fas fa-edit"></i> Editar responsáveis</button>\
                   <button type="button" class="btn btn-primary cancel-edit-btn" onclick="cancelTechListEditionBtn()"><i class="fas fa-times"></i> Cancelar edição</button>\
                   <button type="button" class="btn btn-primary add-tech-btn" onclick="insertTechnicianItemBtn()"><i class="fas fa-plus"></i> Adicionar outro técnico</button>\
@@ -901,4 +1151,6 @@ $(document).ready(function() {
         <div class="modal-footer" style="display: none;"></div>\
       </div>\
     </div>';
+
+    $('.modal').on('shown.bs.modal', afterShownModal);
 });

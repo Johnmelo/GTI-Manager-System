@@ -128,11 +128,11 @@ class Chamado extends Table{
 
       // Include the technicians sharing tickets
       $stmt = $this->db->prepare(
-          "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade` ".
+          "SELECT `ct_xref`.`id_chamado`, `ct_xref`.`id_tecnico`, `u`.`nome` AS `tecnico`, `ct_xref`.`atividade`, `ct_xref`.`status` ".
           "FROM `chamado_tecnico_xref` AS `ct_xref` ".
           "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
           "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
-          "WHERE `c`.`id_cliente_solicitante` = :userId AND `c`.`status` = 'ATENDIMENTO' AND `ct_xref`.`status` = 1"
+          "WHERE `c`.`id_cliente_solicitante` = :userId AND `c`.`status` = 'ATENDIMENTO' AND (`ct_xref`.`status` = 1 OR `ct_xref`.`status` = 2)"
       );
       $stmt->bindParam(":userId", $userId);
       $stmt->execute();
@@ -352,6 +352,28 @@ class Chamado extends Table{
   public function save($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description){
     $query = "Insert into ".$this->table." (id_servico,id_local,id_solicitacao,id_tecnico_abertura,id_cliente_solicitante,prazo,descricao) values (?,?,?,?,?,?,?)";
     $params = array($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description);
+    $stmt = $this->db->prepare($query);
+    if ($stmt->execute($params) && $stmt->rowCount() > 0) {
+      return $this->db->lastInsertId();
+    } else {
+      return false;
+    }
+  }
+
+  public function setResponsibilityDone($ticketID, $technicianID) {
+    $query = "UPDATE `chamado_tecnico_xref` SET `status` = '2' WHERE `chamado_tecnico_xref`.`id_chamado` = ? AND `chamado_tecnico_xref`.`id_tecnico` = ?";
+    $params = array($ticketID, $technicianID);
+    $stmt = $this->db->prepare($query);
+    if ($stmt->execute($params) && $stmt->rowCount() > 0) {
+      return $this->db->lastInsertId();
+    } else {
+      return false;
+    }
+  }
+
+  public function saveResponsibilityChange($ticketID, $technicianID, $responsibility) {
+    $query = "UPDATE `chamado_tecnico_xref` SET `atividade` = ? WHERE `chamado_tecnico_xref`.`id_chamado` = ? AND `chamado_tecnico_xref`.`id_tecnico` = ?";
+    $params = array($responsibility, $ticketID, $technicianID);
     $stmt = $this->db->prepare($query);
     if ($stmt->execute($params) && $stmt->rowCount() > 0) {
       return $this->db->lastInsertId();

@@ -1,6 +1,13 @@
+/* MODAL */
+
 .modal-content {
     background-color: #f5f5f5;
 }
+
+
+
+
+/* TECHNICIANS RESPONSIBLE FIELD */
 
 .responsaveis-wrapper {
     height: auto;
@@ -11,19 +18,19 @@
     flex-direction: column;
 }
 
+
+
+
+/* TECHNICIANS CARDS LIST */
+
 .tech-items-list {
     width: 80%;
 }
 
-.content-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-}
 
-.item-header {
-    width: 100%;
-}
+
+
+/* CARD WRAPPER */
 
 .tech-item-wrapper {
     background-color: #fff;
@@ -36,6 +43,26 @@
     box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
 }
 
+
+
+
+/* CARD CONTENT WRAPPER */
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+
+
+
+/* CARD HEADER */
+
+.item-header {
+    width: 100%;
+}
+
 .item-titles {
     flex: 1;
 }
@@ -45,34 +72,67 @@
     justify-content: space-between;
 }
 
+
+
+
+/* HEADER CARD BUTTONS */
+
+.item-header button {
+    align-self: center;
+    margin: 0px 0px 8px 10px !important;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: none;
+}
+
+.tech-item-wrapper.new-invitation.creating.other-technician .remove-card-btn,
+.tech-item-wrapper.pending-acceptance.viewing.other-technician:not(.not-editable) .remove-card-btn,
+.tech-item-wrapper.pending-acceptance.editing.other-technician .remove-card-btn,
+.tech-item-wrapper.pending-acceptance.fully-editable .remove-card-btn {
+    display: block;
+}
+
+
+
+
+/* TECHNICIAN NAME INPUT */
+
 .titles-upper-row > .tech-name-input {
     color: inherit;
     font-size: 1.6rem;
     font-weight: bold;
+    background-color: #FFF;
     border: #FFF solid 1px;
     margin-bottom: 0px;
     box-shadow: none;
     outline-style: none;
     outline-width: 0px;
 }
-.titles-upper-row > .tech-name-input[readonly] {
-    background-color: #FFF;
+.titles-upper-row > .tech-name-input::placeholder {
+    font-style: italic;
 }
-.responsaveis-wrapper.editing .tech-name-input:not([readonly]) {
+.tech-item-wrapper.new-invitation.creating.other-technician .tech-name-input,
+.tech-item-wrapper.pending-acceptance.editing.other-technician .tech-name-input,
+.tech-item-wrapper.new-invitation.open-ticket.other-technician .tech-name-input,
+.tech-item-wrapper.fully-editable .tech-name-input {
     border: #CCC solid 1px;
     margin-bottom: 8px;
     box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
 }
-.responsaveis-wrapper.editing .tech-item-wrapper:not(.own-card) .tech-name-input[readonly] {
-    opacity: 0.5;
+.tech-item-wrapper.new-invitation.creating.other-technician .tech-name-input:focus,
+.tech-item-wrapper.pending-acceptance.editing.other-technician .tech-name-input:focus,
+.tech-item-wrapper.new-invitation.open-ticket.other-technician .tech-name-input:focus,
+.tech-item-wrapper.fully-editable .tech-name-input:focus {
+    border: #CCC solid 1px;
+    margin-bottom: 8px;
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
 }
-.responsaveis-wrapper.editing .tech-name-input:not([readonly]):focus {
-    outline-style: solid;
-    outline-width: 2px;
-}
-.titles-upper-row > .tech-name-input::placeholder {
-    font-style: italic;
-}
+
+
+
+
+/* TECHNICIAN RESPONSIBILITY TEXTAREA */
 
 .content-wrapper > textarea {
     font-size: 1.6rem;
@@ -84,77 +144,120 @@
     outline-width: 0px;
     resize: none;
 }
-.responsaveis-wrapper.editing textarea:not([readonly]),
-.tech-item-wrapper.own-card.pending-acceptance textarea {
-    border: #DDD solid 1px;
-}
-.responsaveis-wrapper.editing textarea[readonly] {
-    opacity: 0.5;
-}
-.responsaveis-wrapper.editing textarea:not([readonly]):focus,
-.tech-item-wrapper.own-card.pending-acceptance textarea:focus {
-    outline-style: solid;
-    outline-width: 2px;
-}
-.tech-item-wrapper.no-activity .content-wrapper > textarea {
-    display: none;
-}
-.responsaveis-wrapper.editing .tech-item-wrapper.no-activity textarea:not([readonly]),
-.tech-item-wrapper.no-activity.own-card.pending-acceptance textarea {
-    display: block;
-}
 .content-wrapper > textarea::placeholder {
     color: #000;
     opacity: 0.4;
     font-style: italic;
 }
-
-.remove-tech {
-    align-self: center;
-    margin: 0px 0px 8px 10px !important;
-    width: 32px;
-    height: 32px;
-    padding: 0;
+.tech-item-wrapper.no-activity:not(.editing) textarea {
     display: none;
 }
-.responsaveis-wrapper.editing .tech-item-wrapper .remove-tech.editable {
-    display: block;
+.tech-item-wrapper.acquiring.own-card textarea,
+.tech-item-wrapper.new-invitation.creating.other-technician textarea,
+.tech-item-wrapper.new-invitation.responding.own-card textarea,
+.tech-item-wrapper.in-process.editing.own-card textarea,
+.tech-item-wrapper.pending-acceptance.editing.other-technician textarea,
+.tech-item-wrapper.new-invitation.open-ticket.other-technician textarea,
+.tech-item-wrapper.fully-editable textarea {
+    border: #DDD solid 1px;
+}
+.tech-item-wrapper.acquiring.own-card textarea:focus,
+.tech-item-wrapper.new-invitation.creating.other-technician textarea:focus,
+.tech-item-wrapper.new-invitation.responding.own-card textarea:focus,
+.tech-item-wrapper.in-process.editing.own-card textarea:focus,
+.tech-item-wrapper.pending-acceptance.editing.other-technician textarea:focus,
+.tech-item-wrapper.new-invitation.open-ticket.other-technician textarea:focus,
+.tech-item-wrapper.fully-editable textarea:focus {
+    outline-style: solid;
+    outline-width: 2px;
 }
 
-.tech-item-wrapper  .request-sharing-btn-row {
+
+
+
+/* CARD STATUS ROW */
+
+.tech-item-wrapper .status-row {
     align-self: flex-end;
+    margin-top: 3px;
+}
+.tech-item-wrapper .status-row.none {
     display: none;
-    margin-top: 10px;
-}
-.responsaveis-wrapper:not(.editing) .tech-item-wrapper.pending-acceptance.own-card .request-sharing-btn-row {
-    display: block;
 }
 
-.request-sharing-btn-row > button {
-    margin: 0px 0px 0px 6px !important;
-}
-
-.tech-item-wrapper .pending-acceptance-warning,
-.tech-item-wrapper .invitation-declined-warning {
+.tech-item-wrapper .status {
     cursor: none;
     pointer-events: none;
-    margin-top: 3px;
+    margin: 0px !important;
     align-self: flex-end;
-    display: none;
     background-color: #FFF;
+    display: none;
 }
-.tech-item-wrapper.pending-acceptance:not(.own-card) .pending-acceptance-warning,
-.tech-item-wrapper.invitation-declined .invitation-declined-warning {
+
+.tech-item-wrapper.pending-acceptance.viewing.other-technician .pending-status,
+.tech-item-wrapper.refused.viewing .refused-status,
+.tech-item-wrapper.in-process.viewing.other-technician .in-process-status,
+.tech-item-wrapper.done.viewing .done-status {
     display: block;
 }
 
-.buttons-row {
+
+
+
+/* CARD BOTTOM BUTTONS ROW */
+
+.tech-item-wrapper .card-bottom-btn-row {
+    align-self: flex-end;
+    margin-top: 10px;
+    display: none;
+}
+.tech-item-wrapper.new-invitation.responding.own-card .card-bottom-btn-row,
+.tech-item-wrapper.pending-acceptance.other-technician:not(.not-editable) .card-bottom-btn-row,
+.tech-item-wrapper.in-process.own-card .card-bottom-btn-row,
+.tech-item-wrapper.new-invitation.open-ticket.other-technician .card-bottom-btn-row,
+.tech-item-wrapper.done.viewing.own-card .card-bottom-btn-row {
     display: flex;
 }
 
-.buttons-row > button {
+.card-bottom-btn-row > button {
+    margin: 0px 0px 0px 6px !important;
+    display: none;
+}
+
+.card-bottom-btn-row > button > svg {
+    margin-right: 6px !important;
+}
+
+.tech-item-wrapper.new-invitation.open-ticket.other-technician .invite-btn,
+.tech-item-wrapper.new-invitation.open-ticket.other-technician .cancel-btn,
+.tech-item-wrapper.pending-acceptance.editing.other-technician .cancel-btn,
+.tech-item-wrapper.in-process.editing.own-card .cancel-btn,
+.tech-item-wrapper.new-invitation.responding.own-card .acquire-btn,
+.tech-item-wrapper.new-invitation.responding.own-card .refuse-btn,
+.tech-item-wrapper.pending-acceptance.viewing.other-technician:not(.not-editable) .edit-btn,
+.tech-item-wrapper.in-process.viewing.own-card .edit-btn,
+.tech-item-wrapper.editing .save-btn,
+.tech-item-wrapper.in-process.viewing.own-card .done-btn,
+.tech-item-wrapper.done.viewing.own-card .reacquire-btn {
+    display: block;
+}
+
+
+
+
+/* TECHNICIAN LIST ACTION BUTTONS */
+
+.list-buttons-row {
+    display: flex;
+}
+
+.list-buttons-row > button {
     margin: 0px 6px !important;
     display: none;
+}
+
+.list-buttons-row > button > svg {
+    margin-right: 4px;
 }
 
 .responsaveis-wrapper.editable .edit-techs-btn {
@@ -179,8 +282,4 @@
 }
 .responsaveis-wrapper.restrained .add-tech-btn {
     display: none;
-}
-
-.buttons-row > button > svg {
-    margin-right: 4px;
 }
