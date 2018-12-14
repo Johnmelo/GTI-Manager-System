@@ -448,10 +448,10 @@ class TecnicoController extends Action{
   public function save_responsibility_change() {
     session_start();
     if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
-      if (isset($_POST['ticketID']) && isset($_POST['responsibility'])) {
+      if (isset($_POST['ticketID']) && isset($_POST['technicianID']) && isset($_POST['responsibility'])) {
         try {
           $Chamado = Container::getClass("Chamado");
-          $Chamado->saveResponsibilityChange($_POST['ticketID'], $_SESSION['user_id'], $_POST['responsibility']);
+          $Chamado->saveResponsibilityChange($_POST['ticketID'], $_POST['technicianID'], $_POST['responsibility']);
           $ticket = $Chamado->getTicketById($_POST['ticketID']);
           if ($ticket) {
             header('Content-Type: application/json; charset=UTF-8');
@@ -483,6 +483,33 @@ class TecnicoController extends Action{
           if ($ticket) {
             header('Content-Type: application/json; charset=UTF-8');
             echo json_encode(array('event' => 'success', 'type' => 'ticket_reaquired', 'ticket' => $ticket));
+          }
+        } catch (\Exception $e) {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'db_conn_failed')));
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
+      }
+    } else {
+      $this->forbidenAccess();
+    }
+  }
+
+  public function discard_invite() {
+    session_start();
+    if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
+      if (isset($_POST['ticketID']) && isset($_POST['technicianID'])) {
+        try {
+          $Chamado = Container::getClass("Chamado");
+          $Chamado->deleteTicketTechnicianResponsibility($_POST['ticketID'], $_POST['technicianID']);
+          $ticket = $Chamado->getTicketById($_POST['ticketID']);
+          if ($ticket) {
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(array('event' => 'success', 'type' => 'ticket_sharing_invitation_discarded', 'ticket' => $ticket));
           }
         } catch (\Exception $e) {
           header('Content-Type: application/json; charset=UTF-8');

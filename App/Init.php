@@ -51,6 +51,7 @@ class Init extends Bootstrap{
     $routes['/gtic/public/tecnico/responsibility_done'] = array('controller' => 'tecnicoController', 'action' => 'responsibility_done');
     $routes['/gtic/public/tecnico/save_responsibility_change'] = array('controller' => 'tecnicoController', 'action' => 'save_responsibility_change');
     $routes['/gtic/public/tecnico/reaquire_ticket'] = array('controller' => 'tecnicoController', 'action' => 'reaquire_ticket');
+    $routes['/gtic/public/tecnico/discard_invite'] = array('controller' => 'tecnicoController', 'action' => 'discard_invite');
     //----------------------------------------------------------------------------------------------------------------------------
 
     $this->setRoutes($routes);
