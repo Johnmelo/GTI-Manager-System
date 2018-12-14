@@ -525,5 +525,32 @@ class TecnicoController extends Action{
       $this->forbidenAccess();
     }
   }
+
+  public function invite_technician() {
+    session_start();
+    if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
+      if (isset($_POST['ticketID']) && isset($_POST['technicianID']) && isset($_POST['responsibility'])) {
+        try {
+          $Chamado = Container::getClass("Chamado");
+          $Chamado->setTicketTechnicians($_POST['ticketID'], $_POST['technicianID'], $_POST['responsibility'], '0');
+          $ticket = $Chamado->getTicketById($_POST['ticketID']);
+          if ($ticket) {
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(array('event' => 'success', 'type' => 'technician_invited', 'ticket' => $ticket));
+          }
+        } catch (\Exception $e) {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'db_conn_failed')));
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
+      }
+    } else {
+      $this->forbidenAccess();
+    }
+  }
 }
 ?>

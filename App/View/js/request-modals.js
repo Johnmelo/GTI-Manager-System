@@ -626,13 +626,18 @@ function responsibilityDone(e) {
 function cancelActionBtn(e) {
   let card = $(e).closest('.tech-item-wrapper');
   let cardClasses = card.attr('class');
-  card.removeClass('editing').addClass('viewing');
-  card.find('textarea').prop('readonly', true);
-  let backedUpActivity = window.cardsBackup.get(`${card.index()}`);
-  card.find('.tech-name-input').val(backedUpActivity.technician);
-  card.find('textarea').val(backedUpActivity.responsibility);
-  autosize.update(card.find('textarea'));
-  if (cardClasses.match(/tech-item-wrapper editing in-process own-card/g) !== null) {
+  if (cardClasses.match(/new-invitation open-ticket other-technician/g) !== null) {
+    // If giving up of creating an invitation to an already in process ticket
+    removeTechnicianItemBtn(e);
+  } else {
+    // If giving up of editing a card data
+    card.removeClass('editing').addClass('viewing');
+    card.find('.tech-name-input').prop('readonly', true);
+    card.find('textarea').prop('readonly', true);
+    let backedUpActivity = window.cardsBackup.get(`${card.index()}`);
+    card.find('.tech-name-input').val(backedUpActivity.technician);
+    card.find('textarea').val(backedUpActivity.responsibility);
+    autosize.update(card.find('textarea'));
   }
 }
 
@@ -646,7 +651,9 @@ function editCardBtn(e) {
   let cardResponsibility = card.find('textarea').val();
   // change the layout
   card.removeClass('viewing').addClass('editing');
-  card.find('.tech-name-input').prop('readonly', false);
+  if (card.attr('class').match(/own-card/) === null) {
+    card.find('.tech-name-input').prop('readonly', false);
+  }
   card.find('textarea').prop('readonly', false);
   buildAutocompleteInputs();
   // store the current info for in case the edition is canceled
@@ -784,75 +791,142 @@ function insertTechnicianItemBtn(e) {
 }
 
 function removeTechnicianItemBtn(e) {
-  let cardsList = $('.tech-items-list').children(':not(.own-card)');
+  let card = $(e).closest('.tech-item-wrapper');
+  let cardInputName = card.find('.tech-name-input');
+  let inputNameList = $('.tech-name-input:not([readonly])');
   // Get the technician item index
-  let indexCardToRemove = cardsList.index($(e).closest('.tech-item-wrapper'));
+  let indexCardToRemove = inputNameList.index(cardInputName);
   // Remove the autocomplete object related to the item being removed
   $('.autocomplete-suggestions').eq(indexCardToRemove).remove();
   // Then remove the item
-  $(e).closest('.tech-item-wrapper').remove();
+  card.remove();
   updateTechnicianSuggestionsAvailableList();
-
   // If someone is being removed, then it's possible to add at least one technician.
   // Activate the "add" button.
   $('.responsaveis-wrapper').removeClass('restrained');
 
-  // Sharing invitation data
+  // If directly removing the invitation from the DB
+  if (card.attr('class').match(/new-invitation open-ticket other-technician/g) === null) {
+    // Sharing invitation data
+    let ticketID = $('#id_chamado_field').val()
+    let technician = card.find('.tech-name-input').val();
+    let technicianData = window.technicians.find(t => t.value === technician);
+    let technicianID = technicianData.data.userID;
+
+    if ($('.responsaveis-wrapper').attr('class').match(/editable editing/g) === null) {
+      // Unblock page
+      $("html").css("cursor", "auto");
+      $("body").css("pointer-events", "auto");
+      $.post('/gtic/public/tecnico/discard_invite', {
+        'ticketID': ticketID,
+        'technicianID': technicianID
+      })
+      .done(response => {
+        // Unblock page
+        $("html").css("cursor", "auto");
+        $("body").css("pointer-events", "auto");
+
+        if (response && response.event === "success") {
+          if (response.ticket) {
+            if (response.type && response.type === "ticket_sharing_invitation_discarded") {
+              // ticketResponsibilityDone(response.ticket);
+              fillTicketTechniciansList(response.ticket.responsaveis);
+              return true;
+            }
+          }
+        }
+        window.location.reload(true);
+      })
+      .fail(data => {
+        // Unblock page
+        $("html").css("cursor", "auto");
+        $("body").css("pointer-events", "auto");
+
+        if (data && data.responseJSON) {
+          response = data.responseJSON;
+          if (response.event && response.event === "error") {
+            if (response.type) {
+              if (response.type === "missing_data") {
+                alert("Há dados fazendo falta");
+                return false;
+              } else if (response.type === "db_conn_failed") {
+                alert("Falha na conexão com o banco de dados");
+                return false;
+              } else if (response.type === "db_op_failed") {
+                alert("Não foi possível alterar os dados no banco de dados");
+                return false;
+              }
+            }
+          }
+        }
+        alert("Houve uma falha não identificada");
+      });
+    }
+  }
+}
+
+function inviteTechnicianBtn(e) {
   let ticketID = $('#id_chamado_field').val()
   let card = $(e).closest('.tech-item-wrapper');
   let technician = card.find('.tech-name-input').val();
+  let cardResponsibility = card.find('textarea').val();
+
+  // check if a technician was selected
+  let isTechnicianListed = ((window.technicians.filter(x => x.value === technician)).length > 0);
+  if (!isTechnicianListed) {
+      alert("Selecione um dos técnicos sugeridos");
+      return false;
+  }
   let technicianData = window.technicians.find(t => t.value === technician);
   let technicianID = technicianData.data.userID;
 
-  if ($('.responsaveis-wrapper').attr('class').match(/editable editing/g) === null) {
-    // Unblock page
-    $("html").css("cursor", "auto");
-    $("body").css("pointer-events", "auto");
-    $.post('/gtic/public/tecnico/discard_invite', {
-        'ticketID': ticketID,
-        'technicianID': technicianID
-    })
-    .done(response => {
-       // Unblock page
-       $("html").css("cursor", "auto");
-       $("body").css("pointer-events", "auto");
+  $("html").css("cursor", "wait");
+  $("body").css("pointer-events", "none");
+  $.post("/gtic/public/tecnico/invite_technician", {
+    'ticketID': ticketID,
+    'technicianID': technicianID,
+    'responsibility': cardResponsibility
+  })
+  .done(response => {
+     // Unblock page
+     $("html").css("cursor", "auto");
+     $("body").css("pointer-events", "auto");
 
-       if (response && response.event === "success") {
-         if (response.ticket) {
-           if (response.type && response.type === "ticket_sharing_invitation_discarded") {
-             // ticketResponsibilityDone(response.ticket);
-             fillTicketTechniciansList(response.ticket.responsaveis);
-             return true;
+     if (response && response.event === "success") {
+       if (response.ticket) {
+         if (response.type && response.type === "technician_invited") {
+           // ticketResponsibilityDone(response.ticket);
+           fillTicketTechniciansList(response.ticket.responsaveis);
+           return true;
+         }
+       }
+     }
+     window.location.reload(true);
+   })
+  .fail(data => {
+     // Unblock page
+     $("html").css("cursor", "auto");
+     $("body").css("pointer-events", "auto");
+
+     if (data && data.responseJSON) {
+       response = data.responseJSON;
+       if (response.event && response.event === "error") {
+         if (response.type) {
+           if (response.type === "missing_data") {
+             alert("Há dados fazendo falta");
+             return false;
+           } else if (response.type === "db_conn_failed") {
+             alert("Falha na conexão com o banco de dados");
+             return false;
+           } else if (response.type === "db_op_failed") {
+             alert("Não foi possível alterar os dados no banco de dados");
+             return false;
            }
          }
        }
-       window.location.reload(true);
-     })
-    .fail(data => {
-       // Unblock page
-       $("html").css("cursor", "auto");
-       $("body").css("pointer-events", "auto");
-
-       if (data && data.responseJSON) {
-         response = data.responseJSON;
-         if (response.event && response.event === "error") {
-           if (response.type) {
-             if (response.type === "missing_data") {
-               alert("Há dados fazendo falta");
-               return false;
-             } else if (response.type === "db_conn_failed") {
-               alert("Falha na conexão com o banco de dados");
-               return false;
-             } else if (response.type === "db_op_failed") {
-               alert("Não foi possível alterar os dados no banco de dados");
-               return false;
-             }
-           }
-         }
-       }
-       alert("Houve uma falha não identificada");
-     });
-  }
+     }
+     alert("Houve uma falha não identificada");
+   });
 }
 
 function getTechniciansList() {
@@ -1008,7 +1082,7 @@ function insertTechnicianCard(technicianName, technicianActivity, classes) {
       </div>\
       <div class="card-bottom-btn-row">\
         <button type="button" class="btn btn-danger cancel-btn" onclick="cancelActionBtn(this)"><i class="fas fa-times"></i> Cancelar</button>\
-        <button type="button" class="btn btn-primary invite-btn"><i class="fas fa-share"></i> Convidar</button>\
+        <button type="button" class="btn btn-primary invite-btn" onclick="inviteTechnicianBtn(this)"><i class="fas fa-share"></i> Convidar</button>\
         <button type="button" class="btn btn-danger refuse-btn" onclick="refusedInvitation(this)"><i class="fas fa-times"></i> Recusar</button>\
         <button type="button" class="btn btn-success acquire-btn" onclick="acceptInvitation(this)"><i class="fas fa-check"></i> Assumir</button>\
         <button type="button" class="btn btn-primary save-btn" onclick="saveResponsibilityChange(this)"><i class="fas fa-check"></i> Salvar</button>\
