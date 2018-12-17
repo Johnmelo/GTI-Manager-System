@@ -276,7 +276,7 @@
     display: block;
 }
 .responsaveis-wrapper.editing.editable .cancel-edit-btn,
-.responsaveis-wrapper.editing.editable .add-tech-btn,
+.responsaveis-wrapper.editing.editable:not(.restrained) .add-tech-btn,
 .responsaveis-wrapper.editing.editable .save-tech-btn {
     display: block;
 }

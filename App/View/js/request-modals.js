@@ -30,6 +30,7 @@ function defineModal(modalConfig) {
     $('.autocomplete-suggestions').remove();
     $('.tech-items-list').empty();
     $('.responsaveis-wrapper').removeClass('editable editing');
+    checkIfMaxTechnician();
 
     // Set config
     $('.request-modal').find('.modal-header > h4')[0].innerHTML = modalConfig.title;
@@ -508,11 +509,9 @@ function editTechListBtn() {
     window.technicianResDataBackup = backup;
     $('.responsaveis-wrapper').addClass("editing");
     if (myself.role === "GERENTE") {
+      $('.tech-item-wrapper').attr('class', 'tech-item-wrapper new-invitation creating other-technician');
       $('.tech-item-wrapper .tech-name-input').prop("readonly", false);
       $('.tech-item-wrapper textarea').prop("readonly", false);
-    } else {
-      $('.tech-item-wrapper:not(.own-card) .tech-name-input:not(.not-editable)').prop("readonly", false);
-      $('.tech-item-wrapper textarea:not(.not-editable)').prop("readonly", false);
     }
     buildAutocompleteInputs();
   }
@@ -784,10 +783,15 @@ function cancelTechListEditionBtn() {
   $('.autocomplete-suggestions').remove();
   $('.responsaveis-wrapper').removeClass("editing");
   $('.responsaveis-wrapper').prepend(window.technicianResDataBackup);
+  checkIfMaxTechnician();
 }
 
 function insertTechnicianItemBtn(e) {
-  insertTechnicianCard('', '', 'new-invitation open-ticket other-technician');
+  if (window.myself && window.myself.role === "GERENTE") {
+    insertTechnicianCard('', '', 'new-invitation creating other-technician');
+  } else {
+    insertTechnicianCard('', '', 'new-invitation open-ticket other-technician');
+  }
 }
 
 function removeTechnicianItemBtn(e) {
@@ -803,7 +807,7 @@ function removeTechnicianItemBtn(e) {
   updateTechnicianSuggestionsAvailableList();
   // If someone is being removed, then it's possible to add at least one technician.
   // Activate the "add" button.
-  $('.responsaveis-wrapper').removeClass('restrained');
+  checkIfMaxTechnician();
 
   // If directly removing the invitation from the DB
   if (card.attr('class').match(/new-invitation open-ticket other-technician/g) === null) {
@@ -1103,13 +1107,7 @@ function insertTechnicianCard(technicianName, technicianActivity, classes) {
     $(e.currentTarget).autocomplete().options.lookup = availableTechnicianSuggestions;
   });
   buildAutocompleteInputs();
-
-  // If there isn't available technicians anymore, deactivate the "add" button
-  let qtyAddedCards = $('.tech-items-list').children().length;
-  let qtyTechnicians = technicians.length;
-  if (qtyAddedCards === qtyTechnicians) {
-    $('.responsaveis-wrapper').addClass('restrained');
-  }
+  checkIfMaxTechnician();
 }
 
 function buildAutocompleteInputs() {
@@ -1155,6 +1153,17 @@ function buildAutocompleteInputs() {
 
 function afterShownModal() {
   autosize.update($('textarea'))
+}
+
+function checkIfMaxTechnician() {
+  // If there isn't available technicians anymore, deactivate the "add" button
+  let qtyAddedCards = $('.tech-items-list').children().length;
+  let qtyTechnicians = technicians.length;
+  if (qtyAddedCards >= qtyTechnicians) {
+    $('.responsaveis-wrapper').addClass('restrained');
+  } else {
+    $('.responsaveis-wrapper').removeClass('restrained');
+  }
 }
 
 function updateTechnicianSuggestionsAvailableList() {
