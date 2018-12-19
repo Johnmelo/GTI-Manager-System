@@ -788,9 +788,15 @@ function cancelTechListEditionBtn() {
 
 function insertTechnicianItemBtn(e) {
   if (window.myself && window.myself.role === "GERENTE") {
-    insertTechnicianCard('', '', 'new-invitation creating other-technician');
-  } else {
     insertTechnicianCard('', '', 'new-invitation open-ticket other-technician');
+  } else {
+    let ticketID = $('#id_chamado_field').val();
+    isTicketInProcess = techniciansInProcessTickets.findIndex(t => t.id_chamado === ticketID) !== -1;
+    if (isTicketInProcess) {
+      insertTechnicianCard('', '', 'new-invitation open-ticket other-technician');
+    } else {
+      insertTechnicianCard('', '', 'new-invitation creating other-technician');
+    }
   }
 }
 
