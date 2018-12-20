@@ -264,7 +264,7 @@
     // When the support creates a ticket directly
     socket.on('support created ticket', ticket => {
       window.inQueueTickets.push(ticket);
-      insertInInQueueTicketsTable(ticket);
+      insertInInQueueTicketsTable(ticket, true);
     });
 
     // When a client makes a ticket request
@@ -312,7 +312,7 @@
       $('form[name=client_call_request]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
       // Insert into the "in queue" list and table
       window.inQueueTickets.push(ticket);
-      insertInInQueueTicketsTable(ticket);
+      insertInInQueueTicketsTable(ticket, true);
     });
 
     // When technicians acquire a ticket
@@ -487,7 +487,7 @@
       $('form[name=client_call_request]').find(`[data-request-id=${ticket.id_solicitacao}]`).remove();
 
       // Insert the ticket in the "In Queue" table
-      insertInInQueueTicketsTable(ticket);
+      insertInInQueueTicketsTable(ticket, true);
     }
     function ticketRequestRefused(request) {
       // Send the ticket request to connected support users and to the requester client
@@ -505,6 +505,10 @@
       // Replace the ticket responsible technicians data
       let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
       ticketToBeUpdated.responsaveis = ticket.responsaveis;
+      if (ticket.responsaveis === undefined) {
+        removeFromInProcessTicketsTable(ticket);
+        insertInInQueueTicketsTable(ticket, false);
+      }
     }
   </script>
 
@@ -593,7 +597,7 @@
 
       activeTicketRequestsTable.append(newRow);
     }
-    function insertInInQueueTicketsTable(ticket) {
+    function insertInInQueueTicketsTable(ticket, insertBelow) {
       let inQueueTicketsTable = $('#not-processing-requests');
 
       // Row structure
@@ -611,7 +615,11 @@
       $(newRow).on('click', inQueueTicketsTableRowClick);
 
       // Add the row to the table
-      inQueueTicketsTable.append(newRow);
+      if (insertBelow) {
+        inQueueTicketsTable.append(newRow);
+      } else {
+        inQueueTicketsTable.prepend(newRow);
+      }
     }
     function insertInInProcessTicketsTable(ticket) {
       let inProcessTickesTable = $('#processing-requests');
@@ -632,6 +640,9 @@
       // Add the row to the table
       inProcessTickesTable.append(newRow);
     }
+    function removeFromInProcessTicketsTable(ticket) {
+      $(`table#processing-requests td:contains(${ticket.id_chamado})`).closest('tr').remove();
+    }
   </script>
 
   <!-- Ready -->
@@ -648,7 +659,7 @@
     }
     const populateInQueueTicketsTable = () => {
       for (ticket of window.inQueueTickets) {
-        insertInInQueueTicketsTable(ticket);
+        insertInInQueueTicketsTable(ticket, true);
       }
     }
     const populateInProcessTicketsTable = () => {

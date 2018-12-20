@@ -541,9 +541,15 @@ function saveTechListBtn() {
       if (response.type && response.type === "ticket_responsible_technicians_updated") {
         if (response.ticket){
           ticketTechniciansUpdated(response.ticket);
-          fillTicketTechniciansList(response.ticket.responsaveis);
           $('.responsaveis-wrapper').removeClass("editing");
-          return true;
+          if (response.ticket['responsaveis'] === undefined) {
+            // If all technicians were removed
+            $('.request-modal').modal('hide');
+            return true;
+          } else {
+            fillTicketTechniciansList(response.ticket.responsaveis);
+            return true;
+          }
         }
       }
     }
@@ -788,7 +794,7 @@ function cancelTechListEditionBtn() {
   checkIfMaxTechnician();
 }
 
-function insertTechnicianItemBtn(e) {
+function insertTechnicianItemBtn() {
   if (window.myself && window.myself.role === "GERENTE") {
     insertTechnicianCard('', '', 'new-invitation open-ticket other-technician');
   } else {
