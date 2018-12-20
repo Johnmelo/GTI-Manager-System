@@ -119,7 +119,7 @@ function fillUpRequestModal(requestData, visibleFields) {
                 field.value = datetime;
         } else if (field.id === "responsaveis_field") {
             // When responsible technicians area
-            if (requestData.hasOwnProperty("responsaveis")) {
+            if (requestData["responsaveis"] !== undefined) {
               fillTicketTechniciansList(requestData.responsaveis);
             } else {
               if (window.myself) {
@@ -522,6 +522,8 @@ function saveTechListBtn() {
   let techniciansRespList = getTechniciansList();
   if (!techniciansRespList) {
     return false;
+  } else if (techniciansRespList.length === 0) {
+    techniciansRespList = null;
   }
 
   $("html").css("cursor", "wait");

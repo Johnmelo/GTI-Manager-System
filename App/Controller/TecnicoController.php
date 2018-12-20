@@ -297,7 +297,7 @@ class TecnicoController extends Action{
   public function update_ticket_responsible_technicians() {
     session_start();
     if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
-      if (isset($_POST['ticket_id']) && isset($_POST['technicians_list']) && count($_POST['technicians_list']) > 0) {
+      if (isset($_POST['ticket_id']) && isset($_POST['technicians_list'])) {
         // Check if each technician ID appears only one time
         $techniciansIDs = array_column($_POST['technicians_list'], 'technicianID');
         if (count($techniciansIDs) === count(array_flip($techniciansIDs))) {
@@ -313,7 +313,7 @@ class TecnicoController extends Action{
               // For each previously defined technician and his responsibility ...
               \array_walk($ticketData['responsaveis'], function($dbRespData)use($newRespTechniciansData, $Chamado, $ticketID) {
                 $sentDataIndex = \array_search($dbRespData['id_tecnico'], array_column($newRespTechniciansData, 'technicianID'));
-                if ($sentDataIndex !== false) {
+                if ($sentDataIndex && $sentDataIndex !== false) {
                   if ($dbRespData['status'] === "0" || $dbRespData['id_tecnico'] === $_SESSION['user_id'] || $_SESSION['user_role'] === "GERENTE") {
                     // ... Update the definitions if allowed
                     $responsibility = $newRespTechniciansData[$sentDataIndex]['technicianActivity'];
@@ -332,19 +332,29 @@ class TecnicoController extends Action{
                   }
                 }
               });
-              // Get the newly added technicians
-              $newTechRespData = \array_filter($newRespTechniciansData, function($respData)use($ticketData) {
-                // Get the responsibilities data that isn't in the database
-                return (\array_search($respData['technicianID'], \array_column($ticketData['responsaveis'], 'id_tecnico')) === false);
-              });
-              // Store them in the database
-              \array_walk($newTechRespData, function($newRespData)use($Chamado, $ticketID) {
-                $responsibility = $newRespData['technicianActivity'];
-                $responsibility = \preg_replace('/^\s*|\s*$/', '', $responsibility);
-                $responsibility = (\preg_match('/^\s*$/', $responsibility)) ? null : $responsibility;
-                $status = $newRespData['technicianID'] === $_SESSION['user_id'] ? 1 : 0;
-                $Chamado->setTicketTechnicians($ticketID, $newRespData['technicianID'], $responsibility, $status);
-              });
+
+              if ($newRespTechniciansData === '') {
+                // If all technicians were removed, mark the ticket back as "in queue"
+                $Chamado->updateColumnById("status", "AGUARDANDO", $ticketID);
+              } else {
+                // Get the newly added technicians
+                $newTechRespData = \array_filter($newRespTechniciansData, function($respData)use($ticketData) {
+                    // Get the responsibilities data that isn't in the database
+                    if ($ticketData['responsaveis'] === null) {
+                        return true;
+                    } else {
+                        return (\array_search($respData['technicianID'], \array_column($ticketData['responsaveis'], 'id_tecnico')) === false);
+                    }
+                });
+                // Store them in the database
+                \array_walk($newTechRespData, function($newRespData)use($Chamado, $ticketID) {
+                    $responsibility = $newRespData['technicianActivity'];
+                    $responsibility = \preg_replace('/^\s*|\s*$/', '', $responsibility);
+                    $responsibility = (\preg_match('/^\s*$/', $responsibility)) ? null : $responsibility;
+                    $status = $newRespData['technicianID'] === $_SESSION['user_id'] || $_SESSION['user_role'] === "GERENTE" ? 1 : 0;
+                    $Chamado->setTicketTechnicians($ticketID, $newRespData['technicianID'], $responsibility, $status);
+                });
+              }
 
               $db->commit();
               $ticket = $Chamado->getTicketById($ticketID);
