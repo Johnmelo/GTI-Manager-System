@@ -348,6 +348,14 @@
     // Insert into the "other technicians in process tickets" list and table
     window.otherTechniciansInProcessTickets.push(ticket);
     insertInInProcessTicketsTable(ticket);
+
+    // If current technician was invited, blink the ticket table row
+    if (ticket['responsaveis'] !== undefined && window.myself) {
+      let myInvitation = ticket.responsaveis.find(r => r.id_tecnico === window.myself.id);
+      if (myInvitation !== undefined) {
+        $('#processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating')
+      }
+    }
   });
 
   // When other technicians finalize a ticket
@@ -526,6 +534,10 @@
   }
   function inProcessTicketsTableRowClick(e) {
     if (e.target.nodeName == "TR" || e.target.nodeName == "TD") {
+      if(e.target.nodeName == "TR")
+        $(e.target).removeClass('notificating');
+      else
+        $(e.target).closest('tr').removeClass('notificating');
       let requestId = getRowId(e);
       if (requestId) {
         modalConfig = {
