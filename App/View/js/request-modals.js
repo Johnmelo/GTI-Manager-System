@@ -585,6 +585,31 @@ function saveTechListBtn() {
 
 function responsibilityDone(e) {
   let ticketID = $('#id_chamado_field').val()
+
+  // Prevent finalizing ticket while there is pending sharing invitations and the technician is the last one with status 1
+  let ticket;
+  if (window.myself && window.myself.role === "GERENTE") {
+    ticket = inProcessTickets.find(t => t.id_chamado === ticketID);
+  } else if (window.myself && window.myself.role === "TECNICO") {
+    ticket = techniciansInProcessTickets.find(t => t.id_chamado === ticketID);
+  }
+  let qtyInProcessActivities = 0;
+  let qtyPendingInvitations = 0;
+  if (ticket !== undefined) {
+    ticket.responsaveis.map(responsibilityData => {
+      if (responsibilityData.status === "1")
+        qtyInProcessActivities++;
+      else if (responsibilityData.status === "0")
+        qtyPendingInvitations++;
+    });
+    if (qtyInProcessActivities < 2 && qtyPendingInvitations > 0) {
+      alert("Antes de fechar o chamado, aguarde o(s) técnico(s) restante(s) ou discarta o(s) convite(s)");
+      return false;
+    }
+  } else {
+    return false;
+  }
+
   $("html").css("cursor", "wait");
   $("body").css("pointer-events", "none");
   $.post("/gtic/public/tecnico/responsibility_done", { 'ticketID': ticketID })
