@@ -417,7 +417,7 @@ function acceptInvitation(e) {
     if (response && response.event === "success") {
       if (response.ticket) {
         if (response.type && response.type === "ticket_sharing_invitation_accepted") {
-          // ticketSharingAccepted(response.ticket);
+          ticketSharingAccepted(response.ticket);
           $(e).closest('.tech-item-wrapper').removeClass().addClass('tech-item-wrapper viewing in-process own-card');
           $(e).closest('.tech-item-wrapper').find('textarea').prop('readOnly', true);
           return true;
@@ -468,7 +468,7 @@ function refusedInvitation(e) {
     if (response && response.event === "success") {
       if (response.ticket) {
         if (response.type && response.type === "ticket_sharing_invitation_declined") {
-          // ticketSharingAccepted(response.ticket);
+          ticketSharingRefused(response.ticket);
           $(e).closest('.tech-item-wrapper').removeClass().addClass('tech-item-wrapper viewing refused own-card');
           $(e).closest('.tech-item-wrapper').find('textarea').attr('readonly', 'readonly');
           return true;
@@ -596,7 +596,7 @@ function responsibilityDone(e) {
      if (response && response.event === "success") {
        if (response.ticket) {
          if (response.type && response.type === "responsibility_done") {
-           // ticketResponsibilityDone(response.ticket);
+           ticketResponsibilityDone(response.ticket);
            fillTicketTechniciansList(response.ticket.responsaveis);
            return true;
          }
@@ -688,7 +688,7 @@ function reacquireTicketBtn(e) {
      if (response && response.event === "success") {
        if (response.ticket) {
          if (response.type && response.type === "ticket_reaquired") {
-           // ticketResponsibilityDone(response.ticket);
+           ticketReaquired(response.ticket);
            fillTicketTechniciansList(response.ticket.responsaveis);
            return true;
          }
@@ -752,7 +752,7 @@ function saveResponsibilityChange(e) {
      if (response && response.event === "success") {
        if (response.ticket) {
          if (response.type && response.type === "responsibility_change_saved") {
-           // ticketResponsibilityDone(response.ticket);
+           ticketTechniciansUpdated(response.ticket);
            fillTicketTechniciansList(response.ticket.responsaveis);
            return true;
          }
@@ -847,7 +847,7 @@ function removeTechnicianItemBtn(e) {
         if (response && response.event === "success") {
           if (response.ticket) {
             if (response.type && response.type === "ticket_sharing_invitation_discarded") {
-              // ticketResponsibilityDone(response.ticket);
+              ticketTechniciansUpdated(response.ticket);
               fillTicketTechniciansList(response.ticket.responsaveis);
               return true;
             }
@@ -913,7 +913,7 @@ function inviteTechnicianBtn(e) {
      if (response && response.event === "success") {
        if (response.ticket) {
          if (response.type && response.type === "technician_invited") {
-           // ticketResponsibilityDone(response.ticket);
+           ticketSharingInvitationSent(response.ticket);
            fillTicketTechniciansList(response.ticket.responsaveis);
            return true;
          }

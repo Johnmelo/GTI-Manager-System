@@ -366,6 +366,123 @@
     );
     $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
   });
+
+  // When support updates a ticket technician list
+  socket.on('support updated ticket', ticket => {
+    // Blink the ticket table row
+    if (ticket['responsaveis'] !== undefined && window.myself) {
+      $('#processing-requests, #my-processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating');
+    }
+
+    // Replace the ticket responsible technicians data
+    let ticketToBeUpdated = techniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    if (ticketToBeUpdated === undefined) {
+      ticketToBeUpdated = otherTechniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    }
+    ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+    // Check if ticket can be closed
+    const cantBeClosed = ticket.responsaveis.some(responsibilityData => {
+      return responsibilityData.status === "0" || responsibilityData.status === "1"
+    });
+
+    // Add button to close the ticket if it's allowed
+    if (cantBeClosed === false) {
+      addCloseBtnInRow(ticket.id_chamado);
+    } else {
+      removeCloseBtnFromRow(ticket.id_chamado);
+    }
+  });
+
+  // When support updates a ticket technician list
+  socket.on('support refused ticket invitation', ticket => {
+    // If current technician is responsible for the ticket, blink the ticket table row
+    if (ticket['responsaveis'] !== undefined && window.myself) {
+      let myInvitation = ticket.responsaveis.find(r => r.id_tecnico === window.myself.id);
+      if (myInvitation !== undefined) {
+        $('#my-processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating');
+      }
+    }
+
+    // Replace the ticket responsible technicians data
+    let ticketToBeUpdated = techniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    if (ticketToBeUpdated === undefined) {
+      ticketToBeUpdated = otherTechniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    }
+    ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+    // Check if ticket can be closed
+    const cantBeClosed = ticket.responsaveis.some(responsibilityData => {
+      return responsibilityData.status === "0" || responsibilityData.status === "1"
+    });
+
+    // Add button to close the ticket if it's allowed
+    if (cantBeClosed === false) {
+      addCloseBtnInRow(ticket.id_chamado);
+    } else {
+      removeCloseBtnFromRow(ticket.id_chamado);
+    }
+  });
+
+  // When support concludes one of the activities
+  socket.on('support finished activity', ticket => {
+    // If current technician is responsible for the ticket, blink the ticket table row
+    if (ticket['responsaveis'] !== undefined && window.myself) {
+      let myInvitation = ticket.responsaveis.find(r => r.id_tecnico === window.myself.id);
+      if (myInvitation !== undefined) {
+        $('#my-processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating');
+      }
+    }
+
+    // Replace the ticket responsible technicians data
+    let ticketToBeUpdated = techniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    if (ticketToBeUpdated === undefined) {
+      ticketToBeUpdated = otherTechniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    }
+    ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+    // Check if ticket can be closed
+    const cantBeClosed = ticket.responsaveis.some(responsibilityData => {
+      return responsibilityData.status === "0" || responsibilityData.status === "1"
+    });
+
+    // Add button to close the ticket if it's allowed
+    if (cantBeClosed === false) {
+      addCloseBtnInRow(ticket.id_chamado);
+    } else {
+      removeCloseBtnFromRow(ticket.id_chamado);
+    }
+  });
+
+  // When support sends a ticket sharing invitation to another person from support
+  socket.on('support sent ticket sharing invitation', ticket => {
+    // If current technician is responsible for the ticket, blink the ticket table row
+    if (ticket['responsaveis'] !== undefined && window.myself) {
+      let myInvitation = ticket.responsaveis.find(r => r.id_tecnico === window.myself.id);
+      if (myInvitation !== undefined) {
+        $('#my-processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating');
+      }
+    }
+
+    // Replace the ticket responsible technicians data
+    let ticketToBeUpdated = techniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    if (ticketToBeUpdated === undefined) {
+      ticketToBeUpdated = otherTechniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    }
+    ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+    // Check if ticket can be closed
+    const cantBeClosed = ticket.responsaveis.some(responsibilityData => {
+      return responsibilityData.status === "0" || responsibilityData.status === "1"
+    });
+
+    // Add button to close the ticket if it's allowed
+    if (cantBeClosed === false) {
+      addCloseBtnInRow(ticket.id_chamado);
+    } else {
+      removeCloseBtnFromRow(ticket.id_chamado);
+    }
+  });
 </script>
 
 <!-- jQuery autocomplete -->
@@ -473,8 +590,7 @@
           data_abertura_field: true,
           prazo_field: true,
           descricao_field: true,
-          parecer_tecnico_field: false,
-          responsaveis_field: "editing"
+          parecer_tecnico_field: false
         },
         footer_config: [
           {
@@ -624,9 +740,117 @@
     techniciansTable.find(`[data-request-id=${ticket.id_chamado}]`).remove();
   }
   function ticketTechniciansUpdated(ticket) {
+    // Send the ticket to connected support users and to the requester client
+    socket.emit('from support', 'support updated ticket', ticket);
+
     // Replace the ticket responsible technicians data
     let ticketToBeUpdated = techniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
     ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+    // Check if ticket can be closed
+    const cantBeClosed = ticket.responsaveis.some(responsibilityData => {
+      return responsibilityData.status === "0" || responsibilityData.status === "1"
+    });
+
+    // Add button to close the ticket if it's allowed
+    if (cantBeClosed === false) {
+      addCloseBtnInRow(ticket.id_chamado);
+    } else {
+      removeCloseBtnFromRow(ticket.id_chamado);
+    }
+  }
+  function ticketSharingAccepted(ticket) {
+    // Send the ticket to connected support users and to the requester client
+    socket.emit('from support', 'support updated ticket', ticket);
+
+    // Remove the ticket from the "in queue" list and table
+    window.otherTechniciansInProcessTickets = window.otherTechniciansInProcessTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+    $('#processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+    // Insert into the "technicians in process tickets" list and table
+    window.techniciansInProcessTickets.push(ticket);
+    insertInTechniciansTicketsTable(ticket);
+  }
+  function ticketSharingRefused(ticket) {
+    // Send the ticket to connected support users
+    socket.emit('from support', 'support refused ticket invitation', ticket);
+
+    // Replace the ticket responsible technicians data
+    let ticketToBeUpdated = otherTechniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+    // Check if ticket can be closed
+    const cantBeClosed = ticket.responsaveis.some(responsibilityData => {
+      return responsibilityData.status === "0" || responsibilityData.status === "1"
+    });
+
+    // Add button to close the ticket if it's allowed
+    if (cantBeClosed === false) {
+      addCloseBtnInRow(ticket.id_chamado);
+    } else {
+      removeCloseBtnFromRow(ticket.id_chamado);
+    }
+  }
+  function ticketResponsibilityDone(ticket) {
+    // Send the ticket to connected support users
+    socket.emit('from support', 'support finished activity', ticket);
+
+    // Replace the ticket responsible technicians data
+    let ticketToBeUpdated = techniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+    // Check if ticket can be closed
+    const cantBeClosed = ticket.responsaveis.some(responsibilityData => {
+      return responsibilityData.status === "0" || responsibilityData.status === "1"
+    });
+
+    // Add button to close the ticket if it's allowed
+    if (cantBeClosed === false) {
+      addCloseBtnInRow(ticket.id_chamado);
+    } else {
+      removeCloseBtnFromRow(ticket.id_chamado);
+    }
+  }
+  function ticketReaquired(ticket) {
+    // Send the ticket to connected support users and to the requester client
+    socket.emit('from support', 'support updated ticket', ticket);
+
+    // Replace the ticket responsible technicians data
+    let ticketToBeUpdated = techniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+    // Check if ticket can be closed
+    const cantBeClosed = ticket.responsaveis.some(responsibilityData => {
+      return responsibilityData.status === "0" || responsibilityData.status === "1"
+    });
+
+    // Add button to close the ticket if it's allowed
+    if (cantBeClosed === false) {
+      addCloseBtnInRow(ticket.id_chamado);
+    } else {
+      removeCloseBtnFromRow(ticket.id_chamado);
+    }
+  }
+  function ticketSharingInvitationSent(ticket) {
+    // Send the ticket to connected support users and to the requester client
+    socket.emit('from support', 'support sent ticket sharing invitation', ticket);
+
+    // Replace the ticket responsible technicians data
+    let ticketToBeUpdated = techniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+    // Check if ticket can be closed
+    const cantBeClosed = ticket.responsaveis.some(responsibilityData => {
+      return responsibilityData.status === "0" || responsibilityData.status === "1"
+    });
+
+    // Add button to close the ticket if it's allowed
+    if (cantBeClosed === false) {
+      addCloseBtnInRow(ticket.id_chamado);
+    } else {
+      removeCloseBtnFromRow(ticket.id_chamado);
+    }
   }
 </script>
 
@@ -663,6 +887,26 @@
       }
     }
     return deadlineMsg;
+  };
+  const addCloseBtnInRow = (ticketID) => {
+    let ticketRow = $('#my-processing-requests').find(`tr[data-request-id=${ticketID}]`);
+    let cell = ticketRow.find('td').last();
+    if (cell.length !== 0) {
+      let btnCloseTicket = $(
+        `<button type="button"\
+        class="btn btn-primary"\
+        name="btnFinalizarChamado"\
+        value="${ticketID}">Fechar</button>`);
+      $(btnCloseTicket).on('click', closeTicketBtnClick);
+      cell.append(btnCloseTicket);
+    }
+  };
+  const removeCloseBtnFromRow = (ticketID) => {
+    let ticketRow = $('#my-processing-requests').find(`tr[data-request-id=${ticketID}]`);
+    let cell = ticketRow.find('td').last();
+    if (cell.length !== 0) {
+      cell.find('button[name="btnFinalizarChamado"]').remove();
+    }
   };
 
   function insertInActiveTicketRequestsTable(request) {
@@ -744,16 +988,27 @@
     newRow.append(cols);
 
     // Close ticket button
-    let btnCloseTicket = $(
-      `<button type="button"\
-      class="btn btn-primary"\
-      name="btnFinalizarChamado"\
-      value="${request.id_chamado}">Fechar</button>`);
-    newRow.append($("<td>").append(btnCloseTicket));
+    // Check if there's no pending invitations or in process activities
+    if (request.responsaveis !== undefined) {
+      const ticketCantBeClosed = request.responsaveis.some(responsibilityData => {
+        return responsibilityData.status === "0" || responsibilityData.status === "1"
+      });
+
+      if (ticketCantBeClosed === false) {
+        let btnCloseTicket = $(
+          `<button type="button"\
+          class="btn btn-primary"\
+          name="btnFinalizarChamado"\
+          value="${request.id_chamado}">Fechar</button>`);
+        newRow.append($("<td>").append(btnCloseTicket));
+        $(btnCloseTicket).on('click', closeTicketBtnClick);
+      } else {
+        newRow.append($("<td>"));
+      }
+    }
 
     // Events
     $(newRow).on('click', inProcessTicketsTableRowClick);
-    $(btnCloseTicket).on('click', closeTicketBtnClick);
 
     // Add the row to the table
     techniciansTicketsTable.append(newRow);

@@ -343,6 +343,54 @@
       );
       $('table[id=processing-requests]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
     });
+
+    // When support updates a ticket technician list
+    socket.on('support updated ticket', ticket => {
+      // Blink the ticket table row
+      if (ticket['responsaveis'] !== undefined && window.myself) {
+        $('#processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating');
+      }
+
+      // Replace the ticket responsible technicians data
+      let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+      ticketToBeUpdated.responsaveis = ticket.responsaveis;
+    });
+
+    // When support updates a ticket technician list
+    socket.on('support refused ticket invitation', ticket => {
+      // Blink the ticket table row
+      if (ticket['responsaveis'] !== undefined && window.myself) {
+        $('#processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating');
+      }
+
+      // Replace the ticket responsible technicians data
+      let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+      ticketToBeUpdated.responsaveis = ticket.responsaveis;
+    });
+
+    // When support concludes one of the activities
+    socket.on('support finished activity', ticket => {
+      // Blink the ticket table row
+      if (ticket['responsaveis'] !== undefined && window.myself) {
+        $('#processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating');
+      }
+
+      // Replace the ticket responsible technicians data
+      let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+      ticketToBeUpdated.responsaveis = ticket.responsaveis;
+    });
+
+    // When support sends a ticket sharing invitation to another person from support
+    socket.on('support sent ticket sharing invitation', ticket => {
+      // Blink the ticket table row
+      if (ticket['responsaveis'] !== undefined && window.myself) {
+        $('#processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating');
+      }
+
+      // Replace the ticket responsible technicians data
+      let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+      ticketToBeUpdated.responsaveis = ticket.responsaveis;
+    });
   </script>
   <!-- Custom Theme Scripts -->
   <script src="../App/View/js/custom.min.js"></script>
@@ -514,13 +562,50 @@
       $('form[name=client_call_request]').find(`[data-request-id=${request.id_solicitacao}]`).remove();
     }
     function ticketTechniciansUpdated(ticket) {
+      // Send the ticket to connected support users and to the requester client
+      socket.emit('from support', 'support updated ticket', ticket);
+      
       // Replace the ticket responsible technicians data
       let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
       ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+      // If all technicians were removed, the ticket goes back to the queue to be processed
       if (ticket.responsaveis === undefined) {
         removeFromInProcessTicketsTable(ticket);
         insertInInQueueTicketsTable(ticket, false);
       }
+    }
+    function ticketSharingAccepted(ticket) {
+      // Send the ticket to connected support users and to the requester client
+      socket.emit('from support', 'support updated ticket', ticket);
+
+      // Replace the ticket responsible technicians data
+      let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+      ticketToBeUpdated.responsaveis = ticket.responsaveis;
+    }
+    function ticketSharingRefused(ticket) {
+      // Send the ticket to connected support users
+      socket.emit('from support', 'support refused ticket invitation', ticket);
+
+      // Replace the ticket responsible technicians data
+      let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+      ticketToBeUpdated.responsaveis = ticket.responsaveis;
+    }
+    function ticketResponsibilityDone(ticket) {
+      // Send the ticket to connected support users
+      socket.emit('from support', 'support finished activity', ticket);
+
+      // Replace the ticket responsible technicians data
+      let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+      ticketToBeUpdated.responsaveis = ticket.responsaveis;
+    }
+    function ticketReaquired(ticket) {
+      // Send the ticket to connected support users and to the requester client
+      socket.emit('from support', 'support updated ticket', ticket);
+
+      // Replace the ticket responsible technicians data
+      let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+      ticketToBeUpdated.responsaveis = ticket.responsaveis;
     }
   </script>
 

@@ -267,6 +267,20 @@
     );
     $('form[name=chamados_atendimento_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
   });
+
+  // When support updates a ticket technician list
+  socket.on('support updated ticket', ticket => {
+    // Replace the ticket responsible technicians data
+    let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    ticketToBeUpdated.responsaveis = ticket.responsaveis;
+  });
+
+  // When support updates a ticket technician list
+  socket.on('support finished activity', ticket => {
+    // Replace the ticket responsible technicians data
+    let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    ticketToBeUpdated.responsaveis = ticket.responsaveis;
+  });
 </script>
 
 <!-- Custom Theme Scripts -->
