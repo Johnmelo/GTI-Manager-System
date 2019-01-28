@@ -418,6 +418,7 @@ class GerenteController extends Action{
             $data_finalizado = $date->format("Y-m-d H:i:s");
             $Chamado = Container::getClass("Chamado");
             $db->beginTransaction();
+              $Chamado->updateColumnById("id_tecnico_fechamento", $_SESSION['user_id'], $ticketID);
             $Chamado->updateColumnById("status", $status, $ticketID);
             $Chamado->updateColumnById("parecer_tecnico", $parecer, $ticketID);
             $Chamado->updateColumnById("data_finalizado", $data_finalizado, $ticketID);

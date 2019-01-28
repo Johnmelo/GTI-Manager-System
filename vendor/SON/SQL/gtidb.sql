@@ -30,6 +30,7 @@ CREATE TABLE `chamados` (
   `prazo` datetime DEFAULT NULL,
   `id_tecnico_abertura` int(10) NOT NULL,
   `id_cliente_solicitante` int(10) NOT NULL,
+  `id_tecnico_fechamento` int(10) DEFAULT NULL,
   `descricao` text COLLATE utf8mb4_unicode_ci,
   `parecer_tecnico` text COLLATE utf8mb4_unicode_ci,
   `status` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'AGUARDANDO'
@@ -209,6 +210,7 @@ ALTER TABLE `chamados`
   ADD KEY `id_servico` (`id_servico`),
   ADD KEY `id_tecnico_abertura` (`id_tecnico_abertura`),
   ADD KEY `id_cliente_solicitante` (`id_cliente_solicitante`);
+  ADD KEY `id_tecnico_fechamento` (`id_tecnico_fechamento`);
 
 --
 -- Indexes for table `chamado_tecnico_xref`
