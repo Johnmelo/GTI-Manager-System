@@ -360,11 +360,14 @@
 
   // When other technicians finalize a ticket
   socket.on('technician finalized ticket', ticket => {
-    // Remove from "other technicians in process tickets" list and table
+    // Remove from "in process tickets" list and table
     window.otherTechniciansInProcessTickets = window.otherTechniciansInProcessTickets.filter(
       r => r.id_chamado !== ticket.id_chamado
     );
-    $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+    window.techniciansInProcessTickets = window.techniciansInProcessTickets.filter(
+      r => r.id_chamado !== ticket.id_chamado
+    );
+    $('#processing-requests, #my-processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).remove();
   });
 
   // When support updates a ticket technician list
