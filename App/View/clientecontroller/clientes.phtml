@@ -230,6 +230,11 @@
 
   // When the support creates a ticket directly
   socket.on('support created ticket', ticket => {
+    // Remove the technicians who are still to respond to an invitation or refused it
+    ticket.responsaveis = ticket.responsaveis.filter(t => {
+      return t.status === "1" || t.status === "2"
+    });
+    
     // Insert the ticket into the "in queue" list and table
     window.inQueueTickets.push(ticket);
     insertInOpenedRequestsTable(ticket);
@@ -237,6 +242,11 @@
 
   // When the support accepts a ticket request
   socket.on('support accepted ticket request', ticket => {
+    // Remove the technicians who are still to respond to an invitation or refused it
+    ticket.responsaveis = ticket.responsaveis.filter(t => {
+      return t.status === "1" || t.status === "2"
+    });
+
     // Insert the ticket into the "in queue" list and table
     window.inQueueTickets.push(ticket);
     insertInOpenedRequestsTable(ticket);
@@ -255,6 +265,10 @@
     $('form[name=chamados_abertos_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
 
     // Insert the ticket with new data in the "in process" list and table
+    // First, remove the technicians who are still to respond to an invitation or refused it
+    ticket.responsaveis = ticket.responsaveis.filter(t => {
+      return t.status === "1" || t.status === "2"
+    });
     window.inProcessTickets.push(ticket);
     insertInProcessingRequestsTable(ticket);
   });
@@ -272,14 +286,18 @@
   socket.on('support updated ticket', ticket => {
     // Replace the ticket responsible technicians data
     let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
-    ticketToBeUpdated.responsaveis = ticket.responsaveis;
+    ticketToBeUpdated.responsaveis = ticket.responsaveis.filter(t => {
+      return t.status === "1" || t.status === "2"
+    });
   });
 
   // When support updates a ticket technician list
   socket.on('support finished activity', ticket => {
     // Replace the ticket responsible technicians data
     let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
-    ticketToBeUpdated.responsaveis = ticket.responsaveis;
+    ticketToBeUpdated.responsaveis = ticket.responsaveis.filter(t => {
+      return t.status === "1" || t.status === "2"
+    });
   });
 </script>
 
