@@ -796,7 +796,7 @@ function cancelTechListEditionBtn() {
 
 function insertTechnicianItemBtn() {
   if (window.myself && window.myself.role === "GERENTE") {
-    insertTechnicianCard('', '', 'new-invitation open-ticket other-technician');
+    insertTechnicianCard('', '', 'new-invitation creating other-technician');
   } else {
     let ticketID = $('#id_chamado_field').val();
     isTicketInProcess = techniciansInProcessTickets.findIndex(t => t.id_chamado === ticketID) !== -1;
@@ -824,7 +824,7 @@ function removeTechnicianItemBtn(e) {
   checkIfMaxTechnician();
 
   // If directly removing the invitation from the DB
-  if (card.attr('class').match(/new-invitation open-ticket other-technician/g) === null) {
+  if (card.attr('class').match(/new-invitation open-ticket other-technician/g) === null && myself.role !== "GERENTE") {
     // Sharing invitation data
     let ticketID = $('#id_chamado_field').val()
     let technician = card.find('.tech-name-input').val();
