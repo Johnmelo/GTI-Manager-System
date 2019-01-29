@@ -313,7 +313,7 @@ class TecnicoController extends Action{
               // For each previously defined technician and his responsibility ...
               \array_walk($ticketData['responsaveis'], function($dbRespData)use($newRespTechniciansData, $Chamado, $ticketID) {
                 $sentDataIndex = \array_search($dbRespData['id_tecnico'], array_column($newRespTechniciansData, 'technicianID'));
-                if ($sentDataIndex && $sentDataIndex !== false) {
+                if (isset($sentDataIndex) && $sentDataIndex !== false) {
                   if ($dbRespData['status'] === "0" || $dbRespData['id_tecnico'] === $_SESSION['user_id'] || $_SESSION['user_role'] === "GERENTE") {
                     // ... Update the definitions if allowed
                     $responsibility = $newRespTechniciansData[$sentDataIndex]['technicianActivity'];
