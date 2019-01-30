@@ -230,11 +230,6 @@
 
   // When the support creates a ticket directly
   socket.on('support created ticket', ticket => {
-    // Remove the technicians who are still to respond to an invitation or refused it
-    ticket.responsaveis = ticket.responsaveis.filter(t => {
-      return t.status === "1" || t.status === "2"
-    });
-    
     // Insert the ticket into the "in queue" list and table
     window.inQueueTickets.push(ticket);
     insertInOpenedRequestsTable(ticket);
@@ -242,11 +237,6 @@
 
   // When the support accepts a ticket request
   socket.on('support accepted ticket request', ticket => {
-    // Remove the technicians who are still to respond to an invitation or refused it
-    ticket.responsaveis = ticket.responsaveis.filter(t => {
-      return t.status === "1" || t.status === "2"
-    });
-
     // Insert the ticket into the "in queue" list and table
     window.inQueueTickets.push(ticket);
     insertInOpenedRequestsTable(ticket);
