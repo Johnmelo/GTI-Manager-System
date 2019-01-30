@@ -900,10 +900,10 @@
   const addCloseBtnInRow = (ticketID) => {
     let ticketRow = $('#my-processing-requests').find(`tr[data-request-id=${ticketID}]`);
     let cell = ticketRow.find('td').last();
-    if (cell.length !== 0) {
+    if (cell.length !== 0 && cell.find('button[name=btnFinalizarChamado]').length === 0) {
       let btnCloseTicket = $(
         `<button type="button"\
-        class="btn btn-primary"\
+        class="btn btn-primary close-ticket-btn"\
         name="btnFinalizarChamado"\
         value="${ticketID}">Fechar</button>`);
       $(btnCloseTicket).on('click', closeTicketBtnClick);
