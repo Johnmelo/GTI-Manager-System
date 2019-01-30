@@ -824,7 +824,7 @@ function removeTechnicianItemBtn(e) {
   checkIfMaxTechnician();
 
   // If directly removing the invitation from the DB
-  if (card.attr('class').match(/new-invitation open-ticket other-technician/g) === null && myself.role !== "GERENTE") {
+  if (card.attr('class').match(/pending-acceptance viewing other-technician/g) !== null && myself.role !== "GERENTE") {
     // Sharing invitation data
     let ticketID = $('#id_chamado_field').val()
     let technician = card.find('.tech-name-input').val();
