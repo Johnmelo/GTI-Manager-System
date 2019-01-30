@@ -376,6 +376,12 @@
     if (ticket['responsaveis'] !== undefined && window.myself) {
       $('#processing-requests, #my-processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating');
     }
+    if (ticket['responsaveis'] !== undefined && window.myself) {
+      let myInvitation = ticket.responsaveis.find(r => (r.id_tecnico === window.myself.id));
+      if (myInvitation !== undefined && (myInvitation.status === '1' || myInvitation.status === '2')) {
+        $('#processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating')
+      }
+    }
 
     // Replace the ticket responsible technicians data
     let ticketToBeUpdated = techniciansInProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
@@ -402,7 +408,7 @@
     // If current technician is responsible for the ticket, blink the ticket table row
     if (ticket['responsaveis'] !== undefined && window.myself) {
       let myInvitation = ticket.responsaveis.find(r => r.id_tecnico === window.myself.id);
-      if (myInvitation !== undefined) {
+      if (myInvitation !== undefined && (myInvitation.status === '1' || myInvitation.status === '2')) {
         $('#my-processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating');
       }
     }
@@ -432,7 +438,7 @@
     // If current technician is responsible for the ticket, blink the ticket table row
     if (ticket['responsaveis'] !== undefined && window.myself) {
       let myInvitation = ticket.responsaveis.find(r => r.id_tecnico === window.myself.id);
-      if (myInvitation !== undefined) {
+      if (myInvitation !== undefined && (myInvitation.status === '1' || myInvitation.status === '2')) {
         $('#my-processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating');
       }
     }
@@ -462,7 +468,7 @@
     // If current technician is responsible for the ticket, blink the ticket table row
     if (ticket['responsaveis'] !== undefined && window.myself) {
       let myInvitation = ticket.responsaveis.find(r => r.id_tecnico === window.myself.id);
-      if (myInvitation !== undefined) {
+      if (myInvitation !== undefined && myInvitation.status === '0') {
         $('#my-processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating');
       }
     }
