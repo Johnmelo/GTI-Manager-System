@@ -165,7 +165,7 @@ class Chamado extends Table{
           "FROM `chamado_tecnico_xref` AS `ct_xref` ".
           "LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `ct_xref`.`id_tecnico` ".
           "LEFT JOIN `chamados` AS `c` ON `c`.`id` = `ct_xref`.`id_chamado` ".
-          "WHERE `c`.`id_cliente_solicitante` = :userId AND `c`.`status` <> 'AGUARDANDO' AND `c`.`status` <> 'ATENDIMENTO' AND `ct_xref`.`status` = 1"
+          "WHERE `c`.`id_cliente_solicitante` = :userId AND `c`.`status` <> 'AGUARDANDO' AND `c`.`status` <> 'ATENDIMENTO' AND `ct_xref`.`status` <> -1 AND `ct_xref`.`status` <> 0"
       );
       $stmt->bindParam(":userId", $userId);
       $stmt->execute();
@@ -187,7 +187,7 @@ class Chamado extends Table{
           ." LEFT JOIN `usuarios` AS `u2` ON `u2`.`id` = `c`.`id_tecnico_abertura`"
           ." LEFT JOIN `locais` AS `l` ON `l`.`id` = `sc`.`id_local`"
           ." LEFT JOIN `chamado_tecnico_xref` AS `ct_xref` ON `ct_xref`.`id_chamado` = `c`.`id`"
-          ." WHERE `ct_xref`.`id_tecnico` = :technicianId AND `c`.`status` = 'FINALIZADO'"
+          ." WHERE `ct_xref`.`id_tecnico` = :technicianId AND `ct_xref`.`status` <> -1 AND `ct_xref`.`status` <> 0 AND `c`.`status` = 'FINALIZADO'"
           ." ORDER BY `c`.`data_abertura` DESC");
       $stmt->bindParam(":technicianId", $technicianId);
       $stmt->execute();
@@ -201,8 +201,8 @@ class Chamado extends Table{
               "SELECT `c`.`id` AS `id_chamado` ".
               "FROM `chamados` AS `c` ".
               "LEFT JOIN `chamado_tecnico_xref` AS `ct_xref` ON `ct_xref`.`id_chamado` = `c`.`id` ".
-              "WHERE `ct_xref`.`id_tecnico` = 72 AND `c`.`status` = 'FINALIZADO'".
-          ")"
+              "WHERE `ct_xref`.`id_tecnico` = {$technicianId} AND `ct_xref`.`status` <> -1 AND `ct_xref`.`status` <> 0 AND `c`.`status` = 'FINALIZADO'".
+          ") AND `chamado_tecnico_xref`.`status` <> -1 AND `chamado_tecnico_xref`.`status` <> 0"
       );
       $stmt->execute();
       $tickets_technicians_xref = $stmt->fetchAll(\PDO::FETCH_ASSOC);
