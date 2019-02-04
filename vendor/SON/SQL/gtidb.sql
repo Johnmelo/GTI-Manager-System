@@ -28,12 +28,25 @@ CREATE TABLE `chamados` (
   `data_finalizado` datetime DEFAULT NULL,
   `data_assumido` datetime DEFAULT NULL,
   `prazo` datetime DEFAULT NULL,
-  `id_tecnico_responsavel` int(10) DEFAULT NULL,
   `id_tecnico_abertura` int(10) NOT NULL,
   `id_cliente_solicitante` int(10) NOT NULL,
+  `id_tecnico_fechamento` int(10) DEFAULT NULL,
   `descricao` text COLLATE utf8mb4_unicode_ci,
   `parecer_tecnico` text COLLATE utf8mb4_unicode_ci,
   `status` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'AGUARDANDO'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `chamado_tecnico_xref`
+--
+
+CREATE TABLE `chamado_tecnico_xref` (
+  `id` int(10) NOT NULL,
+  `id_chamado` int(10) NOT NULL,
+  `id_tecnico` int(10) NOT NULL,
+  `atividade` text COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -43,7 +56,7 @@ CREATE TABLE `chamados` (
 --
 
 CREATE TABLE `locais` (
-  `id` int(11) NOT NULL,
+  `id` int(10) NOT NULL,
   `nome` varchar(256) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tipo` varchar(128) COLLATE utf8mb4_unicode_ci NOT NULL,
   `ativo` bit(1) NOT NULL
@@ -115,7 +128,7 @@ CREATE TABLE `solicitacao_cadastro` (
   `data_solicitacao` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `status` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'AGUARDANDO',
   `data_recusado` datetime DEFAULT NULL,
-  `id_recusante` int(11) DEFAULT NULL,
+  `id_recusante` int(10) DEFAULT NULL,
   `motivo_recusa` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -134,7 +147,7 @@ CREATE TABLE `solicitacao_chamado` (
   `descricao` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'AGUARDANDO',
   `data_recusado` datetime DEFAULT NULL,
-  `id_recusante` int(11) DEFAULT NULL,
+  `id_recusante` int(10) DEFAULT NULL,
   `motivo_recusa` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -196,8 +209,14 @@ ALTER TABLE `chamados`
   ADD PRIMARY KEY (`id`),
   ADD KEY `id_servico` (`id_servico`),
   ADD KEY `id_tecnico_abertura` (`id_tecnico_abertura`),
-  ADD KEY `id_tecnico_responsavel` (`id_tecnico_responsavel`),
   ADD KEY `id_cliente_solicitante` (`id_cliente_solicitante`);
+  ADD KEY `id_tecnico_fechamento` (`id_tecnico_fechamento`);
+
+--
+-- Indexes for table `chamado_tecnico_xref`
+--
+ALTER TABLE `chamado_tecnico_xref`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `locais`
@@ -253,6 +272,12 @@ ALTER TABLE `usuarios_roles`
 -- AUTO_INCREMENT for table `chamados`
 --
 ALTER TABLE `chamados`
+  MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `chamado_tecnico_xref`
+--
+ALTER TABLE `chamado_tecnico_xref`
   MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
 
 --

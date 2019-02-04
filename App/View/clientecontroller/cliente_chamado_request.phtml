@@ -259,6 +259,9 @@
 
     // Remove the ticket request from the table
     $('form[name=solicitacoes_chamado]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticketRequest);
   });
 
   // When the support refuses a ticket request
@@ -270,6 +273,9 @@
 
     // Remove the ticket request from the table
     $('form[name=solicitacoes_chamado]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+    
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticketRequest);
   });
 </script>
 

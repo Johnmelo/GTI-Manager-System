@@ -9,6 +9,7 @@
 <link href="../../App/View/css/base-style.css" rel="stylesheet">
 <link href="../../App/View/css/custom-style-override.css" rel="stylesheet">
 <link href="../../App/View/css/custom-modal.css" rel="stylesheet">
+<link href="../../App/View/css/request-modal.css" rel="stylesheet">
 </head>
 
 <body class="nav-md">
@@ -164,8 +165,12 @@
   <script src="../../App/View/js/jquery.min.js"></script>
   <!-- Bootstrap -->
   <script src="../../App/View/js/bootstrap.min.js"></script>
+  <!-- Autosize -->
+  <script src="../../App/View/js/autosize.min.js"></script>
   <!-- moment.js -->
   <script src="../../App/View/js/moment.min.js"></script>
+  <!-- jQuery autocomplete -->
+  <script src="../../App/View/js/jquery.autocomplete.min.js"></script>
 
   <!-- Custom Theme Scripts -->
   <script src="../../App/View/js/custom.min.js"></script>
@@ -192,7 +197,7 @@
                 descricao_field: true,
                 prazo_field: true,
                 parecer_tecnico_field: true,
-                tecnico_responsavel_field: true
+                responsaveis_field: true
             }
           };
           let requestData = closedTickets.find(r => r.id_chamado === requestId);
@@ -238,6 +243,14 @@
     };
 
     $(document).ready(function() {
+      // User info
+      window.myself = {
+        "id": <?php echo json_encode($_SESSION['user_id']) ?>,
+        "name": <?php echo json_encode($_SESSION['user_name']) ?>,
+        "username": <?php echo json_encode($_SESSION['user_login']) ?>,
+        "email": <?php echo json_encode($_SESSION['email']) ?>
+      };
+
       // Load the requests for the page
       window.closedTickets = <?php echo json_encode($this->view->closedTickets) ?>;
 

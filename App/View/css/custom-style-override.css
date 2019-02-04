@@ -73,6 +73,14 @@ table.clickable-rows > tbody > tr {
     cursor: pointer;
 }
 
+table > tbody > tr.notificating {
+    color: #FFF;
+    background-color: #337ab7;
+    animation-name: table-row-notification;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
 .modal-header > button > span {
     font-size: 36px;
 }
@@ -180,4 +188,14 @@ table.clickable-rows > tbody > tr {
     width: 100%!important;
     margin-bottom: 5px;
     margin-right: 0;
+}
+
+
+
+
+/* ANIMATIONS */
+
+@keyframes table-row-notification {
+    0%   {background-color: #337ab7;}
+    100% {background-color: #2da7f9;}
 }

@@ -18,21 +18,24 @@ class TecnicoController extends Action{
 
         $Chamado = Container::getClass("Chamado");
         $inQueueTickets = $Chamado->getInQueueTickets();
-        $inProcessTickets = $Chamado->getInProcessTickets();
+        $inProcessTickets = $Chamado->getInProcessTickets(true);
 
         $techniciansInProcessTickets = [];
         $otherTechniciansInProcessTickets = [];
 
-        $techniciansInProcessTickets = \array_filter($inProcessTickets, function($ticket) {
-          $inProcess = ($ticket["status"] === "ATENDIMENTO");
-          $techniciansTicket = ($ticket["id_tecnico_responsavel"] === $_SESSION["user_id"]);
-            return ($inProcess && $techniciansTicket);
-        });
-
-        $otherTechniciansInProcessTickets = \array_filter($inProcessTickets, function($ticket) {
-          $inProcess = ($ticket["status"] === "ATENDIMENTO");
-          $otherTechniciansTicket = ($ticket["id_tecnico_responsavel"] !== $_SESSION["user_id"]);
-            return ($inProcess && $otherTechniciansTicket);
+        \array_walk($inProcessTickets, function($ticket)use(&$techniciansInProcessTickets, &$otherTechniciansInProcessTickets) {
+          $ticketTechniciansIDs = array_column($ticket['responsaveis'], 'id_tecnico');
+          $technicianDataIndex = array_search($_SESSION['user_id'], $ticketTechniciansIDs);
+          if ($technicianDataIndex !== false) {
+            $status = $ticket['responsaveis'][$technicianDataIndex]['status'];
+            if ($status === "1" || $status === "2") {
+              \array_push($techniciansInProcessTickets, $ticket);
+            } else {
+              \array_push($otherTechniciansInProcessTickets, $ticket);
+            }
+          } else {
+            \array_push($otherTechniciansInProcessTickets, $ticket);
+          }
         });
 
         $this->view->token = \json_encode($token->data);
@@ -50,7 +53,7 @@ class TecnicoController extends Action{
     session_start();
     if($_SESSION['user_role'] === "TECNICO"){
       // Check if the necessary data was sent
-      if(isset($_POST['ticket_id']) && isset($_POST['deadline_value'])){
+      if(isset($_POST['ticket_id']) && isset($_POST['deadline_value']) && isset($_POST['technicians_list']) && count($_POST['technicians_list']) > 0){
         // Check if the data was sent in the expected format
         if(preg_match("/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/", $_POST['deadline_value']) === 1) {
           try {
@@ -65,10 +68,19 @@ class TecnicoController extends Action{
               $data_assumido = $date->format("Y-m-d H:i:s");
               $Chamado = Container::getClass("Chamado");
               $db->beginTransaction();
-              $Chamado->updateColumnById("id_tecnico_responsavel", $_SESSION['user_id'], $ticketID);
               $Chamado->updateColumnById("data_assumido", $data_assumido, $ticketID);
               $Chamado->updateColumnById("status", "ATENDIMENTO", $ticketID);
               $Chamado->updateColumnById("prazo", $prazo, $ticketID);
+              // Associate the ticket with technicians
+              $Chamado = Container::getClass("Chamado");
+              \array_walk($_POST['technicians_list'], function($techData)use($Chamado, $ticketID) {
+                $activity = \preg_match('/^\s*$/', $techData['technicianActivity']) ? null : $techData['technicianActivity'];
+                if ($techData['technicianID'] === $_SESSION['user_id']) {
+                  $Chamado->setTicketTechnicians($ticketID, $_SESSION['user_id'], $activity, 1);
+                } else {
+                  $Chamado->setTicketTechnicians($ticketID, $techData['technicianID'], $activity);
+                }
+              });
               $db->commit();
               $ticket = $Chamado->getTicketById($ticketID);
               if ($ticket) {
@@ -281,5 +293,274 @@ class TecnicoController extends Action{
         $this->forbidenAccess();
       }
     }
+
+  public function update_ticket_responsible_technicians() {
+    session_start();
+    if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
+      if (isset($_POST['ticket_id']) && isset($_POST['technicians_list'])) {
+        // Check if each technician ID appears only one time
+        $techniciansIDs = array_column($_POST['technicians_list'], 'technicianID');
+        if (count($techniciansIDs) === count(array_flip($techniciansIDs))) {
+          try {
+            $db = DBConnector::getInstance();
+            try {
+              $ticketID = $_POST['ticket_id'];
+              $newRespTechniciansData = $_POST['technicians_list'];
+              $Chamado = Container::getClass("Chamado");
+              $db->beginTransaction();
+              // Get previous data
+              $ticketData = $Chamado->getTicketById($ticketID);
+              // For each previously defined technician and his responsibility ...
+              \array_walk($ticketData['responsaveis'], function($dbRespData)use($newRespTechniciansData, $Chamado, $ticketID) {
+                $sentDataIndex = \array_search($dbRespData['id_tecnico'], array_column($newRespTechniciansData, 'technicianID'));
+                if (isset($sentDataIndex) && $sentDataIndex !== false) {
+                  if ($dbRespData['status'] === "0" || $dbRespData['id_tecnico'] === $_SESSION['user_id'] || $_SESSION['user_role'] === "GERENTE") {
+                    // ... Update the definitions if allowed
+                    $responsibility = $newRespTechniciansData[$sentDataIndex]['technicianActivity'];
+                    $responsibility = \preg_replace('/^\s*|\s*$/', '', $responsibility);
+                    $responsibility = (\preg_match('/^\s*$/', $responsibility)) ? null : $responsibility;
+                    if ($responsibility !== $dbRespData['atividade']  || $dbRespData['status'] == "0") {
+                      // Update the responsibility in the DB if it was changed
+                      $status = $dbRespData['id_tecnico'] === $_SESSION['user_id'] ? 1 : $dbRespData['status'];
+                      $Chamado->setTicketTechnicians($ticketID, $dbRespData['id_tecnico'], $responsibility, $status);
+                    }
+                  }
+                } else {
+                  if ($dbRespData['status'] === "0" || $dbRespData['id_tecnico'] === $_SESSION['user_id'] || $_SESSION['user_role'] === "GERENTE") {
+                    // ... Remove the definitions which isn't present in the submitted list
+                    $Chamado->deleteTicketTechnicianResponsibility($ticketID, $dbRespData['id_tecnico']);
+                  }
+                }
+              });
+
+              if ($newRespTechniciansData === '') {
+                // If all technicians were removed, mark the ticket back as "in queue"
+                $Chamado->updateColumnById("status", "AGUARDANDO", $ticketID);
+              } else {
+                // Get the newly added technicians
+                $newTechRespData = \array_filter($newRespTechniciansData, function($respData)use($ticketData) {
+                    // Get the responsibilities data that isn't in the database
+                    if ($ticketData['responsaveis'] === null) {
+                        return true;
+                    } else {
+                        return (\array_search($respData['technicianID'], \array_column($ticketData['responsaveis'], 'id_tecnico')) === false);
+                    }
+                });
+                // Store them in the database
+                \array_walk($newTechRespData, function($newRespData)use($Chamado, $ticketID) {
+                    $responsibility = $newRespData['technicianActivity'];
+                    $responsibility = \preg_replace('/^\s*|\s*$/', '', $responsibility);
+                    $responsibility = (\preg_match('/^\s*$/', $responsibility)) ? null : $responsibility;
+                    $status = $newRespData['technicianID'] === $_SESSION['user_id'] || $_SESSION['user_role'] === "GERENTE" ? 1 : 0;
+                    $Chamado->setTicketTechnicians($ticketID, $newRespData['technicianID'], $responsibility, $status);
+                });
+              }
+
+              $db->commit();
+              $ticket = $Chamado->getTicketById($ticketID);
+              if ($ticket) {
+                header('Content-Type: application/json; charset=UTF-8');
+                echo json_encode(array('event' => 'success', 'type' => 'ticket_responsible_technicians_updated', 'ticket' => $ticket));
+              }
+            } catch (\Exception $e) {
+              $db->rollback();
+              header('Content-Type: application/json; charset=UTF-8');
+              header('HTTP/1.1 500');
+              die(json_encode(array('event' => 'error', 'type' => 'db_op_failed')));
+            }
+          } catch (\Exception $e) {
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 400');
+            die(json_encode(array('event' => 'error', 'type' => 'db_conn_failed')));
+          }
+        } else {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'not_unique_tech_ids')));
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
+      }
+    } else {
+      $this->forbidenAccess();
+    }
+  }
+
+  public function respond_ticket_sharing_invitation() {
+    session_start();
+    if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
+      if (isset($_POST['ticketID']) && isset($_POST['response']) && isset($_POST['responsibility'])) {
+        try {
+          $db = DBConnector::getInstance();
+          try {
+            $Chamado = Container::getClass("Chamado");
+            $status = ($_POST['response'] === "accepted") ? 1 : -1;
+            $responseType = 'ticket_sharing_invitation_';
+            $responseType .= ($status === 1) ? 'accepted' : 'declined';
+            $db->beginTransaction();
+            $Chamado->setTicketTechnicians($_POST['ticketID'], $_SESSION['user_id'], $_POST['responsibility'], $status);
+            $db->commit();
+            $ticket = $Chamado->getTicketById($_POST['ticketID']);
+            if ($ticket) {
+              header('Content-Type: application/json; charset=UTF-8');
+              echo json_encode(array('event' => 'success', 'type' => $responseType, 'ticket' => $ticket));
+            }
+          } catch (\Exception $e) {
+            $db->rollback();
+            header('Content-Type: application/json; charset=UTF-8');
+            header('HTTP/1.1 500');
+            die(json_encode(array('event' => 'error', 'type' => 'db_op_failed')));
+          }
+        } catch (\Exception $e) {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'db_conn_failed')));
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
+      }
+    } else {
+      $this->forbidenAccess();
+    }
+  }
+
+  public function responsibility_done() {
+    session_start();
+    if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
+      if (isset($_POST['ticketID'])) {
+        try {
+          $Chamado = Container::getClass("Chamado");
+          $Chamado->setResponsibilityDone($_POST['ticketID'], $_SESSION['user_id']);
+          $ticket = $Chamado->getTicketById($_POST['ticketID']);
+          if ($ticket) {
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(array('event' => 'success', 'type' => 'responsibility_done', 'ticket' => $ticket));
+          }
+        } catch (\Exception $e) {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'db_conn_failed')));
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
+      }
+    } else {
+      $this->forbidenAccess();
+    }
+  }
+
+  public function save_responsibility_change() {
+    session_start();
+    if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
+      if (isset($_POST['ticketID']) && isset($_POST['technicianID']) && isset($_POST['responsibility'])) {
+        try {
+          $Chamado = Container::getClass("Chamado");
+          $Chamado->saveResponsibilityChange($_POST['ticketID'], $_POST['technicianID'], $_POST['responsibility']);
+          $ticket = $Chamado->getTicketById($_POST['ticketID']);
+          if ($ticket) {
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(array('event' => 'success', 'type' => 'responsibility_change_saved', 'ticket' => $ticket));
+          }
+        } catch (\Exception $e) {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'db_conn_failed')));
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
+      }
+    } else {
+      $this->forbidenAccess();
+    }
+  }
+
+  public function reaquire_ticket() {
+    session_start();
+    if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
+      if (isset($_POST['ticketID']) && isset($_POST['responsibility'])) {
+        try {
+          $Chamado = Container::getClass("Chamado");
+          $Chamado->setTicketTechnicians($_POST['ticketID'], $_SESSION['user_id'], $_POST['responsibility'], '1');
+          $ticket = $Chamado->getTicketById($_POST['ticketID']);
+          if ($ticket) {
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(array('event' => 'success', 'type' => 'ticket_reaquired', 'ticket' => $ticket));
+          }
+        } catch (\Exception $e) {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'db_conn_failed')));
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
+      }
+    } else {
+      $this->forbidenAccess();
+    }
+  }
+
+  public function discard_invite() {
+    session_start();
+    if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
+      if (isset($_POST['ticketID']) && isset($_POST['technicianID'])) {
+        try {
+          $Chamado = Container::getClass("Chamado");
+          $Chamado->deleteTicketTechnicianResponsibility($_POST['ticketID'], $_POST['technicianID']);
+          $ticket = $Chamado->getTicketById($_POST['ticketID']);
+          if ($ticket) {
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(array('event' => 'success', 'type' => 'ticket_sharing_invitation_discarded', 'ticket' => $ticket));
+          }
+        } catch (\Exception $e) {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'db_conn_failed')));
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
+      }
+    } else {
+      $this->forbidenAccess();
+    }
+  }
+
+  public function invite_technician() {
+    session_start();
+    if ($_SESSION['user_role'] == "GERENTE" || $_SESSION['user_role'] == "TECNICO") {
+      if (isset($_POST['ticketID']) && isset($_POST['technicianID']) && isset($_POST['responsibility'])) {
+        try {
+          $Chamado = Container::getClass("Chamado");
+          $Chamado->setTicketTechnicians($_POST['ticketID'], $_POST['technicianID'], $_POST['responsibility'], '0');
+          $ticket = $Chamado->getTicketById($_POST['ticketID']);
+          if ($ticket) {
+            header('Content-Type: application/json; charset=UTF-8');
+            echo json_encode(array('event' => 'success', 'type' => 'technician_invited', 'ticket' => $ticket));
+          }
+        } catch (\Exception $e) {
+          header('Content-Type: application/json; charset=UTF-8');
+          header('HTTP/1.1 400');
+          die(json_encode(array('event' => 'error', 'type' => 'db_conn_failed')));
+        }
+      } else {
+        header('Content-Type: application/json; charset=UTF-8');
+        header('HTTP/1.1 400');
+        die(json_encode(array('event' => 'error', 'type' => 'missing_data')));
+      }
+    } else {
+      $this->forbidenAccess();
+    }
+  }
 }
 ?>

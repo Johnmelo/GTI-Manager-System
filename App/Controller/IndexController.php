@@ -236,6 +236,27 @@ class IndexController extends Action{
     echo(json_encode($suggestions));
   }
 
+  public function get_support_users_suggestions() {
+    $suggestions = [];
+
+    // Get the data
+    $Usuario = Container::getClass("Usuario");
+    $supportUsers = $Usuario->findByRole("admin", "technician");
+
+    // Arrange the data to be used by the component
+    foreach ($supportUsers as $supportUser) {
+        $suggestion = [
+            "value" => $supportUser["nome"] . " (" . $supportUser["login"] . ")",
+            "data"  => []
+        ];
+        $suggestion["data"]["userID"] = $supportUser["id"];
+        $suggestion["data"]["username"] = $supportUser["login"];
+        array_push($suggestions, $suggestion);
+    }
+    header("Content-type:application/json");
+    echo(json_encode($suggestions));
+  }
+
   public function logout(){
     session_start();
     $_SESSION = array();

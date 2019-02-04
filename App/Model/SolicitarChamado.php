@@ -23,15 +23,6 @@ class SolicitarChamado extends Table{
     return $res;
   }
 
-  public function getChamadosById($request_id){
-      $query = "SELECT s.id AS id_solicitacao, c.id AS id_chamado, s.data_solicitacao, l.id AS id_local, s.id_cliente, s.id_servico, s.descricao, s.status AS solicitacao_chamado_status, c.status AS chamado_status, c.data_abertura, c.data_finalizado, c.prazo, c.id_tecnico_responsavel, c.id_tecnico_abertura, c.parecer_tecnico FROM {$this->table} AS s LEFT JOIN chamados AS c ON c.id_solicitacao = s.id LEFT JOIN locais AS l ON l.id = s.id_local WHERE c.id = :request_id";
-      $stmt = $this->db->prepare($query);
-      $stmt->bindParam(":request_id",$request_id);
-      $stmt->execute();
-      $res = $stmt->fetchAll();
-      return $res;
-  }
-
   public function getTicketRequestById($ticketId){
       $stmt = $this->db->prepare(
         "SELECT `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, ".

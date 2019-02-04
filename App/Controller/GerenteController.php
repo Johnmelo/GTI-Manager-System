@@ -20,7 +20,7 @@ class GerenteController extends Action{
       $unreviewedAccountRequests = $SolicitarAcesso->getUnreviewedRequests();
       $activeTicketRequests = $SolicitarChamado->getActiveTicketRequests();
       $inQueueTickets = $Chamado->getInQueueTickets();
-      $inProcessTickets = $Chamado->getInProcessTickets();
+      $inProcessTickets = $Chamado->getInProcessTickets(true);
 
       $this->view->token = \json_encode($token->data);
       $this->view->unreviewedAccountRequests = $unreviewedAccountRequests;
@@ -418,6 +418,7 @@ class GerenteController extends Action{
             $data_finalizado = $date->format("Y-m-d H:i:s");
             $Chamado = Container::getClass("Chamado");
             $db->beginTransaction();
+              $Chamado->updateColumnById("id_tecnico_fechamento", $_SESSION['user_id'], $ticketID);
             $Chamado->updateColumnById("status", $status, $ticketID);
             $Chamado->updateColumnById("parecer_tecnico", $parecer, $ticketID);
             $Chamado->updateColumnById("data_finalizado", $data_finalizado, $ticketID);
