@@ -283,6 +283,9 @@
 
       // Remove the ticket request from the table
       $('form[name=client_call_request]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+
+      // If user is viewing the ticket info, notify him/her it was modified
+      checkModalIsOpen(ticketRequest);
     });
 
     // When a client cancels a ticket
@@ -292,6 +295,8 @@
         r => r.id_chamado !== ticket.id_chamado
       );
       $('table[id=not-processing-requests]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+
+      checkModalIsOpen(ticket);
     });
 
     // When the support refuses a ticket request
@@ -301,6 +306,9 @@
         r => r.id_solicitacao !== ticketRequest.id_solicitacao
       );
       $('form[name=client_call_request]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+
+      // If user is viewing the ticket info, notify him/her it was modified
+      checkModalIsOpen(ticketRequest);
     });
 
     // When the support accepts a ticket request
@@ -313,6 +321,9 @@
       // Insert into the "in queue" list and table
       window.inQueueTickets.push(ticket);
       insertInInQueueTicketsTable(ticket, true);
+
+      // If user is viewing the ticket info, notify him/her it was modified
+      checkModalIsOpen(ticket);
     });
 
     // When technicians acquire a ticket
@@ -333,6 +344,9 @@
           $('#processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating')
         }
       }
+      
+      // If user is viewing the ticket info, notify him/her it was modified
+      checkModalIsOpen(ticket);
     });
 
     // When technicians finalize a ticket
@@ -342,6 +356,9 @@
         r => r.id_chamado !== ticket.id_chamado
       );
       $('table[id=processing-requests]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+
+      // If user is viewing the ticket info, notify him/her it was modified
+      checkModalIsOpen(ticket);
     });
 
     // When support updates a ticket technician list
@@ -354,6 +371,9 @@
       // Replace the ticket responsible technicians data
       let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
       ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+      // If user is viewing the ticket info, notify him/her it was modified
+      checkModalIsOpen(ticket);
     });
 
     // When support updates a ticket technician list
@@ -366,6 +386,9 @@
       // Replace the ticket responsible technicians data
       let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
       ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+      // If user is viewing the ticket info, notify him/her it was modified
+      checkModalIsOpen(ticket);
     });
 
     // When support concludes one of the activities
@@ -378,6 +401,9 @@
       // Replace the ticket responsible technicians data
       let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
       ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+      // If user is viewing the ticket info, notify him/her it was modified
+      checkModalIsOpen(ticket);
     });
 
     // When support sends a ticket sharing invitation to another person from support
@@ -390,6 +416,9 @@
       // Replace the ticket responsible technicians data
       let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
       ticketToBeUpdated.responsaveis = ticket.responsaveis;
+
+      // If user is viewing the ticket info, notify him/her it was modified
+      checkModalIsOpen(ticket);
     });
   </script>
   <!-- Custom Theme Scripts -->

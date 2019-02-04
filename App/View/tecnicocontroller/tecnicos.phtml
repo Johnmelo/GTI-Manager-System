@@ -306,6 +306,9 @@
 
     // Remove the ticket request from the table
     $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticketRequest);
   });
 
   // When a client cancels a ticket
@@ -315,6 +318,9 @@
       r => r.id_chamado !== ticket.id_chamado
     );
     $('form[name=chamados_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticket);
   });
 
   // When the support refuses a ticket request
@@ -324,6 +330,9 @@
       r => r.id_solicitacao !== ticketRequest.id_solicitacao
     );
     $('form[name=solicitacoes_chamados]').find(`[data-request-id=${ticketRequest.id_solicitacao}]`).remove();
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticketRequest);
   });
 
   // When other technicians accept a ticket request
@@ -336,6 +345,9 @@
     // Insert into the "in queue" list and table
     window.inQueueTickets.push(ticket);
     insertInInQueueTicketsTable(ticket);
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticket);
   });
 
   // When other technicians acquire a ticket
@@ -356,6 +368,9 @@
         $('#processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).addClass('notificating')
       }
     }
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticket);
   });
 
   // When other technicians finalize a ticket
@@ -368,6 +383,9 @@
       r => r.id_chamado !== ticket.id_chamado
     );
     $('#processing-requests, #my-processing-requests').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticket);
   });
 
   // When support updates a ticket technician list
@@ -401,6 +419,9 @@
     } else {
       removeCloseBtnFromRow(ticket.id_chamado);
     }
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticket);
   });
 
   // When support updates a ticket technician list
@@ -431,6 +452,9 @@
     } else {
       removeCloseBtnFromRow(ticket.id_chamado);
     }
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticket);
   });
 
   // When support concludes one of the activities
@@ -461,6 +485,9 @@
     } else {
       removeCloseBtnFromRow(ticket.id_chamado);
     }
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticket);
   });
 
   // When support sends a ticket sharing invitation to another person from support
@@ -491,6 +518,9 @@
     } else {
       removeCloseBtnFromRow(ticket.id_chamado);
     }
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticket);
   });
 </script>
 

@@ -1192,6 +1192,30 @@ function updateTechnicianSuggestionsAvailableList() {
   });
 }
 
+function checkModalIsOpen(ticket) {
+  let openModalTicketID;
+  let ticketID;
+  if (ticket.id_solicitacao !== undefined && ticket.id_chamado === undefined) {
+    openModalTicketID = $('.modal.in').find('#id_solicitacao_field').val();
+    ticketID = ticket.id_solicitacao;
+  } else if (ticket.id_chamado !== undefined) {
+    openModalTicketID = $('.modal.in').find('#id_chamado_field').val();
+    ticketID = ticket.id_chamado;
+  }
+  if (ticketID === undefined) {
+    return false;
+  }
+  if (openModalTicketID === undefined || openModalTicketID === "") {
+    return false;
+  }
+  if (openModalTicketID === ticketID) {
+    alert("Esse chamado foi atualizado");
+    if ($('.modal.in').length === 1) {
+      $('.modal.in').modal('hide');
+    }
+  }
+}
+
 // Inserting HTML structure into modal tag
 $(document).ready(function() {
     $.post("/gtic/public/get_support_users_suggestions")
