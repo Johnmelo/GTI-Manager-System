@@ -15,6 +15,7 @@ class Init extends Bootstrap{
     $routes['/gtic/public/get_services_suggestions'] = array('controller' => 'indexController', 'action' => 'get_services_suggestions');
     $routes['/gtic/public/get_locales_suggestions'] = array('controller' => 'indexController', 'action' => 'get_locales_suggestions');
     $routes['/gtic/public/get_users_suggestions'] = array('controller' => 'indexController', 'action' => 'get_users_suggestions');
+    $routes['/gtic/public/get_support_users_suggestions'] = array('controller' => 'indexController', 'action' => 'get_support_users_suggestions');
     //--------------------------------------------------------------------------------------------------------------------------
 
     //ADMIN ROUTES--------------------------------------------------------------------------------------------------------------
@@ -39,12 +40,19 @@ class Init extends Bootstrap{
 
     //TECHNICIAN ROUTES-----------------------------------------------------------------------------------------------------------
     $routes['/gtic/public/tecnico'] = array('controller' => 'tecnicoController', 'action' => 'index');
-    $routes['/gtic/public/technician_select_request'] = array('controller' => 'tecnicoController', 'action' => 'technician_select_request');
+    $routes['/gtic/public/tecnico/technician_select_request'] = array('controller' => 'tecnicoController', 'action' => 'technician_select_request');
     $routes['/gtic/public/tecnico/historico_chamados'] = array('controller' => 'tecnicoController', 'action' => 'technician_history');
     $routes['/gtic/public/tecnico/solicitar_atendimento'] = array('controller' => 'tecnicoController', 'action' => 'solicitar_atendimento');
     $routes['/gtic/public/tecnico/register_call_request'] = array('controller' => 'tecnicoController', 'action' => 'register_call_request');
     $routes['/gtic/public/tecnico/configuracoes'] = array('controller' => 'tecnicoController', 'action' => 'technician_account_settings');
     $routes['/gtic/public/tecnico/refuse_support_request'] = array('controller' => 'tecnicoController', 'action' => 'refuse_support_request');
+    $routes['/gtic/public/tecnico/update_ticket_responsible_technicians'] = array('controller' => 'tecnicoController', 'action' => 'update_ticket_responsible_technicians');
+    $routes['/gtic/public/tecnico/respond_ticket_sharing_invitation'] = array('controller' => 'tecnicoController', 'action' => 'respond_ticket_sharing_invitation');
+    $routes['/gtic/public/tecnico/responsibility_done'] = array('controller' => 'tecnicoController', 'action' => 'responsibility_done');
+    $routes['/gtic/public/tecnico/save_responsibility_change'] = array('controller' => 'tecnicoController', 'action' => 'save_responsibility_change');
+    $routes['/gtic/public/tecnico/reaquire_ticket'] = array('controller' => 'tecnicoController', 'action' => 'reaquire_ticket');
+    $routes['/gtic/public/tecnico/discard_invite'] = array('controller' => 'tecnicoController', 'action' => 'discard_invite');
+    $routes['/gtic/public/tecnico/invite_technician'] = array('controller' => 'tecnicoController', 'action' => 'invite_technician');
     //----------------------------------------------------------------------------------------------------------------------------
 
     $this->setRoutes($routes);

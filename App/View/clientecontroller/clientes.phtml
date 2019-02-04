@@ -14,6 +14,7 @@
 <link href="../App/View/css/base-style.css" rel="stylesheet">
 <link href="../App/View/css/custom-style-override.css" rel="stylesheet">
 <link href="../App/View/css/custom-modal.css" rel="stylesheet">
+<link href="../App/View/css/request-modal.css" rel="stylesheet">
 </head>
 
 <body class="nav-md">
@@ -137,7 +138,6 @@
                         <th>ID</th>
                         <th>Serviço</th>
                         <th>Prazo</th>
-                        <th>Técnico Responsável</th>
                         <th>Técnico Abertura</th>
                       </tr>
                     </thead>
@@ -203,6 +203,8 @@
 <script src="../App/View/js/cliente-tour.js"></script>
 <!-- NProgress -->
 <script src="../App/View/js/nprogress.js"></script>
+<!-- Autosize -->
+<script src="../App/View/js/autosize.min.js"></script>
 <!-- Moment.js -->
 <script src="../App/View/js/moment.min.js"></script>
 <!-- forge-sha256 -->
@@ -238,6 +240,9 @@
     // Insert the ticket into the "in queue" list and table
     window.inQueueTickets.push(ticket);
     insertInOpenedRequestsTable(ticket);
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticket);
   });
 
   // When a technician assumes a ticket
@@ -253,8 +258,15 @@
     $('form[name=chamados_abertos_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
 
     // Insert the ticket with new data in the "in process" list and table
+    // First, remove the technicians who are still to respond to an invitation or refused it
+    ticket.responsaveis = ticket.responsaveis.filter(t => {
+      return t.status === "1" || t.status === "2"
+    });
     window.inProcessTickets.push(ticket);
     insertInProcessingRequestsTable(ticket);
+    
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticket);
   });
 
   // When a technician finalizes a ticket
@@ -264,6 +276,33 @@
       r => r.id_chamado !== ticket.id_chamado
     );
     $('form[name=chamados_atendimento_clientes]').find(`[data-request-id=${ticket.id_chamado}]`).remove();
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticket);
+  });
+
+  // When support updates a ticket technician list
+  socket.on('support updated ticket', ticket => {
+    // Replace the ticket responsible technicians data
+    let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    ticketToBeUpdated.responsaveis = ticket.responsaveis.filter(t => {
+      return t.status === "1" || t.status === "2"
+    });
+
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticket);
+  });
+
+  // When support updates a ticket technician list
+  socket.on('support finished activity', ticket => {
+    // Replace the ticket responsible technicians data
+    let ticketToBeUpdated = inProcessTickets.find(t => t.id_chamado === ticket.id_chamado);
+    ticketToBeUpdated.responsaveis = ticket.responsaveis.filter(t => {
+      return t.status === "1" || t.status === "2"
+    });
+    
+    // If user is viewing the ticket info, notify him/her it was modified
+    checkModalIsOpen(ticket);
   });
 </script>
 
@@ -289,7 +328,7 @@
             tecnico_abertura_field: true,
             descricao_field: true,
             prazo_field: true,
-            tecnico_responsavel_field: true
+            responsaveis_field: true
           }
         };
         let requestData = inProcessTickets.find(r => r.id_chamado === requestId);
@@ -464,8 +503,7 @@
     let cols = "";
     cols += `<td>${request.id_chamado}</td>`;
     cols += `<td>${request.servico}</td>`;
-    cols += `<td>${calculateDeadlineMsg(request.prazo)}</td>`
-    cols += `<td>${request.tecnico_responsavel}</td>`;
+    cols += `<td>${calculateDeadlineMsg(request.prazo)}</td>`;
     cols += `<td>${request.tecnico_abertura}</td>`;
     newRow.append(cols);
 
