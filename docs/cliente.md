@@ -6,7 +6,11 @@ As funcionalidades a seguir estão disponíveis para usuários que tem a funçã
 
 Na página "Solicitar atendimento" o cliente pode solicitar um chamado a partir do formulário **"Nova Solicitação"**.
 
-Para abrir um chamado, é obrigatório informar o serviço desejado, o local para o qual o serviço se destina e algum detalhe como motivo do chamado ou qual o problema a ser resolvido.
+Para abrir um chamado, é obrigatório informar:
+
+- **Serviço:** qual o tipo de serviço relacionado ao chamado
+- **Local:** o local para o qual o serviço se destina
+- **Descrição:** uma descrição sobre o problema a ser resolvido ou qual o motivo da solicitação de chamado.
 
 ![Tela de abrir chamado](./_imgs/cliente-solicitar-chamado.png)
 
