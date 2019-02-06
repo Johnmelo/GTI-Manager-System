@@ -1014,8 +1014,13 @@ function fillTicketTechniciansList(ticketTechniciansData) {
       } else if (ownResponsibilityData.status === "-1") {
         invitationStatus = 'viewing refused own-card';
       } else if (ownResponsibilityData.status === "2") {
+        // Check if ticket is being viewed in history page
+        // If closed, don't apply the class that displays the "reaquire" button to the technician
+        let ticketID = $('#id_chamado_field').val();
+        let ticket = closedTickets.find(t => t.id_chamado === ticketID);
+        const isTicketNotClosed = ticket.status !== "FINALIZADO";
         technicianHasTicket = true;
-        invitationStatus = 'viewing done own-card';
+        invitationStatus = (isTicketNotClosed) ? 'viewing done own-card' : 'viewing done';
       }
       insertTechnicianCard(techName, ownResponsibilityData.atividade, invitationStatus);
       updateTechnicianSuggestionsAvailableList();
