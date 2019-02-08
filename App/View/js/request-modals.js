@@ -1023,7 +1023,7 @@ function fillTicketTechniciansList(ticketTechniciansData) {
           technicianHasTicket = true;
           invitationStatus = (isTicketNotClosed) ? 'viewing done own-card' : 'viewing done';
         } else {
-          invitationStatus = (isTicketNotClosed) ? 'viewing done own-card' : 'viewing done';
+          invitationStatus = 'viewing done own-card';
         }
       }
       insertTechnicianCard(techName, ownResponsibilityData.atividade, invitationStatus);
