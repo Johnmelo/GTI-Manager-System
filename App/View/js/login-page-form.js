@@ -201,6 +201,9 @@ function submitRequestAccessForm() {
             alert("Houve uma falha não identificada");
         });
     } else {
+        $("input[id=login-submit]").val("Solicitar acesso");
+        $("input[id=login-submit]").removeClass("disabled");
+        $("input[id=login-submit]").prop("disabled", false);
     }
 }
 
