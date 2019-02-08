@@ -1,4 +1,4 @@
-# Funcionalidades do cliente
+# Funcionalidades disponíveis para clientes
 
 As funcionalidades a seguir estão disponíveis para usuários que tem a função de cliente.
 

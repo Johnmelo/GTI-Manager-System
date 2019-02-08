@@ -1,4 +1,4 @@
-# Funcionalidades do técnico
+# Funcionalidades disponíveis para técnicos
 
 As funcionalidades a seguir estão disponíveis para usuários que tem a função de técnico.
 
