@@ -32,6 +32,8 @@ Daqui, a solicitação pode ser aceita e se tornar um chamado em espera para ser
 
 Clicando na linha de uma das solicitações na tabela permite-se verificar as informações completas da solicitação.
 
+![Janela com as informações completas de uma solicitação de chamado](./_imgs/detalhes-solicitação-2.png)
+
 As informações exibidas são:
 
 - **Solicitação:** código identificador da solicitação de chamado
@@ -60,7 +62,7 @@ Na tabela de "Solicitações de serviço" na página inicial do técnico, as sol
 
 ![Botão "Aceitar" na linha de uma solicitação na tabela](./_imgs/técnico-aceitando-solicitação-1.png)
 
-Ao clicar em **"Aceitar"**, uma janela é aberta com o campo **"Prazo"** habilitado para edição, para que o técnico possa informar o dia e hora em que o chamado terá sido resolvido.
+Ao clicar em **"Aceitar"**, uma janela é aberta com o campo **"Prazo"** habilitado para edição, para que o técnico possa informar o dia e hora em que espera-se que o chamado terá sido resolvido.
 
 ![Aceitando uma solicitação de chamado](./_imgs/técnico-aceitando-solicitação-2.png)
 
