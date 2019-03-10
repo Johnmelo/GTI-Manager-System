@@ -6,6 +6,8 @@
 <script defer src="../../App/View/js/fontawesome-all.min.js"></script>
 <!-- NProgress -->
 <link href="../../App/View/css/nprogress.css" rel="stylesheet">
+<!-- iCheck -->
+<link href="../../App/View/icheck/skins/square/blue.css" rel="stylesheet">
 
 <!-- Custom Theme Style -->
 <link href="../../App/View/css/custom.min.css" rel="stylesheet">
@@ -159,6 +161,18 @@
                       </div>
                     </div>
                     <div class="form-group">
+                      <label class="control-label col-md-3 col-sm-3 col-xs-12">Tombo</label>
+                      <div class="col-md-9 col-sm-9 col-xs-12" style="display: grid;">
+                        <div class="form-group" style="display: inline-flex;margin: 8px 0px 0px 0px;">
+                          <input type="checkbox" class="form-control" id="tombo" name="tombo">
+                          <label for="tombo" style="font-weight: 600; margin-left: 10px; cursor: pointer; font-size: 1.1em; margin-bottom: 0px; align-self: center;">O chamado é para um item com tombamento</label>
+                        </div>
+                        <div class="form-group" style="display: inline-flex;margin: 8px 0px 0px 0px; display: none;">
+                          <input type="text" class="form-control" id="numero_tombo" name="numero_tombo" placeholder="Insira o número do tombo">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12">Descrição</label>
                         <div class="col-md-9 col-sm-9 col-xs-12">
                             <textarea id="descricao" name="descricao" class="form-control" placeholder="Detalhes e observações"></textarea>
@@ -197,6 +211,24 @@
 <script src="../../App/View/js/bootstrap.min.js"></script>
 <!-- NProgress -->
 <script src="../../App/View/js/nprogress.js"></script>
+<!-- iCheck -->
+<script src="../../App/View/js/icheck.min.js"></script>
+<script>
+  $(document).ready(function(){
+    $('input').iCheck({
+      checkboxClass: 'icheckbox_square-blue',
+      radioClass: 'iradio_square'
+    });
+
+    $('#tombo').on('ifChecked', function() {
+      $('#numero_tombo').parent().css("display", "initial")
+    });
+
+    $('#tombo').on('ifUnchecked', function() {
+      $('#numero_tombo').parent().css("display", "none")
+    });
+  });
+</script>
 <!-- Autosize -->
 <script src="../../App/View/js/autosize.min.js"></script>
 <script>
