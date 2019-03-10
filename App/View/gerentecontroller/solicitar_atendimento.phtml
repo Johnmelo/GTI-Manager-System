@@ -217,11 +217,13 @@
     });
 
     $('#tombo').on('ifChecked', function() {
-      $('#numero_tombo').parent().css("display", "initial")
+      $('#numero_tombo').parent().css("display", "initial");
+      checkFormValidity();
     });
 
     $('#tombo').on('ifUnchecked', function() {
-      $('#numero_tombo').parent().css("display", "none")
+      $('#numero_tombo').parent().css("display", "none");
+      checkFormValidity();
     });
   });
 </script>
@@ -400,23 +402,25 @@
     var servico = $('form[name=solicitar_chamado] input[name=servico]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
     var local = $('form[name=solicitar_chamado] input[name=local]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
     var descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    let tombo = $('form[name=solicitar_chamado] input[name=numero_tombo]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    let has_tombo = $('#tombo').is(':checked');
 
     // If at least one is not empty, enable reset button
-    if (!servico.match(/^\s*$/) || !local.match(/^\s*$/) || !descricao.match(/^\s*$/)) {
+    if (!servico.match(/^\s*$/) || !local.match(/^\s*$/) || !descricao.match(/^\s*$/) || (has_tombo && !tombo.match(/^\s*$/))) {
       enableButton($('form[name=solicitar_chamado] button[type=reset]'));
     } else {
       disableButton($('form[name=solicitar_chamado] button[type=reset]'));
     }
 
     // If all inputs are filled, enable submit button
-    if (!servico.match(/^\s*$/) && !local.match(/^\s*$/) && !descricao.match(/^\s*$/)) {
+    if (!servico.match(/^\s*$/) && !local.match(/^\s*$/) && !descricao.match(/^\s*$/) && (!has_tombo || (has_tombo && !tombo.match(/^\s*$/)))) {
       enableButton($('form[name=solicitar_chamado] button[type=submit]'));
     } else {
       disableButton($('form[name=solicitar_chamado] button[type=submit]'));
     }
   }
 
-  $("input[name=servico], textarea[name=descricao], input[name=local]").on("input", function() {
+  $("input[name=servico], textarea[name=descricao], input[name=local], input[name=numero_tombo]").on("input", function() {
     checkFormValidity();
   });
   $("input[name=prazo_field]").on("input", function(e) {
