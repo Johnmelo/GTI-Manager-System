@@ -4,9 +4,9 @@ use SON\Db\Table;
 class SolicitarChamado extends Table{
   protected $table = "solicitacao_chamado";
 
-  public function save($id_usuario,$id_servico,$id_local,$descricao){
-    $query = "Insert into ".$this->table." (id_cliente,id_servico,id_local,descricao) values (?,?,?,?)";
-    $params = array($id_usuario, $id_servico, $id_local, $descricao);
+  public function save($id_usuario,$id_servico,$id_local,$descricao,$tombo){
+    $query = "Insert into ".$this->table." (id_cliente,id_servico,id_local,descricao,tombo) values (?,?,?,?,?)";
+    $params = array($id_usuario, $id_servico, $id_local, $descricao, $tombo);
     $stmt = $this->db->prepare($query);
     if ($stmt->execute($params) && $stmt->rowCount() > 0) {
       return $this->db->lastInsertId();
