@@ -170,7 +170,7 @@ class TecnicoController extends Action{
                 // Save the service request as accepted by saving its data
                 // in the accepted requests table
                 $Chamado = Container::getClass("Chamado");
-                $ticketID = $Chamado->save($service_id, $place_id, $open_request_id, $_SESSION['user_id'], $client_id, $deadline_db, $description);
+                $ticketID = $Chamado->save($service_id, $place_id, $open_request_id, $_SESSION['user_id'], $client_id, $deadline_db, $description, $tombo);
                 if ($ticketID !== false) {
                   $db->commit();
                   // Return the ticket data

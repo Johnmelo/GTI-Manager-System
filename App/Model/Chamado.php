@@ -349,9 +349,9 @@ class Chamado extends Table{
     return $stmt->execute();
   }
 
-  public function save($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description){
-    $query = "Insert into ".$this->table." (id_servico,id_local,id_solicitacao,id_tecnico_abertura,id_cliente_solicitante,prazo,descricao) values (?,?,?,?,?,?,?)";
-    $params = array($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description);
+  public function save($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description, $tombo){
+    $query = "Insert into ".$this->table." (id_servico,id_local,id_solicitacao,id_tecnico_abertura,id_cliente_solicitante,prazo,descricao,tombo) values (?,?,?,?,?,?,?,?)";
+    $params = array($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description, $tombo);
     $stmt = $this->db->prepare($query);
     if ($stmt->execute($params) && $stmt->rowCount() > 0) {
       return $this->db->lastInsertId();
