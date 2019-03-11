@@ -476,7 +476,7 @@ class GerenteController extends Action{
               $date = new \DateTime($_POST['deadline_value'], new \DateTimeZone("America/Recife"));
               $prazo = $date->format("Y-m-d H:i:s");
               $chamadoDb = Container::getClass("Chamado");
-              $ticketId = $chamadoDb->save($requisicao['id_servico'],$requisicao['id_local'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$prazo,$requisicao['descricao']);
+              $ticketId = $chamadoDb->save($requisicao['id_servico'],$requisicao['id_local'],$requisicao['id'],$_SESSION['user_id'],$requisicao['id_cliente'],$prazo,$requisicao['descricao'],$requisicao['tombo']);
 
               if ($ticketId !== false) {
                 // Return the new ticket data

@@ -33,7 +33,8 @@ CREATE TABLE `chamados` (
   `id_tecnico_fechamento` int(10) DEFAULT NULL,
   `descricao` text COLLATE utf8mb4_unicode_ci,
   `parecer_tecnico` text COLLATE utf8mb4_unicode_ci,
-  `status` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'AGUARDANDO'
+  `status` varchar(16) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'AGUARDANDO',
+  `tombo` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -145,6 +146,7 @@ CREATE TABLE `solicitacao_chamado` (
   `id_servico` int(10) NOT NULL,
   `id_local` int(10) NOT NULL,
   `descricao` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tombo` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'AGUARDANDO',
   `data_recusado` datetime DEFAULT NULL,
   `id_recusante` int(10) DEFAULT NULL,

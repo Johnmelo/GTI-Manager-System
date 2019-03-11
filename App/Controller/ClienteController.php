@@ -46,17 +46,21 @@ class ClienteController extends Action{
       if (
         isset($_POST['id_servico']) &&
         isset($_POST['id_local']) &&
-        (isset($_POST['descricao']) && !preg_match('/^\s*$/', $_POST['descricao']))
+        (isset($_POST['descricao']) && !preg_match('/^\s*$/', $_POST['descricao'])) &&
+        (isset($_POST['has_tombo']) && preg_match('/^true$|^false$/', $_POST['has_tombo'])) &&
+        (preg_match('/^false$/', $_POST['has_tombo']) || (preg_match('/^true$/', $_POST['has_tombo']) && isset($_POST['numero_tombo']) && !preg_match('/^\s*$/', $_POST['numero_tombo'])))
       ){
         $id_servico = $_POST['id_servico'];
         $id_local = $_POST['id_local'];
         $descricao = $_POST['descricao'];
+        $hasTombo = $_POST['has_tombo'];
+        $tombo = ($hasTombo === 'true') ? $_POST['numero_tombo'] : null;
 
         session_start();
         $id_usuario = $_SESSION['user_id'];
 
         $SolicitarChamado = Container::getClass("SolicitarChamado");
-        $requestId = $SolicitarChamado->save($id_usuario,$id_servico,$id_local,$descricao);
+        $requestId = $SolicitarChamado->save($id_usuario,$id_servico,$id_local,$descricao,$tombo);
         if ($requestId !== false) {
           $request = $SolicitarChamado->getTicketRequestById($requestId);
           header('Content-Type: application/json; charset=UTF-8');

@@ -126,6 +126,17 @@ function fillUpRequestModal(requestData, visibleFields) {
                 insertTechnicianCard(myself.name, '', 'acquiring own-card');
               }
             }
+        } else if(field.id === "tombo_field") {
+          // When item identifier code, warn when there's none
+          if (!requestData.hasOwnProperty("tombo")) {
+            field.value = "Não possui";
+          } else {
+            if (requestData["tombo"] === null || requestData["tombo"] === '') {
+              field.value = "Não possui";
+            } else {
+              field.value = requestData["tombo"];
+            }
+          }
         } else {
             // Other values except dates, just put it in the input field
             field.value = requestData[fieldTitle];
@@ -1278,6 +1289,12 @@ $(document).ready(function() {
               <label for="servico_field" class="col-sm-4 control-label">Serviço</label>\
               <div class="col-sm-8">\
                 <input type="text" class="form-control" id="servico_field" readonly>\
+              </div>\
+            </div>\
+            <div class="form-group" style="display: none;">\
+              <label for="tombo_field" class="col-sm-4 control-label">Tombo</label>\
+              <div class="col-sm-8">\
+                <input type="text" class="form-control" id="tombo_field" readonly>\
               </div>\
             </div>\
             <div class="form-group" style="display: none;">\

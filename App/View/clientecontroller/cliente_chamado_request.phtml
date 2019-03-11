@@ -9,6 +9,8 @@
 <script defer src="../../App/View/js/fontawesome-all.min.js"></script>
 <!-- NProgress -->
 <link href="../../App/View/css/nprogress.css" rel="stylesheet">
+<!-- iCheck -->
+<link href="../../App/View/icheck/skins/square/blue.css" rel="stylesheet">
 
 <!-- Custom Theme Style -->
 <link href="../../App/View/css/custom.min.css" rel="stylesheet">
@@ -155,6 +157,18 @@
                             <textarea name="descricao" class="form-control" placeholder="Detalhes e observações"></textarea>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Tombo</label>
+                        <div class="col-md-9 col-sm-9 col-xs-12" style="display: grid;">
+                            <div class="form-group" style="display: inline-flex;margin: 8px 0px 0px 0px;">
+                                <input type="checkbox" class="form-control" id="tombo" name="tombo">
+                                <label for="tombo" style="font-weight: 600; margin-left: 10px; cursor: pointer; font-size: 1.1em; margin-bottom: 0px; align-self: center;">O chamado é para um item com tombamento</label>
+                            </div>
+                            <div class="form-group" style="display: inline-flex;margin: 8px 0px 0px 0px; display: none;">
+                                <input type="text" class="form-control" id="numero_tombo" name="numero_tombo" placeholder="Insira o número do tombo">
+                            </div>
+                        </div>
+                    </div>
                     <div class="ln_solid"></div>
                     <div class="form-group">
                       <div class="col-md-9 col-sm-9 col-xs-12 col-md-offset-3">
@@ -222,6 +236,26 @@
 <script src="../../App/View/js/cliente-tour.js"></script>
 <!-- NProgress -->
 <script src="../../App/View/js/nprogress.js"></script>
+<!-- iCheck -->
+<script src="../../App/View/js/icheck.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('input').iCheck({
+            checkboxClass: 'icheckbox_square-blue',
+            radioClass: 'iradio_square'
+        });
+
+        $('#tombo').on('ifChecked', function() {
+            $('#numero_tombo').parent().css("display", "initial");
+            checkFormValidity();
+        });
+
+        $('#tombo').on('ifUnchecked', function() {
+            $('#numero_tombo').parent().css("display", "none");
+            checkFormValidity();
+        });
+    });
+</script>
 <!-- moment.js -->
 <script src="../../App/View/js/moment.min.js"></script>
 <!-- Autosize -->
@@ -374,6 +408,7 @@
             local_field: true,
             status_field: true,
             servico_field: true,
+            tombo_field: true,
             data_solicitacao_field: true,
             descricao_field: true
           }
@@ -487,16 +522,18 @@
     let servico = $('form[name=solicitar_chamado] input[name=servico]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
     let local = $('form[name=solicitar_chamado] input[name=local]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
     let descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    let tombo = $('form[name=solicitar_chamado] input[name=numero_tombo]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    let has_tombo = $('#tombo').is(':checked');
 
     // If at least one is not empty, enable reset button
-    if (!servico.match(/^\s*$/) || !local.match(/^\s*$/) || !descricao.match(/^\s*$/)) {
+    if (!servico.match(/^\s*$/) || !local.match(/^\s*$/) || !descricao.match(/^\s*$/) || (has_tombo && !tombo.match(/^\s*$/))) {
       enableButton($('form[name=solicitar_chamado] button[type=reset]'));
     } else {
       disableButton($('form[name=solicitar_chamado] button[type=reset]'));
     }
 
     // If all inputs are filled, enable submit button
-    if (!servico.match(/^\s*$/) && !local.match(/^\s*$/) && !descricao.match(/^\s*$/)) {
+    if (!servico.match(/^\s*$/) && !local.match(/^\s*$/) && !descricao.match(/^\s*$/) && (!has_tombo || (has_tombo && !tombo.match(/^\s*$/)))) {
       enableButton($('form[name=solicitar_chamado] button[id=submit-btn]'));
     } else {
       disableButton($('form[name=solicitar_chamado] button[id=submit-btn]'));
@@ -507,6 +544,11 @@
     let textareaInput = $('form[name=solicitar_chamado] textarea[name=descricao]');
     let descricao = textareaInput.val().replace(/^\s+/g, '').replace(/\s+$/g, '');
     textareaInput.val(descricao);
+
+    let tomboInput = $('form[name=solicitar_chamado] input[name=numero_tombo]');
+    let numero_tombo = tomboInput.val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    tomboInput.val(numero_tombo);
+    let has_tombo = $('#tombo').is(':checked');
 
     // Check if service is valid
     let serviceInput = $("input[name=servico]");
@@ -539,6 +581,8 @@
     {
       "id_servico": idServico,
       "id_local": idLocal,
+      "has_tombo": has_tombo,
+      "numero_tombo": numero_tombo,
       "descricao": descricao
     })
     .done(function(response) {
@@ -559,10 +603,10 @@
           // Insert the ticket request in the page
           window.activeTicketRequests.push(response.request);
           insertInActiveTicketRequestsTable(response.request);
-        } else {
-          window.reload(true);
+          return true;
         }
       }
+      window.location.reload(true);
     })
     .fail(function(data) {
       // Unblock page
@@ -586,6 +630,7 @@
         }
       }
       alert("Houve uma falha não identificada");
+      window.location.reload(true);
     });
   }
   function enableButton(button) {
@@ -602,7 +647,7 @@
     disableButton($('form[name=solicitar_chamado] button[id=submit-btn]'));
   });
   $('form button[id=submit-btn]').on('click', ticketRequestFormSubmit);
-  $("input[name=servico], textarea[name=descricao], input[name=local]").on('input', checkFormValidity);
+  $("input[name=servico], textarea[name=descricao], input[name=local], input[name=numero_tombo]").on('input', checkFormValidity);
 </script>
 
 <!-- Table handling -->
@@ -654,6 +699,7 @@
     let lastLocation = localStorage.getItem("lastLocation");
     if (lastLocation != null) {
       $("input[name=local]").val(lastLocation);
+      enableButton($('form[name=solicitar_chamado] button[type=reset]'));
     }
   };
   const populateactiveTicketRequestsTable = () => {

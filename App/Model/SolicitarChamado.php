@@ -4,9 +4,9 @@ use SON\Db\Table;
 class SolicitarChamado extends Table{
   protected $table = "solicitacao_chamado";
 
-  public function save($id_usuario,$id_servico,$id_local,$descricao){
-    $query = "Insert into ".$this->table." (id_cliente,id_servico,id_local,descricao) values (?,?,?,?)";
-    $params = array($id_usuario, $id_servico, $id_local, $descricao);
+  public function save($id_usuario,$id_servico,$id_local,$descricao,$tombo){
+    $query = "Insert into ".$this->table." (id_cliente,id_servico,id_local,descricao,tombo) values (?,?,?,?,?)";
+    $params = array($id_usuario, $id_servico, $id_local, $descricao, $tombo);
     $stmt = $this->db->prepare($query);
     if ($stmt->execute($params) && $stmt->rowCount() > 0) {
       return $this->db->lastInsertId();
@@ -26,7 +26,7 @@ class SolicitarChamado extends Table{
   public function getTicketRequestById($ticketId){
       $stmt = $this->db->prepare(
         "SELECT `sc`.`id` AS `id_solicitacao`, `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, ".
-        "`sc`.`status`, `s`.`nome` AS `servico`, `sc`.`data_solicitacao`, `sc`.`descricao`, ".
+        "`sc`.`status`, `s`.`nome` AS `servico`, `sc`.`data_solicitacao`, `sc`.`descricao`, `sc`.`tombo`, ".
         "`sc`.`data_recusado`, `u2`.`nome` AS `recusante`, `sc`.`motivo_recusa`, `sc`.`id_cliente` ".
         "FROM `{$this->table}` AS `sc` ".
         "LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico` ".
@@ -45,7 +45,7 @@ class SolicitarChamado extends Table{
   public function getUsersActiveTicketRequests($userId) {
       $stmt = $this->db->prepare(
           "SELECT `sc`.`id` AS `id_solicitacao`, `u`.`nome` AS `cliente`, `l`.`nome` AS `local`, `sc`.`id_cliente`,"
-          ." `sc`.`status`, `s`.`nome` AS `servico`, `sc`.`data_solicitacao`, `sc`.`descricao`"
+          ." `sc`.`status`, `s`.`nome` AS `servico`, `sc`.`data_solicitacao`, `sc`.`descricao`, `sc`.`tombo`"
           ." FROM `{$this->table}` AS `sc`"
           ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
           ." LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `sc`.`id_cliente`"
@@ -61,7 +61,7 @@ class SolicitarChamado extends Table{
   public function getUsersInactiveTicketRequests($userId) {
     $stmt = $this->db->prepare(
       "SELECT `sc`.`id` AS `id_solicitacao`, `u`.`nome` AS `cliente`, `l`.`nome` AS `local`, `sc`.`id_cliente`,"
-      ." `sc`.`status`, `s`.`nome` AS `servico`, `sc`.`data_solicitacao`, `sc`.`descricao`"
+      ." `sc`.`status`, `s`.`nome` AS `servico`, `sc`.`data_solicitacao`, `sc`.`descricao`, `sc`.`tombo`"
       ." FROM `{$this->table}` AS `sc`"
       ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
       ." LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `sc`.`id_cliente`"
@@ -77,7 +77,7 @@ class SolicitarChamado extends Table{
   public function getActiveTicketRequests() {
     $stmt = $this->db->prepare(
         "SELECT `sc`.`id` AS `id_solicitacao`, `u`.`nome` AS `cliente`, `l`.`nome` AS `local`, `sc`.`id_cliente`,"
-        ." `sc`.`status`, `s`.`nome` AS `servico`, `sc`.`data_solicitacao`, `sc`.`descricao`"
+        ." `sc`.`status`, `s`.`nome` AS `servico`, `sc`.`data_solicitacao`, `sc`.`descricao`, `sc`.`tombo`"
         ." FROM `{$this->table}` AS `sc`"
         ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
         ." LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `sc`.`id_cliente`"
@@ -92,7 +92,7 @@ class SolicitarChamado extends Table{
   public function getInactiveTicketRequests() {
     $stmt = $this->db->prepare(
         "SELECT `sc`.`id` AS `id_solicitacao`, `u`.`nome` AS `cliente`, `l`.`nome` AS `local`, `sc`.`id_cliente`,"
-        ." `sc`.`status`, `s`.`nome` AS `servico`, `sc`.`data_solicitacao`, `sc`.`descricao`"
+        ." `sc`.`status`, `s`.`nome` AS `servico`, `sc`.`data_solicitacao`, `sc`.`descricao`, `sc`.`tombo`"
         ." FROM `{$this->table}` AS `sc`"
         ." LEFT JOIN `servicos` AS `s` ON `s`.`id` = `sc`.`id_servico`"
         ." LEFT JOIN `usuarios` AS `u` ON `u`.`id` = `sc`.`id_cliente`"

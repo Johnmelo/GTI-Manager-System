@@ -146,7 +146,13 @@ class TecnicoController extends Action{
         $client_id   = $_POST['id_usuario'];
         $deadline    = $_POST['prazo'];
         $description = $_POST['descricao'];
-        if ($service_id !== null && $place_id !== null && $client_id !== null && $deadline !== null && $description !== null && !preg_match('/^\s*$/', $description)) {
+        $hasTombo = $_POST['has_tombo'];
+        $tombo = ($hasTombo === 'true') ? $_POST['numero_tombo'] : null;
+        if (
+          $service_id !== null && $place_id !== null && $client_id !== null && $deadline !== null && $description !== null && !preg_match('/^\s*$/', $description) &&
+          ($hasTombo !== null && preg_match('/^true$|^false$/', $hasTombo)) &&
+          (preg_match('/^false$/', $hasTombo) || (preg_match('/^true$/', $hasTombo) && $tombo !== null && !preg_match('/^\s*$/', $tombo)))
+        ){
           // Check if the deadline date was sent in the expected format
           if(preg_match("/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/", $deadline) === 1) {
             try {
@@ -159,12 +165,12 @@ class TecnicoController extends Action{
                 // and immediately after alter the status on the pending table
                 $Request = Container::getClass("SolicitarChamado");
                 $db->beginTransaction();
-                $open_request_id = $Request->save($client_id,$service_id,$place_id,$description);
+                $open_request_id = $Request->save($client_id,$service_id,$place_id,$description,$tombo);
                 $Request->updateColumnById("status", "ATENDIDA", $open_request_id);
                 // Save the service request as accepted by saving its data
                 // in the accepted requests table
                 $Chamado = Container::getClass("Chamado");
-                $ticketID = $Chamado->save($service_id, $place_id, $open_request_id, $_SESSION['user_id'], $client_id, $deadline_db, $description);
+                $ticketID = $Chamado->save($service_id, $place_id, $open_request_id, $_SESSION['user_id'], $client_id, $deadline_db, $description, $tombo);
                 if ($ticketID !== false) {
                   $db->commit();
                   // Return the ticket data

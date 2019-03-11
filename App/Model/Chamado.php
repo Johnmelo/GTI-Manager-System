@@ -7,7 +7,7 @@ class Chamado extends Table{
   public function getTicketById($ticketId) {
     $stmt = $this->db->prepare(
       "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`, ".
-      "`u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, ".
+      "`u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`tombo`, ".
       "`c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`, ".
       "`c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico` ".
       "FROM `{$this->table}` AS `c` ".
@@ -58,7 +58,7 @@ class Chamado extends Table{
   public function getUsersOpenTickets($userId) {
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
-          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`tombo`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
@@ -91,7 +91,7 @@ class Chamado extends Table{
   public function getUsersInQueueTickets($userId) {
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
-          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`tombo`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
@@ -111,7 +111,7 @@ class Chamado extends Table{
   public function getUsersInProcessTickets($userId) {
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
-          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`tombo`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
@@ -144,7 +144,7 @@ class Chamado extends Table{
   public function getUsersInactiveTickets($userId) {
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
-          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`tombo`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
@@ -177,7 +177,7 @@ class Chamado extends Table{
   public function getTechniciansClosedTickets($technicianId) {
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
-          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`tombo`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
@@ -213,7 +213,7 @@ class Chamado extends Table{
   public function getOpenTickets() {
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
-          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`tombo`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
@@ -244,7 +244,7 @@ class Chamado extends Table{
   public function getInQueueTickets() {
       $stmt = $this->db->prepare(
         "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
-        ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+        ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`tombo`,"
         ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
         ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
@@ -264,7 +264,7 @@ class Chamado extends Table{
     // Get the tickets
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
-          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`tombo`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
@@ -296,7 +296,7 @@ class Chamado extends Table{
   public function getInactiveTickets() {
       $stmt = $this->db->prepare(
           "SELECT `c`.`id` AS `id_chamado`, `sc`.`id` AS `id_solicitacao`, `sc`.`id_cliente`,"
-          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`,"
+          ." `u1`.`nome` AS `cliente`, `l`.`nome` AS `local`, `s`.`nome` AS `servico`, `c`.`descricao`, `c`.`tombo`,"
           ." `c`.`status`, `sc`.`data_solicitacao`, `c`.`data_abertura`, `c`.`data_finalizado`, `c`.`data_assumido`,"
           ." `c`.`prazo`, `u2`.`nome` AS `tecnico_abertura`, `c`.`parecer_tecnico`"
           ." FROM `{$this->table}` AS `c`"
@@ -349,9 +349,9 @@ class Chamado extends Table{
     return $stmt->execute();
   }
 
-  public function save($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description){
-    $query = "Insert into ".$this->table." (id_servico,id_local,id_solicitacao,id_tecnico_abertura,id_cliente_solicitante,prazo,descricao) values (?,?,?,?,?,?,?)";
-    $params = array($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description);
+  public function save($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description, $tombo){
+    $query = "Insert into ".$this->table." (id_servico,id_local,id_solicitacao,id_tecnico_abertura,id_cliente_solicitante,prazo,descricao,tombo) values (?,?,?,?,?,?,?,?)";
+    $params = array($service_id, $place_id, $request_id, $id_open_technician, $id_client, $deadline, $description, $tombo);
     $stmt = $this->db->prepare($query);
     if ($stmt->execute($params) && $stmt->rowCount() > 0) {
       return $this->db->lastInsertId();
