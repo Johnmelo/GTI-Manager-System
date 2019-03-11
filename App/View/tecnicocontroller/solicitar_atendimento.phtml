@@ -120,7 +120,7 @@
 
           </div>
           <div class="row">
-            <div class="col-xs-6">
+            <div class="col-md-6 col-xs-12">
               <div id="nova-solicitacao-panel" class="x_panel">
                 <div class="x_title">
                   <h2>ABRIR CHAMADO <small>para cliente</small></h2>
@@ -457,6 +457,10 @@
     var descricao = $('form[name=solicitar_chamado] textarea[name=descricao]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
     $('form[name=solicitar_chamado] textarea[name=descricao]').val(descricao);
 
+    var numero_tombo = $('form[name=solicitar_chamado] input[name=numero_tombo]').val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    $('form[name=solicitar_chamado] input[name=numero_tombo]').val(numero_tombo);
+    var has_tombo = $('#tombo').is(':checked');
+
     // Adjust the deadline date
     let deadline_date = $('form[name=solicitar_chamado] input[name=prazo_field]')[0].value;
     let datetime;
@@ -512,6 +516,8 @@
       "id_local": id_local,
       "id_usuario": id_cliente,
       "prazo": datetime,
+      "has_tombo": has_tombo,
+      "numero_tombo": numero_tombo,
       "descricao": descricao
     })
     .done(function(response) {
@@ -521,17 +527,19 @@
           if (response.ticket) {
             // Send the ticket request to connected support users and to the requester client
             socket.emit('from support', 'support created ticket', response.ticket);
+
+            // Unblock page
+            $("html").css("cursor", "auto");
+            $("body").css("pointer-events", "auto");
+
+            // Notify success and reset the form
+            alert("Chamado aberto com sucesso");
+            $("form[name=solicitar_chamado]").trigger("reset");
+            return true;
           }
         }
       }
-
-      // Unblock page
-      $("html").css("cursor", "auto");
-      $("body").css("pointer-events", "auto");
-
-      // Notify success and reset the form
-      alert("Chamado aberto com sucesso");
-      $("form[name=solicitar_chamado]").trigger("reset");
+      window.location.reload(true);
     })
     .fail(function(data) {
       $("html").css("cursor", "auto");
@@ -556,7 +564,7 @@
         }
       }
       alert("Houve uma falha não identificada");
-      return false;
+      window.location.reload(true);
     });
     return false;
   });

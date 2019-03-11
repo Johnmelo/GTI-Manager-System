@@ -544,6 +544,11 @@
     let descricao = textareaInput.val().replace(/^\s+/g, '').replace(/\s+$/g, '');
     textareaInput.val(descricao);
 
+    let tomboInput = $('form[name=solicitar_chamado] input[name=numero_tombo]');
+    let numero_tombo = tomboInput.val().replace(/^\s+/g, '').replace(/\s+$/g, '');
+    tomboInput.val(numero_tombo);
+    let has_tombo = $('#tombo').is(':checked');
+
     // Check if service is valid
     let serviceInput = $("input[name=servico]");
     let service = serviceInput.val();
@@ -575,6 +580,8 @@
     {
       "id_servico": idServico,
       "id_local": idLocal,
+      "has_tombo": has_tombo,
+      "numero_tombo": numero_tombo,
       "descricao": descricao
     })
     .done(function(response) {
@@ -595,10 +602,10 @@
           // Insert the ticket request in the page
           window.activeTicketRequests.push(response.request);
           insertInActiveTicketRequestsTable(response.request);
-        } else {
-          window.reload(true);
+          return true;
         }
       }
+      window.location.reload(true);
     })
     .fail(function(data) {
       // Unblock page
@@ -622,6 +629,7 @@
         }
       }
       alert("Houve uma falha não identificada");
+      window.location.reload(true);
     });
   }
   function enableButton(button) {
